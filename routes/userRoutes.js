@@ -15,9 +15,9 @@ router.post("/userAuthenticator", userAuthenticator);
 
 router.post("/signup", signupUser);
 router.post("/signin", loginUser);
-router.post("/sendOTP", sendOTP);
-router.post("/verifyOTP", verifyOTP);
-router.post("/handleSocialFollowing", handleSocialFollowing);
-router.get("/getUser/:telegramId", getUser);
+// router.post("/sendOTP", sendOTP);
+// router.post("/verifyOTP", verifyOTP);
+// router.post("/handleSocialFollowing", handleSocialFollowing);
+// router.get("/getUser/:telegramId", getUser);
 
 module.exports = router;
