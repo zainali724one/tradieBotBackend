@@ -8,6 +8,9 @@ const {
   sendOTP,
   verifyOTP,
   updatePassword,
+  updateProfile,
+  changePassword,
+  deleteAccount,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -19,6 +22,9 @@ router.post("/signin", loginUser);
 router.post("/sendOTP", sendOTP);
 router.post("/verifyOTP", verifyOTP);
 router.post("/updatePassword", updatePassword);
+router.put("/updateProfile", updateProfile);
+router.put("/changePassword", changePassword);
+router.delete("/deleteAccount", deleteAccount);
 // router.post("/handleSocialFollowing", handleSocialFollowing);
 router.get("/getUser/:telegramId", getUser);
 

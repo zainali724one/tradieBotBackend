@@ -109,23 +109,7 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
 
   const isPasswordMatch = await bcrypt.compare(password, user.password);
   if (!isPasswordMatch) {
-    // return next(new ErrorHandler("Incorrect password", 401));
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-      user: {
-        telegramId: user.telegramId,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        country: user.country,
-        username: user.username,
-        isPremium: user.isPremium,
-        languageCode: user.languageCode,
-        userImage: user.userImage,
-        isLoggedIn: user.isLoggedIn,
-      },
-    });
+    return next(new ErrorHandler("Incorrect password", 401));
   } else {
     res.status(200).json({
       success: true,
@@ -240,5 +224,118 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Password updated successfully",
+  });
+});
+
+exports.updateProfile = catchAsyncError(async (req, res, next) => {
+  const { id, type, name, oldEmail, newEmail, oldPhone, newPhone } = req.body;
+
+  if (!id) {
+    return next(new ErrorHandler("User ID and type are required", 400));
+  }
+  if (!type) {
+    return next(new ErrorHandler("Please specify which field to update", 400));
+  }
+
+  const user = await User.findOne({ telegramId: id });
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+
+  switch (type) {
+    case "name":
+      if (!name) return next(new ErrorHandler("Name is required", 400));
+      user.name = name;
+      break;
+
+    case "email":
+      if (!oldEmail || !newEmail) {
+        return next(
+          new ErrorHandler("Both old and new email are required", 400)
+        );
+      }
+      if (user.email !== oldEmail) {
+        return next(new ErrorHandler("Old email does not match", 400));
+      }
+      const existingEmailUser = await User.findOne({ email: newEmail });
+      if (existingEmailUser) {
+        return next(new ErrorHandler("New email is already in use", 400));
+      }
+      user.email = newEmail;
+      break;
+
+    case "phone":
+      if (!oldPhone || !newPhone) {
+        return next(
+          new ErrorHandler("Both old and new phone numbers are required", 400)
+        );
+      }
+      if (user.phone !== oldPhone) {
+        return next(new ErrorHandler("Old phone number does not match", 400));
+      }
+      user.phone = newPhone;
+      break;
+
+    default:
+      return next(new ErrorHandler("Invalid update type", 400));
+  }
+
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: `${type} updated successfully`,
+    data: user,
+  });
+});
+
+exports.changePassword = catchAsyncError(async (req, res, next) => {
+  const { telegramId, oldPassword, newPassword } = req.body;
+
+  if (!telegramId) {
+    return next(new ErrorHandler("Telegram Id is required", 400));
+  }
+  if (!oldPassword || !newPassword) {
+    return next(
+      new ErrorHandler("Old password and new password are required", 400)
+    );
+  }
+
+  const user = await User.findOne({ telegramId });
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+
+  const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+  if (!isMatch) {
+    return next(new ErrorHandler("Old password is incorrect", 400));
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Password updated successfully",
+  });
+});
+
+exports.deleteAccount = catchAsyncError(async (req, res, next) => {
+  const { telegramId } = req.body;
+
+  if (!telegramId) {
+    return next(new ErrorHandler("Telegram ID is required", 400));
+  }
+
+  const user = await User.findOneAndDelete({ telegramId });
+
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "User account deleted successfully",
   });
 });

@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
   isPremium: { type: Boolean, default: false },
   isLoggedin: { type: Boolean, default: false },
   userImage: { type: String, default: null },
-resetOTP: { type: String },
+  resetOTP: { type: String },
   resetOTPExpires: { type: Date },
 });
 
