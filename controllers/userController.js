@@ -95,13 +95,13 @@ exports.signupUser = catchAsyncError(async (req, res, next) => {
 });
 
 exports.loginUser = catchAsyncError(async (req, res, next) => {
-  const { telegramId, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!telegramId || !password) {
-    return next(new ErrorHandler("Telegram ID and password are required", 400));
+  if (!email || !password) {
+    return next(new ErrorHandler("Email and password are required", 400));
   }
 
-  const user = await User.findOne({ telegramId });
+  const user = await User.findOne({ email });
 
   if (!user) {
     return next(new ErrorHandler("User not found", 404));
@@ -109,28 +109,44 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
 
   const isPasswordMatch = await bcrypt.compare(password, user.password);
   if (!isPasswordMatch) {
-    return next(new ErrorHandler("Incorrect password", 401));
+    // return next(new ErrorHandler("Incorrect password", 401));
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: {
+        telegramId: user.telegramId,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        country: user.country,
+        username: user.username,
+        isPremium: user.isPremium,
+        languageCode: user.languageCode,
+        userImage: user.userImage,
+        isLoggedIn: user.isLoggedIn,
+      },
+    });
+  } else {
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: {
+        telegramId: user.telegramId,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        country: user.country,
+        username: user.username,
+        isPremium: user.isPremium,
+        languageCode: user.languageCode,
+        userImage: user.userImage,
+        isLoggedIn: user.isLoggedIn,
+      },
+    });
   }
 
   user.isLoggedIn = true;
   await user.save();
-
-  res.status(200).json({
-    success: true,
-    message: "Login successful",
-    user: {
-      telegramId: user.telegramId,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      country: user.country,
-      username: user.username,
-      isPremium: user.isPremium,
-      languageCode: user.languageCode,
-      userImage: user.userImage,
-      isLoggedIn: user.isLoggedIn,
-    },
-  });
 });
 
 exports.getUser = catchAsyncError(async (req, res, next) => {
@@ -200,17 +216,17 @@ exports.verifyOTP = catchAsyncError(async (req, res, next) => {
 });
 
 exports.updatePassword = catchAsyncError(async (req, res, next) => {
-  const { email, otp, newPassword } = req.body;
+  const { email, newPassword } = req.body;
 
-  if (!email || !otp || !newPassword) {
+  if (!email || !newPassword) {
     return next(
       new ErrorHandler("Email, OTP, and new password are required", 400)
     );
   }
 
-  const user = await User.findOne({ email, resetOTP: otp });
+  const user = await User.findOne({ email });
 
-  if (!user || !user.resetOTPExpires || user.resetOTPExpires < Date.now()) {
+  if (!user) {
     return next(new ErrorHandler("Invalid or expired OTP", 400));
   }
 
