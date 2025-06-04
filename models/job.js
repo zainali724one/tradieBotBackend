@@ -12,7 +12,7 @@ const jobSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      byfault: "scheduled",
+      default: "scheduled",
     },
     date: {
       type: Date,
