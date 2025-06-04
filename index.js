@@ -9,6 +9,9 @@ const cors = require("cors");
 const rewardsRoutes = require("./routes/rewardRoutes");
 const userRoutes = require("./routes/userRoutes");
 const historyRoutes = require("./routes/historyRoutes");
+const quoteRoute = require("./routes/quoteRoute");
+const invoiceRoutes = require("./routes/invoiceRoutes");
+const jobRoutes = require("./routes/jobRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,6 +34,9 @@ app.use(`/api/webhook`, botRoutes);
 app.use(`/api/rewards`, rewardsRoutes);
 app.use(`/api/user`, userRoutes);
 app.use(`/api/history`, historyRoutes);
+app.use(`/api/quote`, quoteRoute);
+app.use(`/api/invoice`, invoiceRoutes);
+app.use(`/api/job`, jobRoutes);
 app.use(ErrorMiddleware);
 
 // Health Check

@@ -114,19 +114,22 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Login successful",
-      user: {
-        telegramId: user.telegramId,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        country: user.country,
-        username: user.username,
-        isPremium: user.isPremium,
-        languageCode: user.languageCode,
-        userImage: user.userImage,
-        isLoggedIn: user.isLoggedIn,
-      },
+      
+      user: user,
+      // user: {
+      //   telegramId: user.telegramId,
+      //   name: user.name,
+      //   email: user.email,
+      //   phone: user.phone,
+      //   country: user.country,
+      //   username: user.username,
+      //   isPremium: user.isPremium,
+      //   languageCode: user.languageCode,
+      //   userImage: user.userImage,
+      //   isLoggedIn: user.isLoggedIn,
+      // },
     });
+
   }
 
   user.isLoggedIn = true;
