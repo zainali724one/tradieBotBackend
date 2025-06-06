@@ -21,6 +21,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://radiant-rabanadas-d68427.netlify.app",
+      "https://peppy-swan-6fdd72.netlify.app"
     ],
   })
 );
