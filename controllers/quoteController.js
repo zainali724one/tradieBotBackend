@@ -93,7 +93,9 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   await newQuote.save();
 
   // Ensure temp directory exists
-  const tempDir = path.join(__dirname, "../temp");
+  // const tempDir = path.join(__dirname, "../temp");
+  const tempDir = "/tmp";
+
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
   }
