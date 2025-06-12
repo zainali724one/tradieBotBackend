@@ -46,14 +46,14 @@
 //   });
 // });
 
+const fs = require("fs");
+const path = require("path");
+const PDFDocument = require("pdfkit");
+const nodemailer = require("nodemailer");
 const { catchAsyncError } = require("../middlewares/catchAsyncError");
 const quote = require("../models/quote");
 const User = require("../models/User");
 const { ErrorHandler } = require("../utils/ErrorHandler");
-const puppeteer = require("puppeteer");
-const fs = require("fs");
-const path = require("path");
-const nodemailer = require("nodemailer");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const {
@@ -81,61 +81,6 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User not found for this telegramId", 404));
   }
 
-  // 1. Generate HTML content for the PDF
-  const htmlContent = `
-    <html>
-      <head>
-        <style>
-          body { font-family: Arial, sans-serif; padding: 40px; }
-          h1 { color: #333; }
-          p { font-size: 16px; }
-        </style>
-      </head>
-      <body>
-        <h1>Quote</h1>
-        <p><strong>Customer Name:</strong> ${customerName}</p>
-        <p><strong>Job Description:</strong> ${jobDescription}</p>
-        <p><strong>Quote Amount:</strong> £${quoteAmount}</p>
-      </body>
-    </html>
-  `;
-
-  const pdfPath = path.join(__dirname, "../temp/quote.pdf");
-
-  // 2. Generate PDF using Puppeteer
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.setContent(htmlContent);
-  await page.pdf({ path: pdfPath, format: "A4" });
-  await browser.close();
-
-  // 3. Send email with PDF attachment
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER, // Your email
-      pass: process.env.EMAIL_PASS, // Your app password
-    },
-  });
-  console.log("hello");
-
-  await transporter.sendMail({
-    from: `"UK Tradie Quotes" <${process.env.EMAIL_USER}>`,
-    to: customerEmail,
-    subject: "Your Quote",
-    text: "Attached is your quote.",
-    attachments: [
-      {
-        filename: "quote.pdf",
-        path: pdfPath,
-      },
-    ],
-  });
-
-  // Optional: delete PDF after sending
-  fs.unlinkSync(pdfPath);
-
-  // 4. Save quote in DB
   const newQuote = new quote({
     customerName,
     jobDescription,
@@ -147,8 +92,56 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
 
   await newQuote.save();
 
-  res.status(201).json({
-    message: "Quote submitted and emailed successfully",
-    quote: newQuote,
+  // Generate PDF
+  const pdfPath = path.join(__dirname, `../temp/quote_${newQuote._id}.pdf`);
+  const doc = new PDFDocument();
+
+  doc.pipe(fs.createWriteStream(pdfPath));
+  doc.fontSize(18).text("Quote Summary", { underline: true });
+  doc.moveDown();
+  doc.fontSize(12).text(`Customer Name: ${customerName}`);
+  doc.text(`Job Description: ${jobDescription}`);
+  doc.text(`Quote Amount: $${quoteAmount}`);
+  doc.text(`Email: ${customerEmail}`);
+  doc.end();
+
+  // Email the PDF
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER, // use environment variable in production
+      pass: process.env.EMAIL_PASS, // use environment variable in production
+    },
+  });
+
+  await new Promise((resolve, reject) => {
+    doc.on("finish", async () => {
+      try {
+        await transporter.sendMail({
+          from: "UK Tradie Bot",
+          to: customerEmail,
+          subject: "Your Quote from UK Tradie",
+          text: "Please find your quote attached.",
+          attachments: [
+            {
+              filename: `Quote_${newQuote._id}.pdf`,
+              path: pdfPath,
+            },
+          ],
+        });
+
+        // Delete temp file after sending
+        fs.unlinkSync(pdfPath);
+
+        res.status(201).json({
+          message: "Quote submitted and emailed successfully",
+          quote: newQuote,
+        });
+
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
   });
 });
