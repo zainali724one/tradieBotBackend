@@ -117,6 +117,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
       pass: process.env.EMAIL_PASS, // Your app password
     },
   });
+  console.log("hello");
 
   await transporter.sendMail({
     from: `"UK Tradie Quotes" <${process.env.EMAIL_USER}>`,
