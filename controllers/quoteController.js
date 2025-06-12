@@ -92,11 +92,16 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
 
   await newQuote.save();
 
-  // Generate PDF
-  const pdfPath = path.join(__dirname, `../temp/quote_${newQuote._id}.pdf`);
-  const doc = new PDFDocument();
+  // Ensure temp directory exists
+  const tempDir = path.join(__dirname, "../temp");
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+  }
 
+  const pdfPath = path.join(tempDir, `quote_${newQuote._id}.pdf`);
+  const doc = new PDFDocument();
   doc.pipe(fs.createWriteStream(pdfPath));
+
   doc.fontSize(18).text("Quote Summary", { underline: true });
   doc.moveDown();
   doc.fontSize(12).text(`Customer Name: ${customerName}`);
@@ -109,16 +114,17 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER, // use environment variable in production
-      pass: process.env.EMAIL_PASS, // use environment variable in production
+      user: process.env.EMAIL_USER, // Replace with env var
+      pass: process.env.EMAIL_PASS, // Replace with env var
     },
   });
 
+  // Wait for PDF to finish writing before emailing
   await new Promise((resolve, reject) => {
     doc.on("finish", async () => {
       try {
         await transporter.sendMail({
-          from: "UK Tradie Bot",
+          from: '"UK Tradie Bot" <your-email@gmail.com>',
           to: customerEmail,
           subject: "Your Quote from UK Tradie",
           text: "Please find your quote attached.",
@@ -130,7 +136,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
           ],
         });
 
-        // Delete temp file after sending
+        // Clean up temp PDF file
         fs.unlinkSync(pdfPath);
 
         res.status(201).json({
