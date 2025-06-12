@@ -92,64 +92,55 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
 
   await newQuote.save();
 
-  // Ensure temp directory exists
-  // const tempDir = path.join(__dirname, "../temp");
+  // Use /tmp directory in Vercel
   const tempDir = "/tmp";
-
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
-  }
-
   const pdfPath = path.join(tempDir, `quote_${newQuote._id}.pdf`);
   const doc = new PDFDocument();
-  doc.pipe(fs.createWriteStream(pdfPath));
 
-  doc.fontSize(18).text("Quote Summary", { underline: true });
-  doc.moveDown();
-  doc.fontSize(12).text(`Customer Name: ${customerName}`);
-  doc.text(`Job Description: ${jobDescription}`);
-  doc.text(`Quote Amount: $${quoteAmount}`);
-  doc.text(`Email: ${customerEmail}`);
-  doc.end();
+  // Await PDF generation
+  await new Promise((resolve, reject) => {
+    const stream = fs.createWriteStream(pdfPath);
+    doc.pipe(stream);
 
-  // Email the PDF
+    doc.fontSize(18).text("Quote Summary", { underline: true });
+    doc.moveDown();
+    doc.fontSize(12).text(`Customer Name: ${customerName}`);
+    doc.text(`Job Description: ${jobDescription}`);
+    doc.text(`Quote Amount: $${quoteAmount}`);
+    doc.text(`Email: ${customerEmail}`);
+    doc.end();
+
+    stream.on("finish", resolve);
+    stream.on("error", reject);
+  });
+
+  // Send Email
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER, // Replace with env var
-      pass: process.env.EMAIL_PASS, // Replace with env var
+      user: process.env.EMAIL_USER, // better: use env vars
+      pass: process.env.EMAIL_PASS,
     },
   });
 
-  // Wait for PDF to finish writing before emailing
-  await new Promise((resolve, reject) => {
-    doc.on("finish", async () => {
-      try {
-        await transporter.sendMail({
-          from: '"UK Tradie Bot" <your-email@gmail.com>',
-          to: customerEmail,
-          subject: "Your Quote from UK Tradie",
-          text: "Please find your quote attached.",
-          attachments: [
-            {
-              filename: `Quote_${newQuote._id}.pdf`,
-              path: pdfPath,
-            },
-          ],
-        });
+  await transporter.sendMail({
+    from: '"UK Tradie Bot" <your-email@gmail.com>',
+    to: customerEmail,
+    subject: "Your Quote from UK Tradie",
+    text: "Please find your quote attached.",
+    attachments: [
+      {
+        filename: `Quote_${newQuote._id}.pdf`,
+        path: pdfPath,
+      },
+    ],
+  });
 
-        // Clean up temp PDF file
-        fs.unlinkSync(pdfPath);
+  // Clean up file
+  fs.unlinkSync(pdfPath);
 
-        res.status(201).json({
-          message: "Quote submitted and emailed successfully",
-          quote: newQuote,
-        });
-
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
+  res.status(201).json({
+    message: "Quote submitted and emailed successfully",
+    quote: newQuote,
   });
 });
