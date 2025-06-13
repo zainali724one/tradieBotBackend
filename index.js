@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 3000;
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
+      "http://localhost:5173/",
       "https://radiant-rabanadas-d68427.netlify.app",
       "https://peppy-swan-6fdd72.netlify.app"
     ],
