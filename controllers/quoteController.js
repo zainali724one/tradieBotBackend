@@ -1,51 +1,3 @@
-// const { catchAsyncError } = require("../middlewares/catchAsyncError");
-// const quote = require("../models/quote");
-// const User = require("../models/User");
-// const { ErrorHandler } = require("../utils/ErrorHandler");
-
-// exports.addQuote = catchAsyncError(async (req, res, next) => {
-//   const {
-//     customerName,
-//     jobDescription,
-//     quoteAmount,
-//     customerEmail,
-//     telegramId,
-//     userId,
-//   } = req.body;
-
-//   if (
-//     !customerName ||
-//     !jobDescription ||
-//     !quoteAmount ||
-//     !customerEmail ||
-//     !telegramId ||
-//     !userId
-//   ) {
-//     return next(new ErrorHandler("All fields are required", 400));
-//   }
-
-//   const user = await User.findOne({ telegramId });
-//   if (!user) {
-//     return next(new ErrorHandler("User not found for this telegramId", 404));
-//   }
-
-//   const newQuote = new quote({
-//     customerName,
-//     jobDescription,
-//     quoteAmount,
-//     customerEmail,
-//     telegramId,
-//     userId,
-//   });
-
-//   await newQuote.save();
-
-//   res.status(201).json({
-//     message: "Quote submitted successfully",
-//     quote: newQuote,
-//   });
-// });
-
 const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
@@ -54,6 +6,7 @@ const { catchAsyncError } = require("../middlewares/catchAsyncError");
 const quote = require("../models/quote");
 const User = require("../models/User");
 const { ErrorHandler } = require("../utils/ErrorHandler");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const {
@@ -63,6 +16,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     customerEmail,
     telegramId,
     userId,
+    stripeAccountId,
   } = req.body;
 
   if (
@@ -71,7 +25,8 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     !quoteAmount ||
     !customerEmail ||
     !telegramId ||
-    !userId
+    !userId ||
+    !stripeAccountId
   ) {
     return next(new ErrorHandler("All fields are required", 400));
   }
@@ -90,11 +45,31 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     userId,
   });
 
+  // Create Stripe PaymentIntent
+  const paymentAmount = Math.round(Number(quoteAmount) * 100); // in cents
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: paymentAmount,
+    currency: "usd",
+    automatic_payment_methods: { enabled: true },
+    metadata: {
+      quoteId: newQuote._id.toString(),
+      userId: user._id.toString(),
+    },
+    transfer_data: {
+      destination: user.stripeAccountId,
+    },
+    receipt_email: customerEmail,
+    description: `Quote for ${customerName}`,
+  });
+
+  // Save paymentIntent ID in quote
+  newQuote.paymentIntentId = paymentIntent.id;
   await newQuote.save();
 
   // Use /tmp directory in Vercel
   const tempDir = "/tmp";
   const pdfPath = path.join(tempDir, `quote_${newQuote._id}.pdf`);
+  const paymentLink = `https://peppy-swan-6fdd72.netlify.app/pay/quote/${newQuote._id}`;
   const doc = new PDFDocument();
 
   // Await PDF generation
@@ -108,6 +83,10 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     doc.text(`Job Description: ${jobDescription}`);
     doc.text(`Quote Amount: $${quoteAmount}`);
     doc.text(`Email: ${customerEmail}`);
+    doc.moveDown();
+    doc
+      .fillColor("blue")
+      .text("Click here to pay", { link: paymentLink, underline: true });
     doc.end();
 
     stream.on("finish", resolve);
@@ -124,7 +103,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   });
 
   await transporter.sendMail({
-    from: '"UK Tradie Bot" <your-email@gmail.com>',
+    from: "UK Tradie Bot",
     to: customerEmail,
     subject: "Your Quote from UK Tradie",
     text: "Please find your quote attached.",

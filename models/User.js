@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
   userImage: { type: String, default: null },
   resetOTP: { type: String },
   resetOTPExpires: { type: Date },
+  stripeAccountId: { type: String },
 });
 
 userSchema.pre("save", async function (next) {
