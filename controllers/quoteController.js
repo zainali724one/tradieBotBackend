@@ -56,7 +56,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
       userId: user._id.toString(),
     },
     transfer_data: {
-      destination: user.stripeAccountId,
+      destination: stripeAccountId,
     },
     receipt_email: customerEmail,
     description: `Quote for ${customerName}`,

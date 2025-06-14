@@ -12,6 +12,7 @@ const historyRoutes = require("./routes/historyRoutes");
 const quoteRoute = require("./routes/quoteRoute");
 const invoiceRoutes = require("./routes/invoiceRoutes");
 const jobRoutes = require("./routes/jobRoutes");
+const stripeRoutes = require("./routes/stripeRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
@@ -22,7 +23,7 @@ app.use(
     origin: [
       "http://localhost:5173/",
       "https://radiant-rabanadas-d68427.netlify.app",
-      "https://peppy-swan-6fdd72.netlify.app"
+      "https://peppy-swan-6fdd72.netlify.app",
     ],
   })
 );
@@ -39,6 +40,7 @@ app.use(`/api/history`, historyRoutes);
 app.use(`/api/quote`, quoteRoute);
 app.use(`/api/invoice`, invoiceRoutes);
 app.use(`/api/job`, jobRoutes);
+app.use(`/api/stripe`, stripeRoutes);
 app.use(`/api/admin`, adminRoutes);
 app.use(ErrorMiddleware);
 
