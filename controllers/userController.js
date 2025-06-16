@@ -114,7 +114,7 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: "Login successful",
-      
+
       user: user,
       // user: {
       //   telegramId: user.telegramId,
@@ -129,7 +129,6 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
       //   isLoggedIn: user.isLoggedIn,
       // },
     });
-
   }
 
   user.isLoggedIn = true;
@@ -143,16 +142,16 @@ exports.getUser = catchAsyncError(async (req, res, next) => {
   if (!user) {
     return next(new ErrorHandler("User not found", 404));
   }
-  const rankedUsers = await User.find()
-    .sort({ pollens: -1 })
-    .select("telegramId pollens");
+  // const rankedUsers = await User.find()
+  //   .sort({ pollens: -1 })
+  //   .select("telegramId pollens");
 
-  const rank = rankedUsers.findIndex((u) => u.telegramId === telegramId) + 1;
+  // const rank = rankedUsers.findIndex((u) => u.telegramId === telegramId) + 1;
 
   res.status(200).json({
     user,
-    rank,
-    totalUsers: rankedUsers.length,
+    // rank,
+    // totalUsers: rankedUsers.length,
   });
 });
 
