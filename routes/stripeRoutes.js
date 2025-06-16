@@ -2,6 +2,7 @@ const express = require("express");
 const {
   getStripeData,
   stripeWebhookHandler,
+  stripeCallback,
 } = require("../controllers/stripeIntegration");
 
 const router = express.Router();
@@ -12,5 +13,7 @@ router.post(
   express.raw({ type: "application/json" }),
   stripeWebhookHandler
 );
+
+router.get("/oauth/callback", stripeCallback);
 
 module.exports = router;

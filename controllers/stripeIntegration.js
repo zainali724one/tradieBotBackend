@@ -3,6 +3,7 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { catchAsyncError } = require("../middlewares/catchAsyncError");
 const quote = require("../models/quote");
+const User = require("../models/User");
 
 exports.getStripeData = catchAsyncError(async (req, res) => {
   const { quoteId } = req.params;
@@ -50,4 +51,24 @@ exports.stripeWebhookHandler = async (req, res) => {
   }
 
   res.status(200).json({ received: true });
+};
+
+exports.stripeCallback = async (req, res) => {
+  const { code, state: userId } = req.query;
+
+  try {
+    const response = await stripe.oauth.token({
+      grant_type: "authorization_code",
+      code,
+    });
+
+    const stripeAccountId = response.stripe_user_id;
+
+    await User.findByIdAndUpdate(userId, { stripeAccountId });
+
+    res.send("Stripe account connected successfully!");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Stripe connection failed.");
+  }
 };
