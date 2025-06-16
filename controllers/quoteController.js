@@ -16,7 +16,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     customerEmail,
     telegramId,
     userId,
-    stripeAccountId,
+    // stripeAccountId,
   } = req.body;
 
   if (
@@ -25,8 +25,8 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     !quoteAmount ||
     !customerEmail ||
     !telegramId ||
-    !userId ||
-    !stripeAccountId
+    !userId
+    // !stripeAccountId
   ) {
     return next(new ErrorHandler("All fields are required", 400));
   }
@@ -56,7 +56,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
       userId: user._id.toString(),
     },
     transfer_data: {
-      destination: stripeAccountId,
+      destination: user?.stripeAccountId,
     },
     receipt_email: customerEmail,
     description: `Quote for ${customerName}`,
