@@ -128,9 +128,13 @@ Amount: $${quoteAmount}
 Email: ${customerEmail}
 Click here to pay: ${paymentLink}`;
 
-  const response = await sendWhatsAppMessage(customerPhone, messageBody);
-
-  console.log(response, "Whatsapp response");
+  sendWhatsAppMessage(customerPhone, messageBody)
+    .then((res) => {
+      console.log(res, "Whatsapp response");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   res.status(201).json({
     message: "Quote submitted and emailed successfully",
