@@ -6,6 +6,7 @@ const { catchAsyncError } = require("../middlewares/catchAsyncError");
 const quote = require("../models/quote");
 const User = require("../models/User");
 const { ErrorHandler } = require("../utils/ErrorHandler");
+const sendWhatsAppMessage = require("../services/twillioService");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
@@ -16,6 +17,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     customerEmail,
     telegramId,
     userId,
+    customerPhone,
     // stripeAccountId,
   } = req.body;
 
@@ -25,7 +27,8 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     !quoteAmount ||
     !customerEmail ||
     !telegramId ||
-    !userId
+    !userId ||
+    !customerPhone
     // !stripeAccountId
   ) {
     return next(new ErrorHandler("All fields are required", 400));
@@ -42,6 +45,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     quoteAmount,
     customerEmail,
     telegramId,
+    customerPhone,
     userId,
   });
 
@@ -117,6 +121,16 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
 
   // Clean up file
   fs.unlinkSync(pdfPath);
+
+  const messageBody = `Customer Name: ${customerName}
+  Job: ${jobDescription}
+Amount: $${quoteAmount}
+Email: ${customerEmail}
+Click here to pay: ${paymentLink}`;
+
+  const response = await sendWhatsAppMessage(customerPhone, messageBody);
+
+  console.log(response, "Whatsapp response");
 
   res.status(201).json({
     message: "Quote submitted and emailed successfully",

@@ -18,6 +18,10 @@ const quoteSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    customerPhone: {
+      type: String,
+      required: true,
+    },
     telegramId: {
       type: String,
       required: true,
