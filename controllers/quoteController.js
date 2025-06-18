@@ -74,6 +74,21 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   const tempDir = "/tmp";
   const pdfPath = path.join(tempDir, `quote_${newQuote._id}.pdf`);
   const paymentLink = `https://peppy-swan-6fdd72.netlify.app/pay/quote/${newQuote._id}`;
+
+  const messageBody = `Customer Name: ${customerName}
+  Job: ${jobDescription}
+Amount: $${quoteAmount}
+Email: ${customerEmail}
+Click here to pay: ${paymentLink}`;
+
+  sendWhatsAppMessage(customerPhone, messageBody)
+    .then((res) => {
+      console.log(res, "Whatsapp response");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
   const doc = new PDFDocument();
 
   // Await PDF generation
@@ -121,20 +136,6 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
 
   // Clean up file
   fs.unlinkSync(pdfPath);
-
-  const messageBody = `Customer Name: ${customerName}
-  Job: ${jobDescription}
-Amount: $${quoteAmount}
-Email: ${customerEmail}
-Click here to pay: ${paymentLink}`;
-
-  sendWhatsAppMessage(customerPhone, messageBody)
-    .then((res) => {
-      console.log(res, "Whatsapp response");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
 
   res.status(201).json({
     message: "Quote submitted and emailed successfully",
