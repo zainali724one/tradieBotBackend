@@ -4,6 +4,7 @@ const User = require("../models/User");
 const { ErrorHandler } = require("../utils/ErrorHandler");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
+const { getAuthUrl, getTokensFromCode } = require("../services/googleAuth");
 
 exports.userAuthenticator = catchAsyncError(async (req, res, next) => {
   const { telegramId, firstName, lastName, username, languageCode, isPremium } =
@@ -340,4 +341,30 @@ exports.deleteAccount = catchAsyncError(async (req, res, next) => {
     success: true,
     message: "User account deleted successfully",
   });
+});
+
+exports.connectToGoogle = catchAsyncError(async (req, res) => {
+  const authUrl = getAuthUrl(req.params.userId);
+  res.redirect(authUrl);
+});
+
+// OAuth2 Callback
+exports.googleOAuth2Callback = catchAsyncError(async (req, res) => {
+  const { code, state: userId } = req.query;
+
+  try {
+    const tokens = await getTokensFromCode(code);
+
+    await User.findByIdAndUpdate(userId, {
+      googleAccessToken: tokens.access_token,
+      googleRefreshToken: tokens.refresh_token,
+    });
+
+    res.send(
+      "✅ Google connected successfully. You can now use Drive, Sheets, and Calendar."
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("❌ Error connecting Google account.");
+  }
 });

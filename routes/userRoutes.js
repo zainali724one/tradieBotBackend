@@ -11,6 +11,8 @@ const {
   updateProfile,
   changePassword,
   deleteAccount,
+  connectToGoogle,
+  googleOAuth2Callback,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -25,7 +27,8 @@ router.post("/updatePassword", updatePassword);
 router.put("/updateProfile", updateProfile);
 router.put("/changePassword", changePassword);
 router.delete("/deleteAccount", deleteAccount);
-// router.post("/handleSocialFollowing", handleSocialFollowing);
 router.get("/getUser/:telegramId", getUser);
+router.get("/connect/:userId", connectToGoogle); // /api/user/connect/:userId
+router.get("/google/oauth2callback", googleOAuth2Callback); // /api/user/google/oauth2callback
 
 module.exports = router;

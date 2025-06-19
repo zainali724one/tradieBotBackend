@@ -8,6 +8,7 @@ const User = require("../models/User");
 const { ErrorHandler } = require("../utils/ErrorHandler");
 const sendWhatsAppMessage = require("../services/twillioService");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const dayjs = require("dayjs");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const {
@@ -141,4 +142,36 @@ Click here to pay: ${paymentLink}`;
     message: "Quote submitted and emailed successfully",
     quote: newQuote,
   });
+});
+
+exports.paymentReminder = catchAsyncError(async (req, res) => {
+  const threeDaysAgo = dayjs().subtract(3, "day").toDate();
+
+  // Find unpaid quotes older than 3 days
+  const unpaidQuotes = await quote.find({
+    isPaid: false,
+    createdAt: { $lte: threeDaysAgo },
+  });
+
+  const results = [];
+
+  for (const quoteData of unpaidQuotes) {
+    const { customerName, customerEmail, customerPhone, quoteAmount, _id } =
+      quoteData;
+
+    // Skip if no whatsapp number is provided
+    if (!customerPhone) continue;
+    const paymentLink = `https://peppy-swan-6fdd72.netlify.app/pay/quote/${_id}`;
+    const messageBody = `Hi ${customerName}, this is a friendly reminder from UK Tradie. You have an unpaid quote of $${quoteAmount}. Please complete your payment. click here to pay ${paymentLink} `;
+
+    sendWhatsAppMessage(customerPhone, messageBody)
+      .then((res) => {
+        console.log(res, "Whatsapp response");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  res.json({ message: "Reminder job executed", results });
 });
