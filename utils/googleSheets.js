@@ -2,13 +2,49 @@ const { google } = require("googleapis");
 
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 
+// async function saveDataToSheets(
+//   data,
+//   spreadsheetId,
+//   accessToken,
+//   refreshToken
+// ) {
+
+//   const oauth2Client = new google.auth.OAuth2(
+//     process.env.CLIENT_ID,
+//     process.env.CLIENT_SECRET,
+//     process.env.REDIRECT_URI
+//   );
+
+//   oauth2Client.setCredentials({
+//     access_token: accessToken,
+//     refresh_token: refreshToken,
+//   });
+
+//   const sheets = google.sheets({ version: "v4", auth: oauth2Client });
+
+//   const values = [data];
+
+//   await sheets.spreadsheets.values.append({
+//     spreadsheetId,
+//     range: "Invoices!A:F",
+//     valueInputOption: "USER_ENTERED",
+//     resource: {
+//       values,
+//     },
+//   });
+
+//   console.log("✅ Invoice row added to sheet");
+// }
+
+const { google } = require("googleapis");
+
 async function saveDataToSheets(
   data,
   spreadsheetId,
   accessToken,
-  refreshToken
+  refreshToken,
+  type
 ) {
-  // Set up OAuth2 client with your app credentials
   const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
@@ -22,18 +58,60 @@ async function saveDataToSheets(
 
   const sheets = google.sheets({ version: "v4", auth: oauth2Client });
 
-  const values = [data];
+  const sheetMeta = await sheets.spreadsheets.get({ spreadsheetId });
+  const sheetExists = sheetMeta.data.sheets.some(
+    (s) => s.properties.title === type
+  );
 
+  // Create "Invoices" sheet if it doesn't exist
+  if (!sheetExists) {
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      resource: {
+        requests: [
+          {
+            addSheet: {
+              properties: { title: type },
+            },
+          },
+        ],
+      },
+    });
+
+    // Optionally add headers after creation
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${type}!A1:G1`,
+      valueInputOption: "RAW",
+      resource: {
+        values: [
+          [
+            "Customer Name",
+            "Job",
+            "Amount",
+            "Email",
+            "Telegram ID",
+            "Phone",
+            "User ID",
+          ],
+        ],
+      },
+    });
+  }
+
+  // Append new row
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: "Invoices!A:F",
+    range: `${type}Invoices!A:F`,
     valueInputOption: "USER_ENTERED",
     resource: {
-      values,
+      values: [data],
     },
   });
 
   console.log("✅ Invoice row added to sheet");
 }
+
+module.exports = { saveDataToSheets };
 
 module.exports = { saveDataToSheets };
