@@ -111,30 +111,36 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
   const isPasswordMatch = await bcrypt.compare(password, user.password);
   if (!isPasswordMatch) {
     return next(new ErrorHandler("Incorrect password", 401));
-  } else {
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
+  }
 
-      user: user,
-      // user: {
-      //   telegramId: user.telegramId,
-      //   name: user.name,
-      //   email: user.email,
-      //   phone: user.phone,
-      //   country: user.country,
-      //   username: user.username,
-      //   isPremium: user.isPremium,
-      //   languageCode: user.languageCode,
-      //   userImage: user.userImage,
-      //   isLoggedIn: user.isLoggedIn,
-      // },
-    });
+  // Check if the user's account is approved
+  if (user.isApproved !== "Complete") {
+    return next(new ErrorHandler("Your account is not approved yet", 403));
   }
 
   user.isLoggedIn = true;
   await user.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Login successful",
+    user: user,
+    // You can also return a subset of user details if you prefer
+    // user: {
+    //   telegramId: user.telegramId,
+    //   name: user.name,
+    //   email: user.email,
+    //   phone: user.phone,
+    //   country: user.country,
+    //   username: user.username,
+    //   isPremium: user.isPremium,
+    //   languageCode: user.languageCode,
+    //   userImage: user.userImage,
+    //   isLoggedIn: user.isLoggedIn,
+    // },
+  });
 });
+
 
 exports.getUser = catchAsyncError(async (req, res, next) => {
   const { telegramId } = req.params;
