@@ -91,7 +91,12 @@ Click here to pay: ${paymentLink}`;
   //     console.log(err);
   //   });
 
-  await saveDataToSheets(data, spreadsheetId, accessToken, refreshToken);
+  await saveDataToSheets(
+    data,
+    sheetId,
+    user?.googleRefreshToken,
+    user?.googleAccessToken
+  );
   const doc = new PDFDocument();
 
   // Await PDF generation
