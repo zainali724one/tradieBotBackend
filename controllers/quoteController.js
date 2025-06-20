@@ -92,7 +92,15 @@ Click here to pay: ${paymentLink}`;
   //   });
 
   await saveDataToSheets(
-    data,
+    [
+      customerName,
+      jobDescription,
+      quoteAmount,
+      customerEmail,
+      telegramId,
+      customerPhone,
+      userId,
+    ],
     sheetId,
     user?.googleRefreshToken,
     user?.googleAccessToken
