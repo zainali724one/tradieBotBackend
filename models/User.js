@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   stripeAccountId: { type: String },
   googleAccessToken: { type: String },
   googleRefreshToken: { type: String },
+  sheetId: { type: String },
 });
 
 userSchema.pre("save", async function (next) {

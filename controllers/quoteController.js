@@ -9,6 +9,7 @@ const { ErrorHandler } = require("../utils/ErrorHandler");
 const sendWhatsAppMessage = require("../services/twillioService");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const dayjs = require("dayjs");
+const { saveDataToSheets } = require("../utils/googleSheets");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const {
@@ -19,7 +20,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     telegramId,
     userId,
     customerPhone,
-    // stripeAccountId,
+    sheetId,
   } = req.body;
 
   if (
@@ -29,8 +30,8 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     !customerEmail ||
     !telegramId ||
     !userId ||
-    !customerPhone
-    // !stripeAccountId
+    !customerPhone ||
+    !sheetId
   ) {
     return next(new ErrorHandler("All fields are required", 400));
   }
@@ -82,14 +83,15 @@ Amount: $${quoteAmount}
 Email: ${customerEmail}
 Click here to pay: ${paymentLink}`;
 
-  sendWhatsAppMessage(customerPhone, messageBody)
-    .then((res) => {
-      console.log(res, "Whatsapp response");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  // sendWhatsAppMessage(customerPhone, messageBody)
+  //   .then((res) => {
+  //     console.log(res, "Whatsapp response");
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
 
+  await saveDataToSheets(data, spreadsheetId, accessToken, refreshToken);
   const doc = new PDFDocument();
 
   // Await PDF generation
@@ -134,6 +136,11 @@ Click here to pay: ${paymentLink}`;
       },
     ],
   });
+
+  if (sheetId != user.sheetId) {
+    user.sheetId = sheetId;
+    user.save();
+  }
 
   // Clean up file
   fs.unlinkSync(pdfPath);
