@@ -36,8 +36,6 @@ const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 //   console.log("✅ Invoice row added to sheet");
 // }
 
-const { google } = require("googleapis");
-
 async function saveDataToSheets(
   data,
   spreadsheetId,
