@@ -100,7 +100,7 @@ async function saveDataToSheets(
   // Append new row
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: `${type}Invoices!A:F`,
+    range: `${type}!A:F`,
     valueInputOption: "USER_ENTERED",
     resource: {
       values: [data],
