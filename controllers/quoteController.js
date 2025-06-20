@@ -102,8 +102,8 @@ Click here to pay: ${paymentLink}`;
       userId,
     ],
     sheetId,
-    user?.googleRefreshToken,
-    user?.googleAccessToken
+    user?.googleAccessToken,
+    user?.googleRefreshToken
   );
   const doc = new PDFDocument();
 
