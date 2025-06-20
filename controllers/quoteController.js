@@ -103,7 +103,8 @@ Click here to pay: ${paymentLink}`;
     ],
     sheetId,
     user?.googleAccessToken,
-    user?.googleRefreshToken
+    user?.googleRefreshToken,
+    "Quotes"
   );
   const doc = new PDFDocument();
 
