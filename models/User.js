@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+
 const userSchema = new mongoose.Schema({
   telegramId: { type: String, required: true, unique: true },
   name: { type: String },
@@ -17,6 +18,7 @@ const userSchema = new mongoose.Schema({
   stripeAccountId: { type: String },
   googleAccessToken: { type: String },
   googleRefreshToken: { type: String },
+  isApproved: { type: String, default: "Pending" },  // New field added
 });
 
 userSchema.pre("save", async function (next) {

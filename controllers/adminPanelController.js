@@ -52,6 +52,27 @@ exports.getAllUsers = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.getAllUsersPending = catchAsyncError(async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 10;
+
+  const totalUsers = await User.countDocuments({ isApproved: "Pending" });
+  const users = await User.find({ isApproved: "Pending" })
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * pageSize)
+    .limit(pageSize);
+
+  res.status(200).json({
+    success: true,
+    page,
+    pageSize,
+    totalUsers,
+    totalPages: Math.ceil(totalUsers / pageSize),
+    users,
+  });
+});
+
+
 exports.getSingleUser = catchAsyncError(async (req, res, next) => {
   const { id } = req.query;
 
@@ -74,6 +95,32 @@ exports.getSingleUser = catchAsyncError(async (req, res, next) => {
   });
 });
 
+
+
+exports.getSingleUserPending = catchAsyncError(async (req, res, next) => {
+  const { id } = req.query;
+
+  if (!id) {
+    return next(new ErrorHandler("User ID is required", 400));
+  }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(new ErrorHandler("Please provide a valid user ID", 400));
+  }
+
+  const user = await User.findOne({ _id: id, isApproved: "Pending" });
+
+  if (!user) {
+    return next(new ErrorHandler("User not found or user is not approved", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: user,
+  });
+});
+
+
+
 exports.deleteUser = catchAsyncError(async (req, res, next) => {
   const { id } = req.query;
 
@@ -87,6 +134,30 @@ exports.deleteUser = catchAsyncError(async (req, res, next) => {
   const user = await User.findByIdAndDelete(id);
   if (!user) {
     return next(new ErrorHandler("User not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "User deleted successfully",
+  });
+});
+
+
+exports.deletePendingUser = catchAsyncError(async (req, res, next) => {
+  const { id } = req.query;
+
+  if (!id) {
+    return next(new ErrorHandler("User ID is required", 400));
+  }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(new ErrorHandler("Please provide a valid user ID", 400));
+  }
+
+  // Find and delete only the user with isApproved: "Pending"
+  const user = await User.findOneAndDelete({ _id: id, isApproved: "Pending" });
+
+  if (!user) {
+    return next(new ErrorHandler("User not found or user is not approved", 404));
   }
 
   res.status(200).json({
@@ -129,3 +200,5 @@ exports.addAdmin = catchAsyncError(async (req, res, next) => {
     },
   });
 });
+
+
