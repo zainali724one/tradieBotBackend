@@ -101,6 +101,15 @@ Click here to pay: ${paymentLink}`;
       customerPhone,
       userId,
     ],
+    [
+      "Customer Name",
+      "Job",
+      "Amount",
+      "Email",
+      "Telegram ID",
+      "Phone",
+      "User ID",
+    ],
     sheetId,
     user?.googleAccessToken,
     user?.googleRefreshToken,
@@ -151,7 +160,7 @@ Click here to pay: ${paymentLink}`;
     ],
   });
 
-  if (sheetId != user.sheetId) {
+  if (sheetId != user.sheetId){
     user.sheetId = sheetId;
     user.save();
   }

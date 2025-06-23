@@ -38,6 +38,7 @@ const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 
 async function saveDataToSheets(
   data,
+  headings,
   spreadsheetId,
   accessToken,
   refreshToken,
@@ -82,17 +83,7 @@ async function saveDataToSheets(
       range: `${type}!A1:G1`,
       valueInputOption: "RAW",
       resource: {
-        values: [
-          [
-            "Customer Name",
-            "Job",
-            "Amount",
-            "Email",
-            "Telegram ID",
-            "Phone",
-            "User ID",
-          ],
-        ],
+        values: [headings],
       },
     });
   }
@@ -109,7 +100,5 @@ async function saveDataToSheets(
 
   console.log("✅ Invoice row added to sheet");
 }
-
-module.exports = { saveDataToSheets };
 
 module.exports = { saveDataToSheets };
