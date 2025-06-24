@@ -98,8 +98,9 @@ Email: ${customerEmail}
     sheetId,
     userExists?.googleAccessToken,
     userExists?.googleRefreshToken,
-    "Quotes"
+    "Invoices"
   );
+
   const doc = new PDFDocument();
 
   // Await PDF generation
@@ -119,6 +120,18 @@ Email: ${customerEmail}
     stream.on("finish", resolve);
     stream.on("error", reject);
   });
+
+  await uploadPdfToDrive(
+    {
+      accessToken: userExists.googleAccessToken,
+      refreshToken: userExists.googleRefreshToken,
+    },
+    pdfPath,
+    `Invoice_${newInvoice._id}.pdf`,
+    new Date().getFullYear(),
+    new Date().toLocaleString("default", { month: "long" }),
+    "Invoices"
+  );
 
   // Send Email
   const transporter = nodemailer.createTransport({
@@ -141,18 +154,6 @@ Email: ${customerEmail}
       },
     ],
   });
-
-  await uploadPdfToDrive(
-    {
-      accessToken: userExists.googleAccessToken,
-      refreshToken: userExists.googleRefreshToken,
-    },
-    pdfPath,
-    `Invoice_${newInvoice._id}.pdf`,
-    new Date().getFullYear(),
-    new Date().toLocaleString("default", { month: "long" }),
-    "Invoices"
-  );
 
   if (sheetId != userExists.sheetId) {
     userExists.sheetId = sheetId;
