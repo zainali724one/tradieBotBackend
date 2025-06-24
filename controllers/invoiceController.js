@@ -5,6 +5,7 @@ const { ErrorHandler } = require("../utils/ErrorHandler");
 const User = require("../models/User");
 const { saveDataToSheets } = require("../utils/googleSheets");
 const { uploadPdfToDrive } = require("../utils/googleDrive");
+const path = require("path");
 
 exports.addInvoice = catchAsyncError(async (req, res, next) => {
   const {
