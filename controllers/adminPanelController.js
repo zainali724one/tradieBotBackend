@@ -228,10 +228,9 @@ exports.addAdmin = catchAsyncError(async (req, res, next) => {
 
 
 exports.updateUser = catchAsyncError(async (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.params; // ✅ Correct now
   const { name, email, isApproved, country, phone } = req.body;
 
-  // Validate required fields (optional: remove this if all fields are optional)
   if (!name || !email || !isApproved || !country || !phone) {
     return res.status(400).json({
       success: false,
@@ -258,6 +257,40 @@ exports.updateUser = catchAsyncError(async (req, res, next) => {
     user: updatedUser,
   });
 });
+
+
+
+// exports.updateUser = catchAsyncError(async (req, res, next) => {
+//   const { id } = req.params;
+//   const { name, email, isApproved, country, phone } = req.body;
+
+//   // Validate required fields (optional: remove this if all fields are optional)
+//   if (!name || !email || !isApproved || !country || !phone) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "name, email, isApproved, country, and phone are required.",
+//     });
+//   }
+
+//   const updatedUser = await User.findByIdAndUpdate(
+//     id,
+//     { name, email, isApproved, country, phone },
+//     { new: true, runValidators: true }
+//   );
+
+//   if (!updatedUser) {
+//     return res.status(404).json({
+//       success: false,
+//       message: "User not found.",
+//     });
+//   }
+
+//   res.status(200).json({
+//     success: true,
+//     message: "User updated successfully.",
+//     user: updatedUser,
+//   });
+// });
 
 
 
