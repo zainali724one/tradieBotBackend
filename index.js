@@ -24,6 +24,7 @@ const allowedOrigins = [
   "https://radiant-raanadas-d68427.netlify.app",
   "https://peppy-swan-6fbdd72.netlify.app",
   "https://tradiebot-admin-panel.netlify.app",
+  "https://peppy-swan-6fdd72.netlify.app/",
 ];
 
 app.use(

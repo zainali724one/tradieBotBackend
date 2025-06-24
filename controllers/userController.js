@@ -141,7 +141,6 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
   });
 });
 
-
 exports.getUser = catchAsyncError(async (req, res, next) => {
   const { telegramId } = req.params;
   const user = await User.findOne({ telegramId });
