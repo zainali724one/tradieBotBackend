@@ -7,19 +7,24 @@ const {
   deleteUser,
   getAllUsersPending,
   getSingleUserPending,
-  deletePendingUser,
+  deletePendingUser,updateUser
+
 } = require("../controllers/adminPanelController");
 
 const router = express.Router();
 
 router.post("/login", adminLogin);
 router.get("/getAllUsers", getAllUsers);
+router.get("/updateUserData", updateUser);
+
 router.get("/getSingleUser", getSingleUser);
 router.delete("/deleteUser", deleteUser);
 router.get("/getAllUsersPending", getAllUsersPending);
 
 router.get("/getSingleUserPending", getSingleUserPending);
 router.delete("/deletePendingUser", deletePendingUser);
+
+
 
 
 
