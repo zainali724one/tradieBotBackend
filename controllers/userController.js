@@ -114,9 +114,9 @@ exports.loginUser = catchAsyncError(async (req, res, next) => {
   }
 
   // Check if the user's account is approved
-  if (user.isApproved !== "Complete") {
-    return next(new ErrorHandler("Your account is not approved yet", 403));
-  }
+  // if (user.isApproved !== "Complete") {
+  //   return next(new ErrorHandler("Your account is not approved yet", 403));
+  // }
 
   user.isLoggedIn = true;
   await user.save();
