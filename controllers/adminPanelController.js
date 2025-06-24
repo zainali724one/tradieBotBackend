@@ -36,8 +36,10 @@ exports.getAllUsers = catchAsyncError(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.pageSize) || 10;
 
-  const totalUsers = await User.countDocuments();
-  const users = await User.find()
+  const filter = { isApproved: "Accepted" };
+
+  const totalUsers = await User.countDocuments(filter);
+  const users = await User.find(filter)
     .sort({ createdAt: -1 })
     .skip((page - 1) * pageSize)
     .limit(pageSize);
@@ -51,6 +53,27 @@ exports.getAllUsers = catchAsyncError(async (req, res, next) => {
     users,
   });
 });
+
+
+// exports.getAllUsers = catchAsyncError(async (req, res, next) => {
+//   const page = parseInt(req.query.page) || 1;
+//   const pageSize = parseInt(req.query.pageSize) || 10;
+
+//   const totalUsers = await User.countDocuments();
+//   const users = await User.find()
+//     .sort({ createdAt: -1 })
+//     .skip((page - 1) * pageSize)
+//     .limit(pageSize);
+
+//   res.status(200).json({
+//     success: true,
+//     page,
+//     pageSize,
+//     totalUsers,
+//     totalPages: Math.ceil(totalUsers / pageSize),
+//     users,
+//   });
+// });
 
 exports.getAllUsersPending = catchAsyncError(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
@@ -200,5 +223,74 @@ exports.addAdmin = catchAsyncError(async (req, res, next) => {
     },
   });
 });
+
+
+
+
+exports.updateUser = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params; // ✅ Correct now
+  const { name, email, isApproved, country, phone } = req.body;
+
+  if (!name || !email || !isApproved || !country || !phone) {
+    return res.status(400).json({
+      success: false,
+      message: "name, email, isApproved, country, and phone are required.",
+    });
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    id,
+    { name, email, isApproved, country, phone },
+    { new: true, runValidators: true }
+  );
+
+  if (!updatedUser) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found.",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "User updated successfully.",
+    user: updatedUser,
+  });
+});
+
+
+
+// exports.updateUser = catchAsyncError(async (req, res, next) => {
+//   const { id } = req.params;
+//   const { name, email, isApproved, country, phone } = req.body;
+
+//   // Validate required fields (optional: remove this if all fields are optional)
+//   if (!name || !email || !isApproved || !country || !phone) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "name, email, isApproved, country, and phone are required.",
+//     });
+//   }
+
+//   const updatedUser = await User.findByIdAndUpdate(
+//     id,
+//     { name, email, isApproved, country, phone },
+//     { new: true, runValidators: true }
+//   );
+
+//   if (!updatedUser) {
+//     return res.status(404).json({
+//       success: false,
+//       message: "User not found.",
+//     });
+//   }
+
+//   res.status(200).json({
+//     success: true,
+//     message: "User updated successfully.",
+//     user: updatedUser,
+//   });
+// });
+
 
 
