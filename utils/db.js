@@ -21,11 +21,8 @@ const mongoose = require("mongoose");
 exports.connectDb = async () => {
   try {
     await mongoose.connect(
-      "mongodb+srv://kainatshakeel724:piYDhHj4fbc4UcfW@cluster0.gnyl3yr.mongodb.net/",
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
+      // "mongodb+srv://zleo:zain123@cluster0.yrhc29z.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+      "mongodb+srv://kainatshakeel724:piYDhHj4fbc4UcfW@cluster0.gnyl3yr.mongodb.net/"
     );
     console.log("✅ MongoDB connected successfully.");
   } catch (error) {
