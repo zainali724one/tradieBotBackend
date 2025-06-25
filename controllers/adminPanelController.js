@@ -332,48 +332,54 @@ exports.addAdmin = catchAsyncError(async (req, res, next) => {
 
 
 exports.updateAdmin = catchAsyncError(async (req, res, next) => {
-  const { id } = req.params;
-  const { name, email, password } = req.body;
+  const id = req.params.id || req.query.id;
 
-  if (!name && !email && !password) {
-    return next(new ErrorHandler("At least one field (name, email, or password) is required for update", 400));
+  if (!id) {
+    return next(new ErrorHandler("Admin ID is required", 400));
   }
 
-  // Prepare the update object
+  const { name, email, password } = req.body;
+
+  const existingAdmin = await Admin.findById(id).select('+password');
+  if (!existingAdmin) {
+    return next(new ErrorHandler(`Admin not found with ID: ${id}`, 404));
+  }
   const updateFields = {};
+
   if (name) {
     updateFields.name = name;
   }
-  if (email) {
-    const existingAdminWithEmail = await Admin.findOne({ email, _id: { $ne: id } });
-    if (existingAdminWithEmail) {
-      return next(new ErrorHandler("Another admin already exists with this email", 400));
+
+  if (email && email !== existingAdmin.email) {
+    const emailExists = await Admin.findOne({ email, _id: { $ne: id } });
+    if (emailExists) {
+      return next(new ErrorHandler("Email already in use by another admin", 400));
     }
     updateFields.email = email;
   }
+
   if (password) {
+    if (password.length < 8) {
+      return next(new ErrorHandler("Password must be at least 8 characters", 400));
+    }
     updateFields.password = await bcrypt.hash(password, 10);
+  }
+
+  // 3. Update if there are fields to update
+  if (Object.keys(updateFields).length === 0) {
+    return next(new ErrorHandler("No valid fields provided for update", 400));
   }
 
   const updatedAdmin = await Admin.findByIdAndUpdate(
     id,
     updateFields,
     { new: true, runValidators: true }
-  );
+  ).select('-password');
 
-  if (!updatedAdmin) {
-    return next(new ErrorHandler("Admin not found with the provided ID", 404));
-  }
-
-  // 4. Send success response
   res.status(200).json({
     success: true,
     message: "Admin updated successfully",
-    admin: {
-      id: updatedAdmin._id,
-      name: updatedAdmin.name,
-      email: updatedAdmin.email,
-    },
+    admin: updatedAdmin,
   });
 });
 
@@ -441,39 +447,6 @@ exports.updateUser = catchAsyncError(async (req, res, next) => {
   });
 });
 
-
-
-// exports.updateUser = catchAsyncError(async (req, res, next) => {
-//   const { id } = req.params;
-//   const { name, email, isApproved, country, phone } = req.body;
-
-//   // Validate required fields (optional: remove this if all fields are optional)
-//   if (!name || !email || !isApproved || !country || !phone) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "name, email, isApproved, country, and phone are required.",
-//     });
-//   }
-
-//   const updatedUser = await User.findByIdAndUpdate(
-//     id,
-//     { name, email, isApproved, country, phone },
-//     { new: true, runValidators: true }
-//   );
-
-//   if (!updatedUser) {
-//     return res.status(404).json({
-//       success: false,
-//       message: "User not found.",
-//     });
-//   }
-
-//   res.status(200).json({
-//     success: true,
-//     message: "User updated successfully.",
-//     user: updatedUser,
-//   });
-// });
 
 exports.getWelcomeMessage = catchAsyncError(async (req, res, next) => {
   // 1. Fetch the welcome message from the database
