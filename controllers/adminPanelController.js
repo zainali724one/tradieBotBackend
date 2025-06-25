@@ -7,6 +7,8 @@ const { default: mongoose } = require("mongoose");
 const welcomeMessage = require("../models/welcomeMessage");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
+const fs = require('fs').promises; // For reading the HTML file
+const path = require('path');     // For constructing file paths
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -383,31 +385,121 @@ exports.updateAdmin = catchAsyncError(async (req, res, next) => {
   });
 });
 
+// exports.updateUser = catchAsyncError(async (req, res, next) => {
+//   const { id } = req.params;
+//   const { name, email, isApproved, country, phone } = req.body;
+
+//   // 1. Validate input
+//   if (!name || !email || !isApproved || !country || !phone) {
+//     return next(new ErrorHandler("Name, email, isApproved, country, and phone are required.", 400));
+//   }
+
+//   // Optional: Validate the `isApproved` status if you have a predefined list
+//   const validStatuses = ["Pending", "Approved", "Rejected", "Accepted"];
+//   if (!validStatuses.includes(isApproved)) {
+//     return next(new ErrorHandler("Invalid status value provided for isApproved.", 400));
+//   }
+
+//   // 2. Find the user BEFORE updating to check their current status
+//   const existingUser = await User.findById(id);
+//   if (!existingUser) {
+//     return next(new ErrorHandler("User not found.", 404));
+//   }
+
+//   // 3. Update the user
+//   const updatedUser = await User.findByIdAndUpdate(
+//     id,
+//     { name, email, isApproved, country, phone },
+//     { new: true, runValidators: true }
+//   );
+
+//   if (!updatedUser) {
+//     return next(new ErrorHandler("User not found after update attempt.", 404));
+//   }
+
+//   // 4. Check if the status changed to "Approved" and send email
+//   if (existingUser.isApproved !== "Accepted" && updatedUser.isApproved === "Accepted") {
+//     const welcomeMsgDoc = await welcomeMessage.findOne({});
+//     let welcomeMessageContent = "Welcome to our community! We're excited to have you.";
+
+//     if (welcomeMsgDoc && welcomeMsgDoc.message) {
+//       welcomeMessageContent = welcomeMsgDoc.message; // Use the message from DB if found
+//     }
+//     console.log("welcomeMsgDoc", welcomeMsgDoc);
+//     console.log("welcomeMessageContent", welcomeMessageContent);
+
+//     const mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: updatedUser.email,
+//       subject: "Your TradieBot Account Has Been Accepted!",
+//       html: `
+//                 <p>Dear ${updatedUser.name || updatedUser.username || 'User'},</p>
+//                 <p>Great news! Your account on TradieBot has been officially **Accepted**.</p>
+//                 <p>${welcomeMessageContent}</p> <p>You can now log in and access all features.</p>
+//                 <p>Thank you for joining our community!</p>
+//                 <br>
+//                 <p>Best regards,</p>
+//                 <p>The TradieBot Team</p>
+//             `,
+//     };
+
+//     try {
+//       await transporter.sendMail(mailOptions);
+//       console.log(`Accepted email sent to ${updatedUser.email}`);
+//     } catch (error) {
+//       console.error(`Error sending accepted email to ${updatedUser.email}:`, error);
+//     }
+//   }
+
+//   // 5. Send success response
+//   res.status(200).json({
+//     success: true,
+//     message: "User updated successfully.",
+//     user: updatedUser,
+//   });
+// });
+
+
 exports.updateUser = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
   const { name, email, isApproved, country, phone } = req.body;
 
-  // 1. Validate input
-  if (!name || !email || !isApproved || !country || !phone) {
-    return next(new ErrorHandler("Name, email, isApproved, country, and phone are required.", 400));
+  // 1. Validate input and prepare update fields
+  const updateFields = {};
+  if (name) updateFields.name = name;
+  if (email) updateFields.email = email;
+  if (country) updateFields.country = country;
+  if (phone) updateFields.phone = phone;
+
+  if (isApproved) {
+    const validStatuses = ["Pending", "Approved", "Rejected", "Accepted"];
+    if (!validStatuses.includes(isApproved)) {
+      return next(new ErrorHandler("Invalid status value provided for isApproved.", 400));
+    }
+    updateFields.isApproved = isApproved;
   }
 
-  // Optional: Validate the `isApproved` status if you have a predefined list
-  const validStatuses = ["Pending", "Approved", "Rejected", "Accepted"];
-  if (!validStatuses.includes(isApproved)) {
-    return next(new ErrorHandler("Invalid status value provided for isApproved.", 400));
+  // Check if at least one field is being updated
+  if (Object.keys(updateFields).length === 0) {
+    return next(new ErrorHandler("At least one field (name, email, isApproved, country, or phone) is required for update", 400));
   }
 
-  // 2. Find the user BEFORE updating to check their current status
   const existingUser = await User.findById(id);
   if (!existingUser) {
     return next(new ErrorHandler("User not found.", 404));
   }
 
-  // 3. Update the user
+  if (email && email !== existingUser.email) {
+    const existingUserWithNewEmail = await User.findOne({ email, _id: { $ne: id } });
+    if (existingUserWithNewEmail) {
+      return next(new ErrorHandler("Another user already exists with this email", 400));
+    }
+  }
+
+  // 4. Update the user
   const updatedUser = await User.findByIdAndUpdate(
     id,
-    { name, email, isApproved, country, phone },
+    updateFields,
     { new: true, runValidators: true }
   );
 
@@ -415,37 +507,68 @@ exports.updateUser = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User not found after update attempt.", 404));
   }
 
-  // 4. Check if the status changed to "Approved" and send email
   if (existingUser.isApproved !== "Accepted" && updatedUser.isApproved === "Accepted") {
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: updatedUser.email,
-      subject: "Your Account Has Been Accepted!",
-      html: `
+    let emailHtmlContent = '';
+    const htmlFilePath = path.join(__dirname, 'accepted_request_email.html');
+
+    try {
+      // Read the HTML file content
+      emailHtmlContent = await fs.readFile(htmlFilePath, 'utf8');
+
+      let adminMessageContent = "Your request has been reviewed and approved! Welcome aboard.";
+      const welcomeMsgDoc = await welcomeMessage.findOne({});
+      if (welcomeMsgDoc && welcomeMsgDoc.message) {
+        adminMessageContent = welcomeMsgDoc.message;
+      }
+      // --------------------------------------------------------------------
+
+      // Replace placeholders in the HTML with dynamic data
+      emailHtmlContent = emailHtmlContent
+        .replace(/\[User's Name\]/g, updatedUser.name || updatedUser.username || 'User')
+        .replace(/\[Admin's Message\]/g, adminMessageContent) // Corrected regex to remove " Here"
+        .replace(/https:\/\/via.placeholder.com\/150x50\/ffffff\/000000\?text=Tradie\+Bot\+Logo/g, process.env.EMAIL_LOGO_URL || 'https://example.com/default-logo.png') // Replaced placeholder URL directly
+        .replace(/https:\/\/via.placeholder.com\/600x200\/cccccc\/ffffff\?text=Background\+Image/g, process.env.EMAIL_BACKGROUND_IMAGE_URL || 'https://example.com/default-bg.jpg') // Replaced placeholder URL directly
+        .replace(/https:\/\/via.placeholder.com\/60x60\/ffffff\/2D9CDB\?text=TB/g, process.env.EMAIL_WHITE_ICON_URL || 'https://example.com/default-icon.png') // Replaced placeholder URL directly
+        .replace(/\[REPLACE_WITH_YOUR_WEBSITE_URL\]/g, process.env.FRONTEND_WEBSITE_URL || 'https://yourwebsite.com') // Assuming a new env variable for website URL
+        .replace(/2024/g, new Date().getFullYear().toString()); // Replaces literal "2024"
+
+    } catch (readError) {
+      console.error(`Error reading or processing HTML file from ${htmlFilePath}:`, readError);
+      // Fallback to a simpler HTML message if file reading fails
+      emailHtmlContent = `
                 <p>Dear ${updatedUser.name || updatedUser.username || 'User'},</p>
-                <p>Good news! Your account on TradieBot has been officially **Accepted**.</p>
+                <p>Great news! Your account on TradieBot has been officially **Accepted**.</p>
                 <p>You can now log in and access all features.</p>
                 <p>Thank you for joining our community!</p>
                 <br>
                 <p>Best regards,</p>
                 <p>The TradieBot Team</p>
-            `,
+            `;
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: updatedUser.email,
+      subject: "Your TradieBot Account Has Been Accepted!",
+      html: emailHtmlContent,
     };
 
     try {
       await transporter.sendMail(mailOptions);
+      console.log(`Accepted email sent to ${updatedUser.email}`);
     } catch (error) {
-      console.error(`Error sending approval email to ${updatedUser.email}:`, error);
+      console.error(`Error sending accepted email to ${updatedUser.email}:`, error);
     }
   }
 
-  // 5. Send success response
+  // 6. Send success response
   res.status(200).json({
     success: true,
     message: "User updated successfully.",
     user: updatedUser,
   });
 });
+
 
 
 exports.getWelcomeMessage = catchAsyncError(async (req, res, next) => {
