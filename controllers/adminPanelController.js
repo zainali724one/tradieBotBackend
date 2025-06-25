@@ -4,32 +4,85 @@ const { ErrorHandler } = require("../utils/ErrorHandler");
 const Admin = require("../models/admin");
 const User = require("../models/User");
 const { default: mongoose } = require("mongoose");
+const welcomeMessage = require("../models/welcomeMessage");
+const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER, // better: use env vars
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+// exports.adminLogin = catchAsyncError(async (req, res, next) => {
+//   const { email, password } = req.body;
+
+//   if (!email || !password) {
+//     return next(new ErrorHandler("Email and password are required", 400));
+//   }
+
+//   const user = await Admin.findOne({ email });
+
+//   if (!user) {
+//     return next(new ErrorHandler("User not found", 404));
+//   }
+
+//   const isPasswordMatch = await bcrypt.compare(password, user.password);
+//   if (!isPasswordMatch) {
+//     return next(new ErrorHandler("Incorrect password", 401));
+//   } else {
+//     res.status(200).json({
+//       success: true,
+//       message: "Login successful",
+//       data: user,
+//     });
+//   }
+
+//   await user.save();
+// });
+
 
 exports.adminLogin = catchAsyncError(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return next(new ErrorHandler("Email and password are required", 400));
+    return next(new ErrorHandler("Please enter email and password", 400));
   }
 
-  const user = await Admin.findOne({ email });
+  const admin = await Admin.findOne({ email }).select('+password');
 
-  if (!user) {
-    return next(new ErrorHandler("User not found", 404));
+  if (!admin) {
+    return next(new ErrorHandler("Invalid credentials", 401));
   }
 
-  const isPasswordMatch = await bcrypt.compare(password, user.password);
-  if (!isPasswordMatch) {
-    return next(new ErrorHandler("Incorrect password", 401));
-  } else {
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-      data: user,
-    });
+  // 3. Compare Passwords
+  const isPasswordMatched = await bcrypt.compare(password, admin.password);
+
+  if (!isPasswordMatched) {
+    // Use a generic message for security
+    return next(new ErrorHandler("Invalid credentials", 401));
   }
 
-  await user.save();
+  const token = jwt.sign(
+    { id: admin._id, role: admin.role },
+    process.env.JWT_SECRET,
+    { expiresIn: '72h' }
+  );
+
+  admin.lastLogin = new Date();
+  await admin.save({ validateBeforeSave: false });
+
+  admin.password = undefined;
+
+  // 7. Send Success Response
+  res.status(200).json({
+    success: true,
+    message: "Admin login successful",
+    token,
+    admin,
+  });
 });
 
 exports.getAllUsers = catchAsyncError(async (req, res, next) => {
@@ -225,19 +278,74 @@ exports.addAdmin = catchAsyncError(async (req, res, next) => {
 });
 
 
+exports.updateAdmin = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const { name, email, password } = req.body;
 
-
-exports.updateUser = catchAsyncError(async (req, res, next) => {
-  const { id } = req.params; // ✅ Correct now
-  const { name, email, isApproved, country, phone } = req.body;
-
-  if (!name || !email || !isApproved || !country || !phone) {
-    return res.status(400).json({
-      success: false,
-      message: "name, email, isApproved, country, and phone are required.",
-    });
+  if (!name && !email && !password) {
+    return next(new ErrorHandler("At least one field (name, email, or password) is required for update", 400));
   }
 
+  // Prepare the update object
+  const updateFields = {};
+  if (name) {
+    updateFields.name = name;
+  }
+  if (email) {
+    const existingAdminWithEmail = await Admin.findOne({ email, _id: { $ne: id } });
+    if (existingAdminWithEmail) {
+      return next(new ErrorHandler("Another admin already exists with this email", 400));
+    }
+    updateFields.email = email;
+  }
+  if (password) {
+    updateFields.password = await bcrypt.hash(password, 10);
+  }
+
+  const updatedAdmin = await Admin.findByIdAndUpdate(
+    id,
+    updateFields,
+    { new: true, runValidators: true }
+  );
+
+  if (!updatedAdmin) {
+    return next(new ErrorHandler("Admin not found with the provided ID", 404));
+  }
+
+  // 4. Send success response
+  res.status(200).json({
+    success: true,
+    message: "Admin updated successfully",
+    admin: {
+      id: updatedAdmin._id,
+      name: updatedAdmin.name,
+      email: updatedAdmin.email,
+    },
+  });
+});
+
+exports.updateUser = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const { name, email, isApproved, country, phone } = req.body;
+
+  // 1. Validate input
+  if (!name || !email || !isApproved || !country || !phone) {
+    return next(new ErrorHandler("Name, email, isApproved, country, and phone are required.", 400));
+  }
+
+  // Optional: Validate the `isApproved` status if you have a predefined list
+  const validStatuses = ["Pending", "Approved", "Rejected", "Accepted"];
+  if (!validStatuses.includes(isApproved)) {
+    return next(new ErrorHandler("Invalid status value provided for isApproved.", 400));
+  }
+
+  // 2. Find the user BEFORE updating to check their current status
+  const existingUser = await User.findById(id);
+  if (!existingUser) {
+    return next(new ErrorHandler("User not found.", 404));
+  }
+
+  // 3. Update the user
   const updatedUser = await User.findByIdAndUpdate(
     id,
     { name, email, isApproved, country, phone },
@@ -245,12 +353,34 @@ exports.updateUser = catchAsyncError(async (req, res, next) => {
   );
 
   if (!updatedUser) {
-    return res.status(404).json({
-      success: false,
-      message: "User not found.",
-    });
+    return next(new ErrorHandler("User not found after update attempt.", 404));
   }
 
+  // 4. Check if the status changed to "Approved" and send email
+  if (existingUser.isApproved !== "Accepted" && updatedUser.isApproved === "Accepted") {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: updatedUser.email,
+      subject: "Your Account Has Been Accepted!",
+      html: `
+                <p>Dear ${updatedUser.name || updatedUser.username || 'User'},</p>
+                <p>Good news! Your account on TradieBot has been officially **Accepted**.</p>
+                <p>You can now log in and access all features.</p>
+                <p>Thank you for joining our community!</p>
+                <br>
+                <p>Best regards,</p>
+                <p>The TradieBot Team</p>
+            `,
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.error(`Error sending approval email to ${updatedUser.email}:`, error);
+    }
+  }
+
+  // 5. Send success response
   res.status(200).json({
     success: true,
     message: "User updated successfully.",
@@ -294,3 +424,90 @@ exports.updateUser = catchAsyncError(async (req, res, next) => {
 
 
 
+exports.setOrUpdateWelcomeMessage = catchAsyncError(async (req, res, next) => {
+  const { message } = req.body;
+
+  // 1. Validate input
+  if (!message) {
+    return next(new ErrorHandler("Message is required", 400));
+  }
+  const welcomeMsg = await welcomeMessage.findOneAndUpdate(
+    {},
+    { message: message },
+    {
+      new: true,
+      upsert: true,
+      runValidators: true
+    }
+  );
+
+  // 3. Send success response
+  res.status(200).json({
+    success: true,
+    message: "Welcome message set/updated successfully!",
+    data: welcomeMsg,
+  });
+});
+
+exports.updateUserApprovalStatus = catchAsyncError(async (req, res, next) => {
+  const { userId, status } = req.body;
+
+  // 1. Validate input
+  if (!userId || !status) {
+    return next(new ErrorHandler("User ID and Status are required", 400));
+  }
+
+  const validStatuses = ["Pending", "Approved", "Rejected"];
+  if (!validStatuses.includes(status)) {
+    return next(new ErrorHandler("Invalid status value provided", 400));
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { isApproved: status },
+    {
+      new: true,
+      runValidators: true
+    }
+  );
+
+  if (!updatedUser) {
+    return next(new ErrorHandler("User not found with the provided ID", 404));
+  }
+
+  // 4. Send success response
+  res.status(200).json({
+    success: true,
+    message: `User approval status updated to '${status}' successfully!`,
+    data: updatedUser,
+  });
+});
+
+exports.getUserStats = catchAsyncError(async (req, res, next) => {
+  // 1. Calculate Total Users
+  const totalUsers = await User.countDocuments();
+
+  // 2. Calculate Users Created This Week
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7); // Set date to 7 days in the past
+
+  const usersThisWeek = await User.countDocuments({
+    createdAt: { $gte: sevenDaysAgo } // Query for users created on or after 'sevenDaysAgo'
+  });
+
+  // 3. Calculate Total Pending Requests
+  const totalPendingRequests = await User.countDocuments({
+    isApproved: 'Pending' // Query for users with 'isApproved' status as 'Pending'
+  });
+
+  // 4. Send success response with the aggregated data
+  res.status(200).json({
+    success: true,
+    message: 'User statistics fetched successfully!',
+    data: {
+      totalUsers,
+      usersThisWeek,
+      totalPendingRequests
+    }
+  });
+});

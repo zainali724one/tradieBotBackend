@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
   googleRefreshToken: { type: String },
   sheetId: { type: String },
   isApproved: { type: String, default: "Pending" }, // New field added
-});
+}, { timestamps: true });
 
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password") || !this.password) return next();
