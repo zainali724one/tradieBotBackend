@@ -85,11 +85,49 @@ exports.adminLogin = catchAsyncError(async (req, res, next) => {
   });
 });
 
+// exports.getAllUsers = catchAsyncError(async (req, res, next) => {
+//   const page = parseInt(req.query.page) || 1;
+//   const pageSize = parseInt(req.query.pageSize) || 10;
+
+//   const filter = { isApproved: "Accepted" };
+
+//   const totalUsers = await User.countDocuments(filter);
+//   const users = await User.find(filter)
+//     .sort({ createdAt: -1 })
+//     .skip((page - 1) * pageSize)
+//     .limit(pageSize);
+
+//   res.status(200).json({
+//     success: true,
+//     page,
+//     pageSize,
+//     totalUsers,
+//     totalPages: Math.ceil(totalUsers / pageSize),
+//     users,
+//   });
+// });
+
 exports.getAllUsers = catchAsyncError(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.pageSize) || 10;
+  const searchTerm = req.query.searchTerm;
 
-  const filter = { isApproved: "Accepted" };
+  let filter = { isApproved: "Accepted" };
+
+  if (searchTerm) {
+    const searchRegex = new RegExp(searchTerm, 'i');
+
+    // Use $or to search across multiple fields
+    filter.$or = [
+      { name: { $regex: searchRegex } },
+      { email: { $regex: searchRegex } },
+      { username: { $regex: searchRegex } },
+      { telegramId: { $regex: searchRegex } },
+      { phone: { $regex: searchRegex } },
+      { country: { $regex: searchRegex } },
+      { isApproved: { $regex: searchRegex } },
+    ];
+  }
 
   const totalUsers = await User.countDocuments(filter);
   const users = await User.find(filter)
@@ -106,7 +144,6 @@ exports.getAllUsers = catchAsyncError(async (req, res, next) => {
     users,
   });
 });
-
 
 // exports.getAllUsers = catchAsyncError(async (req, res, next) => {
 //   const page = parseInt(req.query.page) || 1;
@@ -131,9 +168,25 @@ exports.getAllUsers = catchAsyncError(async (req, res, next) => {
 exports.getAllUsersPending = catchAsyncError(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const pageSize = parseInt(req.query.pageSize) || 10;
+  const searchTerm = req.query.searchTerm;
 
-  const totalUsers = await User.countDocuments({ isApproved: "Pending" });
-  const users = await User.find({ isApproved: "Pending" })
+  let filter = { isApproved: "Pending" };
+
+  if (searchTerm) {
+    const searchRegex = new RegExp(searchTerm, 'i');
+
+    filter.$or = [
+      { name: { $regex: searchRegex } },
+      { email: { $regex: searchRegex } },
+      { username: { $regex: searchRegex } },
+      { telegramId: { $regex: searchRegex } },
+      { phone: { $regex: searchRegex } },
+      { country: { $regex: searchRegex } },
+    ];
+  }
+
+  const totalUsers = await User.countDocuments(filter);
+  const users = await User.find(filter)
     .sort({ createdAt: -1 })
     .skip((page - 1) * pageSize)
     .limit(pageSize);
