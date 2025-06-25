@@ -11,7 +11,8 @@ const {
   setOrUpdateWelcomeMessage,
   updateUserApprovalStatus,
   updateAdmin,
-  getUserStats
+  getUserStats,
+  getWelcomeMessage
 
 } = require("../controllers/adminPanelController");
 
@@ -29,6 +30,7 @@ router.get("/getAllUsersPending", getAllUsersPending);
 router.get("/getSingleUserPending", getSingleUserPending);
 router.delete("/deletePendingUser", deletePendingUser);
 
+router.get("/welcome-message", getWelcomeMessage); 
 router.post("/welcome-message", setOrUpdateWelcomeMessage); 
 router.post("/update-status", updateUserApprovalStatus); 
 

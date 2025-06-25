@@ -475,7 +475,20 @@ exports.updateUser = catchAsyncError(async (req, res, next) => {
 //   });
 // });
 
+exports.getWelcomeMessage = catchAsyncError(async (req, res, next) => {
+  // 1. Fetch the welcome message from the database
+  const welcomeMsg = await welcomeMessage.findOne({});
+  if (!welcomeMsg) {
+    return next(new ErrorHandler("Welcome message not found", 404));
+  }
 
+  // 2. Send success response
+  res.status(200).json({
+    success: true,
+    message: "Welcome message fetched successfully!",
+    data: welcomeMsg,
+  });
+});
 
 exports.setOrUpdateWelcomeMessage = catchAsyncError(async (req, res, next) => {
   const { message } = req.body;
