@@ -19,10 +19,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const allowedOrigins = [
+  "https://peppy-swan-6fdd72.netlify.app",
   "http://localhost:5173",
-  "https://radiant-rabanadas-d68427.netlify.app",
-  "https://radiant-raanadas-d68427.netlify.app",
-  "https://peppy-swan-6fbdd72.netlify.app",
   "https://tradiebot-admin-panel.netlify.app",
 ];
 
