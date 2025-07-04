@@ -123,65 +123,63 @@ bot.start(async (ctx) => {
 
   const userId = msg.from.id.toString();
   const userFirstName = msg.from.first_name || "User";
-  const userLastName = msg.from.last_name || "";
-  const userUsername = msg.from.username || "";
-  const userLanguageCode = msg.from.language_code || "en";
-  const isPremium = msg.from.is_premium || false;
-  const refCode = msg.text.split(" ")[1]?.startsWith("ref_")
-    ? msg.text.split(" ")[1].substring(4)
-    : null;
+  // const userLastName = msg.from.last_name || "";
+  // const userUsername = msg.from.username || "";
+  // const userLanguageCode = msg.from.language_code || "en";
+  // const isPremium = msg.from.is_premium || false;
+  // const refCode = msg.text.split(" ")[1]?.startsWith("ref_")
+  //   ? msg.text.split(" ")[1].substring(4)
+  //   : null;
 
   const welcomeMessage = `Hi, ${userFirstName}!👋\n\nWelcome to Tradir Bot!🥳\n\nRun your business efficiently and effortlessly. Streamline operations, save time, and boost productivity with smart tools that keep everything organized and on track.🚀`;
 
   try {
-    let user = await User.findOne({ telegramId: userId });
+    // let user = await User.findOne({ telegramId: userId });
 
-    if (!user) {
-      const userData = {
-        telegramId: userId,
-        firstName: userFirstName,
-        lastName: userLastName,
-        username: userUsername,
-        languageCode: userLanguageCode,
-        isPremium,
-        referredBy: refCode || null,
-        pollens: 0,
-      };
+    // if (!user) {
+    //   const userData = {
+    //     telegramId: userId,
+    //     firstName: userFirstName,
+    //     lastName: userLastName,
+    //     username: userUsername,
+    //     languageCode: userLanguageCode,
+    //     isPremium,
+    //     referredBy: refCode || null,
+    //     pollens: 0,
+    //   };
 
-      if (refCode) {
-        const refererUser = await User.findOne({ telegramId: refCode });
-        if (refererUser) {
-          const refererReward = isPremium ? 5000 : 500;
+    //   if (refCode) {
+    //     const refererUser = await User.findOne({ telegramId: refCode });
+    //     if (refererUser) {
+    //       const refererReward = isPremium ? 5000 : 500;
+    //       if (
+    //         refererUser.pollens < 100000 &&
+    //         refererUser.pollens + refererReward >= 100000
+    //       ) {
+    //         refererUser.isQueen = true;
+    //       }
 
-          // Check and update Queen status for referer
-          if (
-            refererUser.pollens < 100000 &&
-            refererUser.pollens + refererReward >= 100000
-          ) {
-            refererUser.isQueen = true;
-          }
+    //       refererUser.pollens += refererReward;
+    //       await refererUser.save();
 
-          refererUser.pollens += refererReward;
-          await refererUser.save();
+    //       const historyData = {
+    //         type: "pollens",
+    //         reward: refererReward,
+    //         userId: userId,
+    //         refererId: refCode,
+    //         message: "accepted your invite",
+    //       };
 
-          const historyData = {
-            type: "pollens",
-            reward: refererReward,
-            userId: userId,
-            refererId: refCode,
-            message: "accepted your invite",
-          };
+    //       const history = new History(historyData);
+    //       await history.save();
+    //     } else {
+    //       userData.referredBy = null;
+    //     }
+    //   }
 
-          const history = new History(historyData);
-          await history.save();
-        } else {
-          userData.referredBy = null;
-        }
-      }
-
-      user = new User(userData);
-      await user.save();
-    }
+    //   user = new User(userData);
+    //   await user.save();
+    // }
 
     await ctx.reply(welcomeMessage, {
       reply_markup: {
