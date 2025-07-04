@@ -131,7 +131,7 @@ bot.start(async (ctx) => {
     ? msg.text.split(" ")[1].substring(4)
     : null;
 
-  const welcomeMessage = `Hi, ${userFirstName}!👋\n\nWelcome to The Hive!🥳\n\nEarn pollens by mining them! Invite friends to earn more and level up faster!🚀`;
+  const welcomeMessage = `Hi, ${userFirstName}!👋\n\nWelcome to Tradir Bot!🥳\n\nRun your business efficiently and effortlessly. Streamline operations, save time, and boost productivity with smart tools that keep everything organized and on track.🚀`;
 
   try {
     let user = await User.findOne({ telegramId: userId });
@@ -188,8 +188,8 @@ bot.start(async (ctx) => {
         inline_keyboard: [
           [
             {
-              text: "Open Hive App",
-              web_app: { url: "https://radiant-rabanadas-d68427.netlify.app" },
+              text: "Open Tradie Bot App",
+              web_app: { url: "https://peppy-swan-6fdd72.netlify.app" },
             },
           ],
         ],
