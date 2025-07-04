@@ -1,194 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tradie Bot - Your Request Was Accepted</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        /* --- Base & Reset Styles --- */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            background-color: #f3f4f6;
-            /* Full-width background color */
-        }
+      /* --- Base & Reset Styles --- */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background-color: #f3f4f6;
+        /* Full-width background color */
+      }
 
+      .container {
+        width: 100%;
+        margin: 0 auto;
+        /* Centers the container on the body's background */
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+
+      /* --- Content Sections --- */
+      .header-section {
+        padding: 32px 24px;
+        text-align: center;
+      }
+
+      .dark-section {
+        /* Placeholder background */
+        background-image: linear-gradient(
+            rgba(45, 156, 219, 0.8),
+            rgba(21, 99, 142, 0.9)
+          ),
+          url("https://via.placeholder.com/600x200/cccccc/ffffff?text=Background+Image");
+        background-size: cover;
+        background-position: center;
+        /* display: flex; */
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        color: #ffffff;
+        padding: 32px 24px;
+        margin: 24px;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .footer-section {
+        padding: 24px;
+        text-align: center;
+        font-size: 0.875rem;
+        /* 14px */
+        background-color: #f9fafb;
+        color: #6b7280;
+      }
+
+      .admin-message-box {
+        background-color: #f9fafb;
+        border-left: 4px solid #2d9cdb;
+        padding: 16px;
+        margin: 24px 0;
+        text-align: left;
+        font-style: italic;
+        color: #4b5563;
+      }
+
+      /* --- Typography & Elements --- */
+      h1 {
+        font-size: 1.875rem;
+        /* 30px */
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 0.5rem 0;
+        /* 8px bottom margin */
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        /* 24px */
+        font-weight: 700;
+        color: #2d9cdb;
+        margin: 0 0 1.5rem 0;
+        /* 24px bottom margin */
+      }
+
+      h3 {
+        font-size: 1.25rem;
+        /* 20px */
+        font-weight: 700;
+        margin: 0;
+      }
+
+      p {
+        margin: 0;
+        line-height: 1.6;
+        color: #4b5563;
+      }
+
+      a {
+        color: #2d9cdb;
+        text-decoration: underline;
+      }
+
+      /* --- Mobile Responsiveness --- */
+      @media (max-width: 600px) {
         .container {
-            width: 100%;
-            margin: 0 auto;
-            /* Centers the container on the body's background */
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
+          width: 100% !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
         }
 
-        /* --- Content Sections --- */
-        .header-section {
-            padding: 32px 24px;
-            text-align: center;
+        .header-section,
+        .dark-section,
+        .footer-section {
+          padding: 24px 16px;
         }
 
         .dark-section {
-            /* Placeholder background */
-            background-image: linear-gradient(rgba(45, 156, 219, 0.8), rgba(21, 99, 142, 0.9)), url('https://via.placeholder.com/600x200/cccccc/ffffff?text=Background+Image');
-            background-size: cover;
-            background-position: center;
-            /* display: flex; */
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            color: #ffffff;
-            padding: 32px 24px;
-            margin: 24px;
-            border-radius: 12px;
-            text-align: center;
+          margin: 16px;
         }
 
-        .footer-section {
-            padding: 24px;
-            text-align: center;
-            font-size: 0.875rem;
-            /* 14px */
-            background-color: #f9fafb;
-            color: #6b7280;
-        }
-
-        .admin-message-box {
-            background-color: #f9fafb;
-            border-left: 4px solid #2D9CDB;
-            padding: 16px;
-            margin: 24px 0;
-            text-align: left;
-            font-style: italic;
-            color: #4b5563;
-        }
-
-        /* --- Typography & Elements --- */
         h1 {
-            font-size: 1.875rem;
-            /* 30px */
-            font-weight: 700;
-            color: #1f2937;
-            margin: 0 0 0.5rem 0;
-            /* 8px bottom margin */
+          font-size: 1.5rem;
+          /* 24px */
         }
 
         h2 {
-            font-size: 1.5rem;
-            /* 24px */
-            font-weight: 700;
-            color: #2D9CDB;
-            margin: 0 0 1.5rem 0;
-            /* 24px bottom margin */
+          font-size: 1.25rem;
+          /* 20px */
         }
-
-        h3 {
-            font-size: 1.25rem;
-            /* 20px */
-            font-weight: 700;
-            margin: 0;
-        }
-
-        p {
-            margin: 0;
-            line-height: 1.6;
-            color: #4b5563;
-        }
-
-        a {
-            color: #2D9CDB;
-            text-decoration: underline;
-        }
-
-        /* --- Mobile Responsiveness --- */
-        @media (max-width: 600px) {
-            .container {
-                width: 100% !important;
-                border-radius: 0 !important;
-                box-shadow: none !important;
-            }
-
-            .header-section,
-            .dark-section,
-            .footer-section {
-                padding: 24px 16px;
-            }
-
-            .dark-section {
-                margin: 16px;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-                /* 24px */
-            }
-
-            h2 {
-                font-size: 1.25rem;
-                /* 20px */
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="container">
-        <!-- 1. Header with Logo -->
-        <div class="header-section">
-            <img src="https://via.placeholder.com/150x50/ffffff/000000?text=Tradie+Bot+Logo" alt="Tradie Bot Logo"
-                style="height: 48px; margin-bottom: 24px;">
+      <!-- 1. Header with Logo -->
+      <div class="header-section">
+        <img
+          src="https://via.placeholder.com/150x50/ffffff/000000?text=Tradie+Bot+Logo"
+          alt="Tradie Bot Logo"
+          style="height: 48px; margin-bottom: 24px"
+        />
 
-            <h1>Hi [User's Name],</h1>
-            <h2>Your Request Has Been Accepted!</h2>
+        <h1>Hi [User's Name],</h1>
+        <h2>Your Request Has Been Accepted!</h2>
 
-            <p>
-                Great news! Your recent request has been reviewed and accepted. Please see the message from the admin
-                below.
-            </p>
+        <p>
+          Great news! Your recent request has been reviewed and accepted. Please
+          see the message from the admin below.
+        </p>
 
-            <!-- 2. Admin Message Section -->
-            <div class="admin-message-box">
-                <p style="font-weight: 600; color: #374151; margin-bottom: 8px;">Message from Admin:</p>
-                <p>[Admin's Message]</p>
-            </div>
-
-            <!-- 3. Call to Action Text -->
-            <p style="margin-top: 32px; font-weight: 500;">
-                Login to your account on the Tradie Bot app to see the full details.
-            </p>
+        <!-- 2. Admin Message Section -->
+        <div class="admin-message-box">
+          <p style="font-weight: 600; color: #374151; margin-bottom: 8px">
+            Message from Admin:
+          </p>
+          <p>[Admin's Message]</p>
         </div>
 
-        <!-- 4. Informational Section -->
-        <div class="dark-section">
-            <img src="https://via.placeholder.com/60x60/ffffff/2D9CDB?text=TB" alt="Tradie Bot Icon"
-                style="height: 56px; border-radius: 50%;">
-            <h3>Connecting You with Trusted Professionals</h3>
-            <p style="font-size: 0.875rem; color: #e5e7eb;">
-                Tradie Bot is dedicated to simplifying your search for reliable tradespeople.
-                Track your jobs, communicate easily, and get your tasks done efficiently, all in one place.
-            </p>
-        </div>
+        <!-- 3. Call to Action Text -->
+        <p style="margin-top: 32px; font-weight: 500">
+          Login to your account on the Tradie Bot app to see the full details.
+        </p>
+      </div>
 
-        <!-- 5. Footer -->
-        <div class="footer-section">
-            <p>© 2024 Tradie Bot. All rights reserved.</p>
-            <p style="margin-top: 8px; font-size: 0.75rem; color: #9ca3af;">
-                You are receiving this email because you created an account and submitted a request on Tradie Bot.
-            </p>
-            <p style="margin-top: 8px; font-size: 0.75rem;">
-                <a href="[REPLACE_WITH_YOUR_WEBSITE_URL]">Visit our website</a>
-            </p>
-        </div>
+      <!-- 4. Informational Section -->
+      <div class="dark-section">
+        <img
+          src="https://via.placeholder.com/60x60/ffffff/2D9CDB?text=TB"
+          alt="Tradie Bot Icon"
+          style="height: 56px; border-radius: 50%"
+        />
+        <h3>Connecting You with Trusted Professionals</h3>
+        <p style="font-size: 0.875rem; color: #e5e7eb">
+          Tradie Bot is dedicated to simplifying your search for reliable
+          tradespeople. Track your jobs, communicate easily, and get your tasks
+          done efficiently, all in one place.
+        </p>
+      </div>
+
+      <!-- 5. Footer -->
+      <div class="footer-section">
+        <p>© 2024 Tradie Bot. All rights reserved.</p>
+        <p style="margin-top: 8px; font-size: 0.75rem; color: #9ca3af">
+          You are receiving this email because you created an account and
+          submitted a request on Tradie Bot.
+        </p>
+        <p style="margin-top: 8px; font-size: 0.75rem">
+          <a href="[REPLACE_WITH_YOUR_WEBSITE_URL]">Visit our website</a>
+        </p>
+      </div>
     </div>
-</body>
-
+  </body>
 </html>

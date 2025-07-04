@@ -72,13 +72,13 @@ Job: ${jobDescription}
 Amount: $${invoiceAmount}
 Email: ${customerEmail}
 `;
-  // sendWhatsAppMessage(customerPhone, messageBody)
-  //   .then((res) => {
-  //     console.log(res, "Whatsapp response");
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
+  sendWhatsAppMessage(customerPhone, messageBody)
+    .then((res) => {
+      console.log(res, "Whatsapp response");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   await saveDataToSheets(
     [

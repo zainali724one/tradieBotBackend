@@ -77,19 +77,21 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   const pdfPath = path.join(tempDir, `quote_${newQuote._id}.pdf`);
   const paymentLink = `https://peppy-swan-6fdd72.netlify.app/pay/quote/${newQuote._id}`;
 
-  const messageBody = `Customer Name: ${customerName}
-  Job: ${jobDescription}
+  const messageBody = `
+You have received a quote from UK Tradie Bot
+Customer Name: ${customerName}
+Job: ${jobDescription}
 Amount: $${quoteAmount}
 Email: ${customerEmail}
 Click here to pay: ${paymentLink}`;
 
-  // sendWhatsAppMessage(customerPhone, messageBody)
-  //   .then((res) => {
-  //     console.log(res, "Whatsapp response");
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
+  await sendWhatsAppMessage(customerPhone, messageBody)
+    .then((res) => {
+      console.log(res, "Whatsapp response");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   await saveDataToSheets(
     [
@@ -160,7 +162,7 @@ Click here to pay: ${paymentLink}`;
     ],
   });
 
-  if (sheetId != user.sheetId){
+  if (sheetId != user.sheetId) {
     user.sheetId = sheetId;
     user.save();
   }
