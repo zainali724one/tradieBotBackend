@@ -10,6 +10,7 @@ const PDFDocument = require("pdfkit");
 const nodemailer = require("nodemailer");
 const fs = require("fs");
 const sendWhatsAppMessage = require("../services/twillioService");
+const { sendWhatsApp } = require("../services/VonageService");
 
 exports.addInvoice = catchAsyncError(async (req, res, next) => {
   const {
@@ -73,13 +74,19 @@ Job: ${jobDescription}
 Amount: $${invoiceAmount}
 Email: ${customerEmail}
 `;
-  sendWhatsAppMessage(customerPhone, messageBody)
-    .then((res) => {
+sendWhatsApp(customerPhone, messageBody).then((res) => {
       console.log(res, "Whatsapp response");
     })
     .catch((err) => {
       console.log(err);
     });
+  // sendWhatsAppMessage(customerPhone, messageBody)
+  //   .then((res) => {
+  //     console.log(res, "Whatsapp response");
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
 
   await saveDataToSheets(
     [
