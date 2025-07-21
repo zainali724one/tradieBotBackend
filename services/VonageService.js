@@ -5,7 +5,7 @@ const vonage = new Vonage({
   apiSecret: process.env.VONAGE_API_SECRET
 })
 
-const from = "+14157386102"  // Must be WhatsApp-enabled
+const from = "14157386102"  // Must be WhatsApp-enabled
 const to = "RECIPIENT_PHONE_NUMBER"  // Include country code, e.g., "923001234567"
 const text = "Hello from Vonage over WhatsApp using Node.js!"
 
