@@ -231,7 +231,7 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Password updated successfully",
+    message: "Password updated successfully 2",
   });
 });
 
