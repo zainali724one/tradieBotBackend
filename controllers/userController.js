@@ -226,7 +226,7 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
   // user.password = await bcrypt.hash(newPassword, salt);
   user.resetOTP = undefined;
   user.resetOTPExpires = undefined;
-
+console.log("password updated")
   await user.save();
 
   res.status(200).json({
