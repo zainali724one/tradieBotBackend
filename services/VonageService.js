@@ -101,8 +101,10 @@ const { WhatsAppText } = require('@vonage/messages');
 
 
 
-const privateKeyPath = path.join(__dirname, '..', 'public', 'private.key');
-const privateKey = fs.readFileSync(privateKeyPath);
+// const privateKeyPath = path.join(__dirname, '..', 'public', 'private.key');
+// const privateKey = fs.readFileSync(privateKeyPath);
+
+const privateKey = process.env.VONAGE_PRIVATE_KEY.replace(/\\n/g, '\n');
 
 const vonage = new Vonage(
   {
