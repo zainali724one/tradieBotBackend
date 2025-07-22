@@ -222,11 +222,11 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Invalid or expired OTP", 400));
   }
 
-  // const salt = await bcrypt.genSalt(10);
-  // user.password = await bcrypt.hash(newPassword, salt);
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(newPassword, salt);
   user.resetOTP = undefined;
   user.resetOTPExpires = undefined;
-  req.body.password=newPassword
+  // req.body.password=newPassword
 console.log("password updated")
   await user.save();
 
