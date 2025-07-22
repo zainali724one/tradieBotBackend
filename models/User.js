@@ -22,12 +22,12 @@ const userSchema = new mongoose.Schema({
   isApproved: { type: String, default: "Pending" }, // New field added
 }, { timestamps: true });
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password") || !this.password) return next();
+// userSchema.pre("save", async function (next) {
+//   if (!this.isModified("password") || !this.password) return next();
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
+//   const salt = await bcrypt.genSalt(10);
+//   this.password = await bcrypt.hash(this.password, salt);
+//   next();
+// });
 
 module.exports = mongoose.model("User", userSchema);
