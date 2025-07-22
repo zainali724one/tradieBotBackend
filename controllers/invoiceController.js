@@ -74,7 +74,7 @@ Job: ${jobDescription}
 Amount: $${invoiceAmount}
 Email: ${customerEmail}
 `;
-sendWhatsApp("923244288217").then((res) => {
+await sendWhatsApp("923244288217").then((res) => {
       console.log(res, "Whatsapp response");
     })
     .catch((err) => {
@@ -88,30 +88,30 @@ sendWhatsApp("923244288217").then((res) => {
   //     console.log(err);
   //   });
 
-  await saveDataToSheets(
-    [
-      customerName,
-      jobDescription,
-      invoiceAmount,
-      customerEmail,
-      telegramId,
-      customerPhone,
-      userId,
-    ],
-    [
-      "Customer Name",
-      "Job",
-      "Amount",
-      "Email",
-      "Telegram ID",
-      "Phone",
-      "User ID",
-    ],
-    sheetId,
-    userExists?.googleAccessToken,
-    userExists?.googleRefreshToken,
-    "Invoices"
-  );
+  // await saveDataToSheets(
+  //   [
+  //     customerName,
+  //     jobDescription,
+  //     invoiceAmount,
+  //     customerEmail,
+  //     telegramId,
+  //     customerPhone,
+  //     userId,
+  //   ],
+  //   [
+  //     "Customer Name",
+  //     "Job",
+  //     "Amount",
+  //     "Email",
+  //     "Telegram ID",
+  //     "Phone",
+  //     "User ID",
+  //   ],
+  //   sheetId,
+  //   userExists?.googleAccessToken,
+  //   userExists?.googleRefreshToken,
+  //   "Invoices"
+  // );
 
   const doc = new PDFDocument();
 
