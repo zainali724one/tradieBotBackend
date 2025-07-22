@@ -37,8 +37,8 @@ const { WhatsAppText } = require('@vonage/messages');
 
 const vonage = new Vonage(
   {
-    applicationId: process.env.VONAGE_APPLICATION_ID,
-    privateKey: process.env.VONAGE_PRIVATE_KEY,
+    applicationId: process.env.VONAGE_API_KEY,
+    privateKey: process.env.VONAGE_API_SECRET,
   },
   { apiHost: 'https://messages-sandbox.nexmo.com' } // Sandbox URL
 );
