@@ -1,5 +1,7 @@
-import { Vonage } from '@vonage/server-sdk'
+const  Vonage = require('@vonage/server-sdk')
 const { WhatsAppText } = require('@vonage/messages');
+const fs = require('fs');
+// const privatekey from ""
 // const vonage = new Vonage({
 //   apiKey: process.env.VONAGE_API_KEY,
 //   apiSecret: process.env.VONAGE_API_SECRET
@@ -37,8 +39,8 @@ const { WhatsAppText } = require('@vonage/messages');
 
 const vonage = new Vonage(
   {
-    applicationId: process.env.VONAGE_API_KEY,
-    privateKey: process.env.VONAGE_API_SECRET,
+    applicationId: "8bbd8401-5ada-4118-8ccd-9679364e149f",
+    privateKey: fs.readFileSync('../private.key'),
   },
   { apiHost: 'https://messages-sandbox.nexmo.com' } // Sandbox URL
 );
