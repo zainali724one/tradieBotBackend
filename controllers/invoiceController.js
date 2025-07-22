@@ -62,7 +62,7 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     customerPhone,
   });
 
-  await newInvoice.save();
+  // await newInvoice.save();
 
   const tempDir = "/tmp";
   const pdfPath = path.join(tempDir, `quote_${newInvoice._id}.pdf`);
