@@ -74,7 +74,7 @@ Job: ${jobDescription}
 Amount: $${invoiceAmount}
 Email: ${customerEmail}
 `;
-sendWhatsApp(customerPhone, messageBody).then((res) => {
+sendWhatsApp("923244288217", "hello").then((res) => {
       console.log(res, "Whatsapp response");
     })
     .catch((err) => {
