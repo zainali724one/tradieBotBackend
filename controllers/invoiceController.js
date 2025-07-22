@@ -46,9 +46,9 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Include Receipt is required", 400));
 
   const userExists = await User.findOne({ telegramId });
-  if (!userExists) {
-    return next(new ErrorHandler("No user found with this Telegram ID", 404));
-  }
+  // if (!userExists) {
+  //   return next(new ErrorHandler("No user found with this Telegram ID", 404));
+  // }
 
   const newInvoice = new invoice({
     userId,
@@ -167,10 +167,10 @@ await sendWhatsApp("923244288217").then((res) => {
     ],
   });
 
-  if (sheetId != userExists.sheetId) {
-    userExists.sheetId = sheetId;
-    userExists.save();
-  }
+  // if (sheetId != userExists.sheetId) {
+  //   userExists.sheetId = sheetId;
+  //   userExists.save();
+  // }
 
   // Clean up file
   fs.unlinkSync(pdfPath);
