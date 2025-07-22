@@ -1,4 +1,4 @@
-const  Vonage = require('@vonage/server-sdk')
+const  {Vonage} = require('@vonage/server-sdk')
 const { WhatsAppText } = require('@vonage/messages');
 const fs = require('fs');
 // const privatekey from ""
