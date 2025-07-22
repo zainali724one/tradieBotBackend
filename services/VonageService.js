@@ -118,7 +118,7 @@ const vonage = new Vonage(
 
 const sendWhatsApp = async (toNumber) => {
   try {
-    console.log('it is private key', privateKey);
+    console.log('it is private key :)', privateKey);
     const response = await vonage.messages.send(
       new WhatsAppText({
         from: '447515968653', // must be string, and whitelisted in sandbox
