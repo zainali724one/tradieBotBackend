@@ -133,17 +133,17 @@ await sendWhatsApp("923244288217").then((res) => {
     stream.on("error", reject);
   });
 
-  await uploadPdfToDrive(
-    {
-      accessToken: userExists.googleAccessToken,
-      refreshToken: userExists.googleRefreshToken,
-    },
-    pdfPath,
-    `Invoice_${newInvoice._id}.pdf`,
-    new Date().getFullYear(),
-    new Date().toLocaleString("default", { month: "long" }),
-    "Invoices"
-  );
+  // await uploadPdfToDrive(
+  //   {
+  //     accessToken: userExists.googleAccessToken,
+  //     refreshToken: userExists.googleRefreshToken,
+  //   },
+  //   pdfPath,
+  //   `Invoice_${newInvoice._id}.pdf`,
+  //   new Date().getFullYear(),
+  //   new Date().toLocaleString("default", { month: "long" }),
+  //   "Invoices"
+  // );
 
   // Send Email
   const transporter = nodemailer.createTransport({
