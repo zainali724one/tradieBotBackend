@@ -99,12 +99,15 @@ const path = require('path');
 const { Vonage } = require('@vonage/server-sdk');
 const { WhatsAppText } = require('@vonage/messages');
 
-const privateKeyPath = path.join(__dirname, 'private.key');
+
+
+const privateKeyPath = path.join(__dirname, '..', 'public', 'private.key');
+const privateKey = fs.readFileSync(privateKeyPath);
 
 const vonage = new Vonage(
   {
     applicationId: '8bbd8401-5ada-4118-8ccd-9679364e149f',
-    privateKey: fs.readFileSync(privateKeyPath),
+    privateKey: privateKey,
   },
   {
     apiHost: 'https://messages-sandbox.nexmo.com',
