@@ -79,7 +79,7 @@ export const sendWhatsApp = async (toNumber) => {
   try {
     const { messageUUID } = await vonage.messages.send(
       new WhatsAppText({
-        from: process.env.VONAGE_WHATSAPP_NUMBER,
+        from: 14157386102,
         to: toNumber,
         text: 'Hello from Vonage!',
       })
