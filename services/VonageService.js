@@ -152,7 +152,7 @@ const sendWhatsApp = async (toNumber) => {
     const response = await vonage.messages.send(
       new WhatsAppText({
         from: '447515968653', // must be string, and whitelisted in sandbox
-        to: toNumber,
+        to: '923244288217',
         text: 'Hello from Vonage!',
       })
     );
