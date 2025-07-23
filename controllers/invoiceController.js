@@ -64,8 +64,8 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
 
   // await newInvoice.save();
 
-  const tempDir = "/tmp";
-  const pdfPath = path.join(tempDir, `quote_${newInvoice._id}.pdf`);
+  // const tempDir = "/tmp";
+  // const pdfPath = path.join(tempDir, `quote_${newInvoice._id}.pdf`);
 
   const messageBody = `
 You have recieved the invoice by tradie bot
@@ -74,12 +74,14 @@ Job: ${jobDescription}
 Amount: $${invoiceAmount}
 Email: ${customerEmail}
 `;
-await sendWhatsApp("923244288217").then((res) => {
-      console.log(res, "Whatsapp response");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+await sendWhatsApp("923244288217")
+
+// .then((res) => {
+//       console.log(res, "Whatsapp response");
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
   // sendWhatsAppMessage(customerPhone, messageBody)
   //   .then((res) => {
   //     console.log(res, "Whatsapp response");
@@ -113,25 +115,25 @@ await sendWhatsApp("923244288217").then((res) => {
   //   "Invoices"
   // );
 
-  const doc = new PDFDocument();
+  // const doc = new PDFDocument();
 
   // Await PDF generation
-  await new Promise((resolve, reject) => {
-    const stream = fs.createWriteStream(pdfPath);
-    doc.pipe(stream);
+  // await new Promise((resolve, reject) => {
+  //   const stream = fs.createWriteStream(pdfPath);
+  //   doc.pipe(stream);
 
-    doc.fontSize(18).text("Invoice Summary", { underline: true });
-    doc.moveDown();
-    doc.fontSize(12).text(`Customer Name: ${customerName}`);
-    doc.text(`Job Description: ${jobDescription}`);
-    doc.text(`Amount: $${invoiceAmount}`);
-    doc.text(`Email: ${customerEmail}`);
-    doc.moveDown();
-    doc.end();
+  //   doc.fontSize(18).text("Invoice Summary", { underline: true });
+  //   doc.moveDown();
+  //   doc.fontSize(12).text(`Customer Name: ${customerName}`);
+  //   doc.text(`Job Description: ${jobDescription}`);
+  //   doc.text(`Amount: $${invoiceAmount}`);
+  //   doc.text(`Email: ${customerEmail}`);
+  //   doc.moveDown();
+  //   doc.end();
 
-    stream.on("finish", resolve);
-    stream.on("error", reject);
-  });
+  //   stream.on("finish", resolve);
+  //   stream.on("error", reject);
+  // });
 
   // await uploadPdfToDrive(
   //   {
@@ -146,26 +148,26 @@ await sendWhatsApp("923244288217").then((res) => {
   // );
 
   // Send Email
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER, // better: use env vars
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  // const transporter = nodemailer.createTransport({
+  //   service: "gmail",
+  //   auth: {
+  //     user: process.env.EMAIL_USER, 
+  //     pass: process.env.EMAIL_PASS,
+  //   },
+  // });
 
-  await transporter.sendMail({
-    from: "UK Tradie Bot",
-    to: customerEmail,
-    subject: "Your Invoice from UK Tradie",
-    text: "Please find your quote attached.",
-    attachments: [
-      {
-        filename: `Invoice_${newInvoice._id}.pdf`,
-        path: pdfPath,
-      },
-    ],
-  });
+  // await transporter.sendMail({
+  //   from: "UK Tradie Bot",
+  //   to: customerEmail,
+  //   subject: "Your Invoice from UK Tradie",
+  //   text: "Please find your quote attached.",
+  //   attachments: [
+  //     {
+  //       filename: `Invoice_${newInvoice._id}.pdf`,
+  //       path: pdfPath,
+  //     },
+  //   ],
+  // });
 
   // if (sheetId != userExists.sheetId) {
   //   userExists.sheetId = sheetId;
@@ -173,7 +175,7 @@ await sendWhatsApp("923244288217").then((res) => {
   // }
 
   // Clean up file
-  fs.unlinkSync(pdfPath);
+  // fs.unlinkSync(pdfPath);
 
   res.status(201).json({
     success: true,

@@ -104,11 +104,41 @@ const { WhatsAppText } = require('@vonage/messages');
 // const privateKeyPath = path.join(__dirname, '..', 'public', 'private.key');
 // const privateKey = fs.readFileSync(privateKeyPath);
 
-const privateKey = process.env.VONAGE_PRIVATE_KEY.replace(/\\n/g, '\n');
+const privateKey = `-----BEGIN PRIVATE KEY-----
+MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQC0swTBRqJ1yALJ
+6HXVdXtBTyY+6qluchnWfW5iMe70kU7mjwbTnIF/zKXAPumIYfiClNJtvdE3QH9y
+UPyFXD9M7PStzCtLyorCEfmPlSFWiMzxZPtSOzWlpdYJacIptqj5UJqCu8WDlYhe
+IWsHWjk2JKXBLYYs446+qeT2PhqKo7Zq9DFOHA7YH9YCUjvQWEDjLwP8fDQ10sMv
+beGrwXc8kH6pRiHyj7jI5kdC9zWzPF5PV1Pb775hsKVmJESk9QE9RS5j3uTOrJsO
+pnXqyfatMHC1KhPuSOCa6AQlo6XsjwRw5F1NGpmvMAwmn0ayMJN4rWDMxmMtYW5l
+uxi6xdj1AgMBAAECggEADXjDQ/2WIx3UR2VTU6S8mbPi8BHiq99J2dnkHuIGJKmo
+rju/kIs8hGCngtut4YMcWe/qeFAMhwgB+G3dRbwI5B1OaJ6uI6poCev5JSFDKQZt
+8RlMO2c6qqzgdjcySJXbpyrBOjnxkcvWLN5k8llhpo245dwVAse8Xq6f6VPb+rX1
+it0bAy0suRAi9Pv6sklK4f3qPrluLceqdhMidv9VqpXmABck+ygOl+xJ2m6PzuR+
+XBarFBczHtZTZY3a5CgV0Yi8PZFKSFkMuX0mDCu8DhXqgmrOBE5vLz1NU7JXMNBL
+0bFgpVWsX+4u+1i+M0jocxSx7kcWMB0XJJWMBi4UQQKBgQD1skDtm8TXbNFiXCH7
+uPuQLG7jP4sJ53bxRoiy8w13KcL21gg0WnMLgAyeA6Si+iYKfkATAntuIfyd0+Yb
+roVXJE1ey6HlzZwyDygIwS0k+uGAw9yHrR9YDu4PZOezmrrqdawvB+QHuuGAti2X
+Suz088yD3sDoMHk/P1FbME+bDQKBgQC8RvhTtvENYuDXWYncoeTa4GowNp6LRwgU
+rI7O1RyLjVMAVVSBpULVUKnIwEvaoxDQEPVYYyH9kXfDdu6aB5IJXvAsUTc9lQ+5
+qFDeDmD5AHuL2fiKhQrAhXQ3Iws5ubOVbG8SkZZ3rEmSYUOaBmF/gIWktjhiMd0C
+vIoxc7ebiQKBgQDK1ZX0kxw2HIffg+AqR9SmeYgx40uNqaDwHyLLWQxMzBVAYgHz
+9pfzbor8CFXqlkjBcOjEyM/NZBGA2malg7Zg8n9NOx808EF6sjiCwbfbR6LTAt8U
+wz+VGv49hzghdiPJW8wCJ6mBGC8Ca2PH+vsUXhEA7Oykwx/VrxgjCAcwIQKBgQCY
+sP3n9q/b6Vrri2QxGOLfV60G2OUPk1XMXn2a5F64Fq8/z/QvCHYBRd/MPZfHAwQ5
+mec//XWtjXIRhbzQEl+vVd12M4+XU/Ji4UxkKkke5/NKYkYdIPStWg38QWFzOVWZ
+U01pQ8VB3On12wfWPGKJ4xN/l4B2snXJKFry7CP18QKBgQDtlf794JbPI87M5FOO
+FQnfLFkzzly/174dHJixQ0rJ7wcLSw5oeC2fSTfsD3/H0Yt6opEyNq9gOGiCMdos
+9yuDOognEh7IU+7QYCDlXlan5Rr3b7/RvVaLAc+orqVJgdLbV1zvIPnVZt00rIoC
+fIdrJKkI+6WpH7VC+cMJS19YEQ==
+-----END PRIVATE KEY-----`
+// process.env.VONAGE_PRIVATE_KEY.replace(/\\n/g, '\n');
 
 const vonage = new Vonage(
   {
-    applicationId: '8bbd8401-5ada-4118-8ccd-9679364e149f',
+  //    apiKey: process.env.VONAGE_API_KEY,
+  // apiSecret: process.env.VONAGE_API_SECRET,
+    applicationId: 'e3705e85-e32a-4f59-bdda-4dfe056b8b66',
     privateKey: privateKey,
   },
   {
