@@ -198,6 +198,8 @@ error.response ? error.response.body : error.message
 
 );
 
+ console.error('Full error:', require('util').inspect(error, { depth: null }));
+
 }
 
 };
