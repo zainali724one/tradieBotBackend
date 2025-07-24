@@ -10,6 +10,7 @@ const sendWhatsAppMessage = require("../services/twillioService");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const dayjs = require("dayjs");
 const { saveDataToSheets } = require("../utils/googleSheets");
+const { sendWhatsApp } = require("../services/VonageService");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const {
