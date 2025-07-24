@@ -104,7 +104,8 @@ const { WhatsAppText } = require('@vonage/messages');
 // const privateKeyPath = path.join(__dirname, '..', 'public', 'private.key');
 // const privateKey = fs.readFileSync(privateKeyPath);
 
-const privateKey = `-----BEGIN PRIVATE KEY-----
+const privateKey = `
+-----BEGIN PRIVATE KEY-----
 MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQC0swTBRqJ1yALJ
 6HXVdXtBTyY+6qluchnWfW5iMe70kU7mjwbTnIF/zKXAPumIYfiClNJtvdE3QH9y
 UPyFXD9M7PStzCtLyorCEfmPlSFWiMzxZPtSOzWlpdYJacIptqj5UJqCu8WDlYhe
@@ -131,7 +132,7 @@ U01pQ8VB3On12wfWPGKJ4xN/l4B2snXJKFry7CP18QKBgQDtlf794JbPI87M5FOO
 FQnfLFkzzly/174dHJixQ0rJ7wcLSw5oeC2fSTfsD3/H0Yt6opEyNq9gOGiCMdos
 9yuDOognEh7IU+7QYCDlXlan5Rr3b7/RvVaLAc+orqVJgdLbV1zvIPnVZt00rIoC
 fIdrJKkI+6WpH7VC+cMJS19YEQ==
------END PRIVATE KEY-----`
+-----END PRIVATE KEY-----`.trim()
 // process.env.VONAGE_PRIVATE_KEY.replace(/\\n/g, '\n');
 
 const vonage = new Vonage(
