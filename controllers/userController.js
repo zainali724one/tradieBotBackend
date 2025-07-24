@@ -69,11 +69,22 @@ exports.signupUser = catchAsyncError(async (req, res, next) => {
 
   // Check for existing user
   const existingUser = await User.findOne({ telegramId });
+    const existingUsercheck2 = await User.findOne({ email });
   if (existingUser) {
     return next(
       new ErrorHandler("User with this Telegram ID already exists", 409)
     );
   }
+
+   if (existingUsercheck2) {
+    return next(
+      new ErrorHandler("User with this Email already exists", 409)
+    );
+  }
+
+
+    const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
   // Create new user
   const newUser = await User.create({
@@ -83,7 +94,7 @@ exports.signupUser = catchAsyncError(async (req, res, next) => {
     phone,
     country,
     username,
-    password,
+    password:hashedPassword,
     languageCode,
     userImage,
   });

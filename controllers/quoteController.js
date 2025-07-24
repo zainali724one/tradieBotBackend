@@ -85,13 +85,13 @@ Amount: $${quoteAmount}
 Email: ${customerEmail}
 Click here to pay: ${paymentLink}`;
 
-  await sendWhatsAppMessage(customerPhone, messageBody)
-    .then((res) => {
-      console.log(res, "Whatsapp response");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  await sendWhatsApp(customerPhone, messageBody)
+    // .then((res) => {
+    //   console.log(res, "Whatsapp response");
+    // })
+    // .catch((err) => {
+    //   console.log(err);
+    // });
 
   await saveDataToSheets(
     [

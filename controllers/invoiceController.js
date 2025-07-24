@@ -9,7 +9,7 @@ const path = require("path");
 const PDFDocument = require("pdfkit");
 const nodemailer = require("nodemailer");
 const fs = require("fs");
-const sendWhatsAppMessage = require("../services/twillioService");
+// const sendWhatsAppMessage = require("../services/twillioService");
 const { sendWhatsApp } = require("../services/VonageService");
 
 exports.addInvoice = catchAsyncError(async (req, res, next) => {
@@ -46,9 +46,9 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Include Receipt is required", 400));
 
   const userExists = await User.findOne({ telegramId });
-  // if (!userExists) {
-  //   return next(new ErrorHandler("No user found with this Telegram ID", 404));
-  // }
+  if (!userExists) {
+    return next(new ErrorHandler("No user found with this Telegram ID", 404));
+  }
 
   const newInvoice = new invoice({
     userId,
@@ -62,10 +62,10 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     customerPhone,
   });
 
-  // await newInvoice.save();
+  await newInvoice.save();
 
-  // const tempDir = "/tmp";
-  // const pdfPath = path.join(tempDir, `quote_${newInvoice._id}.pdf`);
+  const tempDir = "/tmp";
+  const pdfPath = path.join(tempDir, `quote_${newInvoice._id}.pdf`);
 
   const messageBody = `
 You have recieved the invoice by tradie bot
@@ -74,7 +74,7 @@ Job: ${jobDescription}
 Amount: $${invoiceAmount}
 Email: ${customerEmail}
 `;
-await sendWhatsApp("923244288217")
+await sendWhatsApp(customerPhone, messageBody)
 
 // .then((res) => {
 //       console.log(res, "Whatsapp response");
@@ -90,92 +90,92 @@ await sendWhatsApp("923244288217")
   //     console.log(err);
   //   });
 
-  // await saveDataToSheets(
-  //   [
-  //     customerName,
-  //     jobDescription,
-  //     invoiceAmount,
-  //     customerEmail,
-  //     telegramId,
-  //     customerPhone,
-  //     userId,
-  //   ],
-  //   [
-  //     "Customer Name",
-  //     "Job",
-  //     "Amount",
-  //     "Email",
-  //     "Telegram ID",
-  //     "Phone",
-  //     "User ID",
-  //   ],
-  //   sheetId,
-  //   userExists?.googleAccessToken,
-  //   userExists?.googleRefreshToken,
-  //   "Invoices"
-  // );
+  await saveDataToSheets(
+    [
+      customerName,
+      jobDescription,
+      invoiceAmount,
+      customerEmail,
+      telegramId,
+      customerPhone,
+      userId,
+    ],
+    [
+      "Customer Name",
+      "Job",
+      "Amount",
+      "Email",
+      "Telegram ID",
+      "Phone",
+      "User ID",
+    ],
+    sheetId,
+    userExists?.googleAccessToken,
+    userExists?.googleRefreshToken,
+    "Invoices"
+  );
 
-  // const doc = new PDFDocument();
+  const doc = new PDFDocument();
 
-  // Await PDF generation
-  // await new Promise((resolve, reject) => {
-  //   const stream = fs.createWriteStream(pdfPath);
-  //   doc.pipe(stream);
 
-  //   doc.fontSize(18).text("Invoice Summary", { underline: true });
-  //   doc.moveDown();
-  //   doc.fontSize(12).text(`Customer Name: ${customerName}`);
-  //   doc.text(`Job Description: ${jobDescription}`);
-  //   doc.text(`Amount: $${invoiceAmount}`);
-  //   doc.text(`Email: ${customerEmail}`);
-  //   doc.moveDown();
-  //   doc.end();
+  await new Promise((resolve, reject) => {
+    const stream = fs.createWriteStream(pdfPath);
+    doc.pipe(stream);
 
-  //   stream.on("finish", resolve);
-  //   stream.on("error", reject);
-  // });
+    doc.fontSize(18).text("Invoice Summary", { underline: true });
+    doc.moveDown();
+    doc.fontSize(12).text(`Customer Name: ${customerName}`);
+    doc.text(`Job Description: ${jobDescription}`);
+    doc.text(`Amount: $${invoiceAmount}`);
+    doc.text(`Email: ${customerEmail}`);
+    doc.moveDown();
+    doc.end();
 
-  // await uploadPdfToDrive(
-  //   {
-  //     accessToken: userExists.googleAccessToken,
-  //     refreshToken: userExists.googleRefreshToken,
-  //   },
-  //   pdfPath,
-  //   `Invoice_${newInvoice._id}.pdf`,
-  //   new Date().getFullYear(),
-  //   new Date().toLocaleString("default", { month: "long" }),
-  //   "Invoices"
-  // );
+    stream.on("finish", resolve);
+    stream.on("error", reject);
+  });
+
+  await uploadPdfToDrive(
+    {
+      accessToken: userExists.googleAccessToken,
+      refreshToken: userExists.googleRefreshToken,
+    },
+    pdfPath,
+    `Invoice_${newInvoice._id}.pdf`,
+    new Date().getFullYear(),
+    new Date().toLocaleString("default", { month: "long" }),
+    "Invoices"
+  );
 
   // Send Email
-  // const transporter = nodemailer.createTransport({
-  //   service: "gmail",
-  //   auth: {
-  //     user: process.env.EMAIL_USER, 
-  //     pass: process.env.EMAIL_PASS,
-  //   },
-  // });
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER, 
+      pass: process.env.EMAIL_PASS,
+    },
+  });
 
-  // await transporter.sendMail({
-  //   from: "UK Tradie Bot",
-  //   to: customerEmail,
-  //   subject: "Your Invoice from UK Tradie",
-  //   text: "Please find your quote attached.",
-  //   attachments: [
-  //     {
-  //       filename: `Invoice_${newInvoice._id}.pdf`,
-  //       path: pdfPath,
-  //     },
-  //   ],
-  // });
+  await transporter.sendMail({
+    from: "UK Tradie Bot",
+    to: customerEmail,
+    subject: "Your Invoice from UK Tradie",
+    text: "Please find your quote attached.",
+    attachments: [
+      {
+        filename: `Invoice_${newInvoice._id}.pdf`,
+        path: pdfPath,
+      },
+    ],
+  });
 
-  // if (sheetId != userExists.sheetId) {
-  //   userExists.sheetId = sheetId;
-  //   userExists.save();
-  // }
+  if (sheetId != userExists.sheetId) {
+    userExists.sheetId = sheetId;
+    userExists.save();
+  }
 
   // Clean up file
-  // fs.unlinkSync(pdfPath);
+  fs.unlinkSync(pdfPath);
 
   res.status(201).json({
     success: true,

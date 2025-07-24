@@ -167,20 +167,20 @@ const vonage = new Vonage(
 
 // Function to send a message via Vonage
 
-const sendWhatsApp = async (to_number) => {
+const sendWhatsApp = async (to_number,msg) =>{
 
 const text = "Message received."; // The reply message
+const cleanNumber =to_number.includes("+") ? to_number.replace("+", ""):to_number;
 
 try {
 
 const { messageUUID } = await vonage.messages.send(
 
 new WhatsAppText({
-
 // from: process.env.VONAGE_WHATSAPP_NUMBER,
 from:14157386102,
-to:923244288217, // The recipient's WhatsApp number
-text: text,
+to:cleanNumber, // The recipient's WhatsApp number
+text: msg,
 
 })
 
