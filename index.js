@@ -14,6 +14,8 @@ const invoiceRoutes = require("./routes/invoiceRoutes");
 const jobRoutes = require("./routes/jobRoutes");
 const stripeRoutes = require("./routes/stripeRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const { sendWhatsApp } = require("./services/VonageService");
+const { verifyJWT } = require("./controllers/VonageWebhooks");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -56,10 +58,46 @@ app.use(`/api/invoice`, invoiceRoutes);
 app.use(`/api/job`, jobRoutes);
 app.use(`/api/stripe`, stripeRoutes);
 app.use(`/api/admin`, adminRoutes);
+app.post("/inbound", async (req, res) => {
+
+const { from: requesterNumber } = req.body;
+
+console.log(`Received message from ${requesterNumber}`);
+
+try {
+
+// Send the "Message received" reply
+
+await sendWhatsApp(requesterNumber);
+
+res.status(200).send(); // Acknowledge the received message
+
+} catch (error) {
+
+console.error("Error handling incoming message:", error);
+
+res.status(500).send("An error occurred while processing the message.");
+
+}
+
+});
+
+app.post('/status', (req, res) => {
+
+  console.log(req.body);
+
+  verifyJWT(req);
+
+  console.log('Received status update');
+
+  res.status(200).send();
+
+})
+app.get("/", (req, res) => res.send("Bot is running!"));
 app.use(ErrorMiddleware);
 
 // Health Check
-app.get("/", (req, res) => res.send("Bot is running!"));
+
 connectDb();
 // Start Server
 app.listen(PORT, () => {

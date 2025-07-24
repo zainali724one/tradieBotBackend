@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@vonage/jwt": "^1.11.0",
     "@vonage/messages": "^1.20.1",
     "@vonage/server-sdk": "^3.22.1",
     "bcryptjs": "^3.0.2",

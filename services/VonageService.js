@@ -146,20 +146,59 @@ const vonage = new Vonage(
   }
 );
 
-const sendWhatsApp = async (toNumber) => {
-  try {
-    console.log('it is private key :)', privateKey);
-    const response = await vonage.messages.send(
-      new WhatsAppText({
-        from: '447515968653', // must be string, and whitelisted in sandbox
-        to: '923244288217',
-        text: 'Hello from Vonage!',
-      })
-    );
-    console.log('Sent:', response);
-  } catch (error) {
-    console.error('Failed:', error.response?.body || error.message || error);
-  }
+// const sendWhatsApp = async (toNumber) => {
+//   try {
+//     console.log('it is private key :)', privateKey);
+//     const response = await vonage.messages.send(
+//       new WhatsAppText({
+//         from: '447515968653', // must be string, and whitelisted in sandbox
+//         to: '923244288217',
+//         text: 'Hello from Vonage!',
+//       })
+//     );
+//     console.log('Sent:', response);
+//   } catch (error) {
+//     console.error('Failed:', error.response?.body || error.message || error);
+//   }
+// };
+
+
+
+// Function to send a message via Vonage
+
+const sendWhatsApp = async (to_number) => {
+
+const text = "Message received."; // The reply message
+
+try {
+
+const { messageUUID } = await vonage.messages.send(
+
+new WhatsAppText({
+
+// from: process.env.VONAGE_WHATSAPP_NUMBER,
+from:447441443346,
+to:923244288217, // The recipient's WhatsApp number
+text: text,
+
+})
+
+);
+
+console.log(`Message sent with messageUUID: ${messageUUID}`);
+
+} catch (error) {
+
+console.error(
+
+"Error sending message:",
+
+error.response ? error.response.body : error.message
+
+);
+
+}
+
 };
 
 module.exports = { sendWhatsApp };
