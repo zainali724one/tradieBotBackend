@@ -178,7 +178,7 @@ const { messageUUID } = await vonage.messages.send(
 new WhatsAppText({
 
 // from: process.env.VONAGE_WHATSAPP_NUMBER,
-from:447441443346,
+from:14157386102,
 to:923244288217, // The recipient's WhatsApp number
 text: text,
 
