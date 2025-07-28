@@ -285,14 +285,14 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
       break;
 
     case "phone":
-      if (!oldPhone || !newPhone) {
+      if (!newPhone) {
         return next(
-          new ErrorHandler("Both old and new phone numbers are required", 400)
+          new ErrorHandler("phone number is required", 400)
         );
       }
-      if (user.phone !== oldPhone) {
-        return next(new ErrorHandler("Old phone number does not match", 400));
-      }
+      // if (user.phone !== oldPhone) {
+      //   return next(new ErrorHandler("Old phone number does not match", 400));
+      // }
       user.phone = newPhone;
       break;
 
