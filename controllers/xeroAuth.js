@@ -37,28 +37,56 @@ exports.getConsentUrl = catchAsyncError(async (req, res, next) => {
 
 
 
+// exports.handleXeroCallback = catchAsyncError(async (req, res) => {
+//   const { state } = req.query;
+
+//   // Ensure state is passed into checks object
+//   await xero.apiCallback(req.url, {
+//     state,
+//   });
+
+//   await xero.updateTenants();
+
+//   const tokenSet = xero.readTokenSet();
+//   const tenantId = xero.tenantIds[0];
+
+//   // Use state as the userId, since you passed it when generating the consent URL
+//   const userId = state;
+
+//   await User.findByIdAndUpdate(userId, {
+//     xeroTokenSet: tokenSet,
+//     xeroTenantId: tenantId,
+//   });
+
+//   // Redirect to frontend
+//   res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected");
+// });
+
+
 exports.handleXeroCallback = catchAsyncError(async (req, res) => {
-  const { state } = req.query;
+  try {
+    // Verify state parameter exists
+    if (!req.query.state) {
+      throw new Error("State parameter missing");
+    }
 
-  // Ensure state is passed into checks object
-  await xero.apiCallback(req.url, {
-    state,
-  });
+    await xero.apiCallback(req.url);
+    await xero.updateTenants();
 
-  await xero.updateTenants();
+    const tokenSet = xero.readTokenSet();
+    const tenantId = xero.tenantIds[0];
+    const userId = req.query.state;
 
-  const tokenSet = xero.readTokenSet();
-  const tenantId = xero.tenantIds[0];
+    await User.findByIdAndUpdate(userId, {
+      xeroTokenSet: tokenSet,
+      xeroTenantId: tenantId,
+    });
 
-  // Use state as the userId, since you passed it when generating the consent URL
-  const userId = state;
-
-  await User.findByIdAndUpdate(userId, {
-    xeroTokenSet: tokenSet,
-    xeroTenantId: tenantId,
-  });
-
-  // Redirect to frontend
-  res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected");
+    res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected");
+  } catch (error) {
+    console.error("Xero callback error:", error);
+    // Redirect to an error page or handle appropriately
+    // res.redirect("https://peppy-swan-6fdd72.netlify.app/xero-error");
+  }
 });
 
