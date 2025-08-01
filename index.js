@@ -12,6 +12,7 @@ const historyRoutes = require("./routes/historyRoutes");
 const quoteRoute = require("./routes/quoteRoute");
 const invoiceRoutes = require("./routes/invoiceRoutes");
 const jobRoutes = require("./routes/jobRoutes");
+const xeroRoutes = require("./routes/xeroRoutes");
 const stripeRoutes = require("./routes/stripeRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const { sendWhatsApp } = require("./services/VonageService");
@@ -58,6 +59,7 @@ app.use(`/api/invoice`, invoiceRoutes);
 app.use(`/api/job`, jobRoutes);
 app.use(`/api/stripe`, stripeRoutes);
 app.use(`/api/admin`, adminRoutes);
+app.use(`/api`, xeroRoutes);
 app.post("/inbound", async (req, res) => {
 
 const { from: requesterNumber } = req.body;

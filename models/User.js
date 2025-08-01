@@ -18,6 +18,8 @@ const userSchema = new mongoose.Schema({
   stripeAccountId: { type: String },
   googleAccessToken: { type: String },
   googleRefreshToken: { type: String },
+  xeroToken: { type: String },
+    tenantId:{ type: String },
   sheetId: { type: String },
   isApproved: { type: String, default: "Pending" }, // New field added
 }, { timestamps: true });
