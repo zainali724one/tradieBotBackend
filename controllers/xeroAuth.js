@@ -16,21 +16,49 @@ exports.getConsentUrl = catchAsyncError(async (req, res, next) => {
 
 
 // 2. Handle callback
+// exports.handleXeroCallback = catchAsyncError(async (req, res) => {
+//   await xero.apiCallback(req.url);
+//   await xero.updateTenants();
+
+//   const tokenSet = xero.readTokenSet();
+//   const tenantId = xero.tenantIds[0];
+
+
+// // const userId = req.query.userId; 
+
+//  const userId = req.query.state;
+//   await User.findByIdAndUpdate(userId, {
+//     xeroTokenSet: tokenSet,
+//     xeroTenantId: tenantId,
+//   });
+
+//   res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected"); // redirect to frontend
+// })
+
+
+
 exports.handleXeroCallback = catchAsyncError(async (req, res) => {
-  await xero.apiCallback(req.url);
+  const { state } = req.query;
+
+  // Ensure state is passed into checks object
+  await xero.apiCallback(req.url, {
+    state,
+  });
+
   await xero.updateTenants();
 
   const tokenSet = xero.readTokenSet();
   const tenantId = xero.tenantIds[0];
 
+  // Use state as the userId, since you passed it when generating the consent URL
+  const userId = state;
 
-// const userId = req.query.userId; 
-
- const userId = req.query.state;
   await User.findByIdAndUpdate(userId, {
     xeroTokenSet: tokenSet,
     xeroTenantId: tenantId,
   });
 
-  res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected"); // redirect to frontend
-})
+  // Redirect to frontend
+  res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected");
+});
+
