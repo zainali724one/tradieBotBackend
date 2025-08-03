@@ -37,56 +37,56 @@ exports.getConsentUrl = catchAsyncError(async (req, res, next) => {
 
 
 
-// exports.handleXeroCallback = catchAsyncError(async (req, res) => {
-//   const { state } = req.query;
-
-//   // Ensure state is passed into checks object
-//   await xero.apiCallback(req.url, {
-//     state,
-//   });
-
-//   await xero.updateTenants();
-
-//   const tokenSet = xero.readTokenSet();
-//   const tenantId = xero.tenantIds[0];
-
-//   // Use state as the userId, since you passed it when generating the consent URL
-//   const userId = state;
-
-//   await User.findByIdAndUpdate(userId, {
-//     xeroTokenSet: tokenSet,
-//     xeroTenantId: tenantId,
-//   });
-
-//   // Redirect to frontend
-//   res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected");
-// });
-
-
 exports.handleXeroCallback = catchAsyncError(async (req, res) => {
-  try {
-    // Verify state parameter exists
-    if (!req.query.state) {
-      throw new Error("State parameter missing");
-    }
+  const { state } = req.query;
 
-    await xero.apiCallback(req.url);
-    await xero.updateTenants();
+  // Ensure state is passed into checks object
+  await xero.apiCallback(req.url, {
+    state,
+  });
 
-    const tokenSet = xero.readTokenSet();
-    const tenantId = xero.tenantIds[0];
-    const userId = req.query.state;
+  await xero.updateTenants();
 
-    await User.findByIdAndUpdate(userId, {
-      xeroTokenSet: tokenSet,
-      xeroTenantId: tenantId,
-    });
+  const tokenSet = xero.readTokenSet();
+  const tenantId = xero.tenantIds[0];
 
-    res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected");
-  } catch (error) {
-    console.error("Xero callback error:", error);
-    // Redirect to an error page or handle appropriately
-    // res.redirect("https://peppy-swan-6fdd72.netlify.app/xero-error");
-  }
+  // Use state as the userId, since you passed it when generating the consent URL
+  const userId = state;
+
+  await User.findByIdAndUpdate(userId, {
+    xeroTokenSet: tokenSet,
+    xeroTenantId: tenantId,
+  });
+
+  // Redirect to frontend
+  res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected");
 });
+
+
+// exports.handleXeroCallback = catchAsyncError(async (req, res) => {
+//   try {
+//     // Verify state parameter exists
+//     if (!req.query.state) {
+//       throw new Error("State parameter missing");
+//     }
+
+//     await xero.apiCallback(req.url);
+//     await xero.updateTenants();
+
+//     const tokenSet = xero.readTokenSet();
+//     const tenantId = xero.tenantIds[0];
+//     const userId = req.query.state;
+
+//     await User.findByIdAndUpdate(userId, {
+//       xeroTokenSet: tokenSet,
+//       xeroTenantId: tenantId,
+//     });
+
+//     res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected");
+//   } catch (error) {
+//     console.error("Xero callback error:", error);
+//     // Redirect to an error page or handle appropriately
+//     // res.redirect("https://peppy-swan-6fdd72.netlify.app/xero-error");
+//   }
+// });
 
