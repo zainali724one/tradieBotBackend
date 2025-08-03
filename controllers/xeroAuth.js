@@ -20,14 +20,14 @@ exports.handleXeroCallback = catchAsyncError(async (req, res) => {
 try {
     // ⚠️ Use the full req object here, not req.url
     const state = req.query.state;
-
+console.log(state,"here is state")
     await xero.apiCallback(req, { state }); // ✅ FIXED
-
+console.log("before updateTenants")
     await xero.updateTenants(); // Populates tenantIds
-
+console.log("after updateTenants")
     const tokenSet = xero.readTokenSet(); // { access_token, refresh_token, etc. }
     const tenantId = xero.tenantIds[0];
-
+console.log(tokenSet,tokenSet,"these are required")
     // Save the tokenSet & tenantId in your database against the user
     await User.findByIdAndUpdate(state, {
       xeroToken: tokenSet,
