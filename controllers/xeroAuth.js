@@ -27,7 +27,7 @@ console.log("before updateTenants")
     await xero.updateTenants(); // Populates tenantIds
 console.log("after updateTenants")
     const tokenSet = xero.readTokenSet(); // { access_token, refresh_token, etc. }
-    const tenantId = xero.tenantIds[0];
+    const tenantId = xero.tenants[0];
 console.log(tokenSet,tokenSet,"these are required")
     // Save the tokenSet & tenantId in your database against the user
     await User.findByIdAndUpdate(state, {
