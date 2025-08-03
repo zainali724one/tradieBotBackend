@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema({
   googleAccessToken: { type: String },
   googleRefreshToken: { type: String },
   xeroToken: { type: String },
-    tenantId:{ type: String },
+  tenantId:{ type: String },
+  xeroRefreshToken:{ type: String },
   sheetId: { type: String },
   isApproved: { type: String, default: "Pending" }, // New field added
 }, { timestamps: true });
