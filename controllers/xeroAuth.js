@@ -37,6 +37,7 @@ console.log(tokenSet,tokenSet,"these are required")
     res.redirect("https://your-frontend-url.com/xeroconnected");
   } catch (error) {
     console.error("Xero callback error", error);
+    console.log(req.query.state,"req.query.state")
     res.status(500).json({ success: false, message: "Callback failed" });
   }
 
