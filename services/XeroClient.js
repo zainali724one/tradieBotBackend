@@ -6,12 +6,13 @@ const xero = new XeroClient({
   clientSecret: process.env.XERO_CLIENT_SECRET,
   redirectUris: [process.env.XERO_REDIRECT_URI],
   scopes: [
-    "openid",
+   "openid",
     "profile",
     "email",
     "offline_access",
     "accounting.transactions",
     "accounting.contacts",
+    "accounting.settings",
   ],
 });
 
