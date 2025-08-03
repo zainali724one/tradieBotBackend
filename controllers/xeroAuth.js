@@ -21,7 +21,7 @@ try {
     // ⚠️ Use the full req object here, not req.url
     const state = req.query.state;
 console.log(state,"here is state")
-    await xero.apiCallback(req, { state }); // ✅ FIXED
+    await xero.apiCallback(req); // ✅ FIXED
 console.log("before updateTenants")
     await xero.updateTenants(); // Populates tenantIds
 console.log("after updateTenants")
