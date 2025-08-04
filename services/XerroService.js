@@ -20,7 +20,7 @@ export async function createXeroDocumentForUser(userId, data, type) {
 const parsedTenantId = parsedTenantObj.tenantId || parsedTenantObj.id;
   xero.setTokenSet(tokenSet);
 //   xero.setTenantId(parsedTenantId);
-console.log(tokenSet)
+console.log(tokenSet,"here is token set")
 if (!tokenSet?.refresh_token) {
   throw new Error('Refresh token is missing');
 }
