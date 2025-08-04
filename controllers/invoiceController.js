@@ -13,7 +13,7 @@ const fs = require("fs");
 const { sendWhatsApp } = require("../services/VonageService");
 const { createXeroDocumentForUser } = require("../services/XerroService");
 // import { Invoice } from "xero-node";
-const Invoice=require("xero-node")
+const { Invoice } = require('xero-node')
 
 exports.addInvoice = catchAsyncError(async (req, res, next) => {
   const {
