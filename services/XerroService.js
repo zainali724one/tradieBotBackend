@@ -33,9 +33,9 @@ const parsedTenantId = parsedTenantObj.tenantId || parsedTenantObj.id;
     let response;
 
     if (type === "invoice") {
-      response = await xero.accountingApi.createInvoices(user.parsedTenantId, { invoices: [data] });
+      response = await xero.accountingApi.createInvoices(parsedTenantId, { invoices: [data] });
     } else if (type === "quote") {
-      response = await xero.accountingApi.createQuotes(user.parsedTenantId, { quotes: [data] });
+      response = await xero.accountingApi.createQuotes(parsedTenantId, { quotes: [data] });
     } else {
       throw new Error("Unsupported document type");
     }
