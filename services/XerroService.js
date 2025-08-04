@@ -22,12 +22,12 @@ const parsedTenantId = parsedTenantObj.tenantId || parsedTenantObj.id;
 //   xero.setTenantId(parsedTenantId);
 
   // 🔁 Refresh token if expired
-  if (xero.isTokenExpired()) {
+//   if (xero.isTokenExpired()) {
     const newTokenSet = await xero.refreshToken();
     xero.setTokenSet(newTokenSet);
     user.xeroToken =JSON.stringify(newTokenSet)
     await user.save();
-  }
+//   }
 
   try {
     let response;
