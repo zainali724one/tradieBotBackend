@@ -11,6 +11,7 @@ const nodemailer = require("nodemailer");
 const fs = require("fs");
 // const sendWhatsAppMessage = require("../services/twillioService");
 const { sendWhatsApp } = require("../services/VonageService");
+const { createXeroDocumentForUser } = require("../services/XerroService");
 
 exports.addInvoice = catchAsyncError(async (req, res, next) => {
   const {
@@ -146,6 +147,15 @@ await sendWhatsApp(customerPhone, messageBody)
     new Date().toLocaleString("default", { month: "long" }),
     "Invoices"
   );
+
+
+  await createXeroDocumentForUser(userId, {customerName,
+      jobDescription,
+      invoiceAmount,
+      customerEmail,
+      telegramId,
+      customerPhone,
+      userId,}, "invoice")
 
   // Send Email
   const transporter = nodemailer.createTransport({
