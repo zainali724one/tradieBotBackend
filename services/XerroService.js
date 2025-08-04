@@ -39,7 +39,7 @@ if (!tokenSet?.refresh_token) {
     let response;
 
     if (type === "invoice") {
-      response = await xero.accountingApi.createInvoices(parsedTenantId, { invoices: [data] });
+      response = await xero.accountingApi.createInvoices(parsedTenantId, data);
     } else if (type === "quote") {
       response = await xero.accountingApi.createQuotes(parsedTenantId, { quotes: [data] });
     } else {
