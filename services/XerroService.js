@@ -1,7 +1,7 @@
 // services/xeroService.ts
 
-import { User } from "../models/User"; 
-import { xero } from "./XeroClient"; 
+const User = require("../models/User");
+const xero = require("./XeroClient");
 
 export async function createXeroDocumentForUser(userId, data, type) {
   if (!userId || !data || !type) {
