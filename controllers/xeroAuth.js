@@ -31,11 +31,11 @@ console.log("after updateTenants")
 console.log(tokenSet,tokenSet,"these are required")
     // Save the tokenSet & tenantId in your database against the user
     await User.findByIdAndUpdate(state, {
-      xeroToken: tokenSet,
-      tenantId: tenantId,
+      xeroToken:JSON.stringify(tokenSet),
+      tenantId: JSON.stringify(tenantId),
     });
 
-    res.redirect("https://your-frontend-url.com/xeroconnected");
+    res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected")
   } catch (error) {
     console.error("Xero callback error", error);
     console.log(req.query.state,"req.query.state")
@@ -44,7 +44,7 @@ console.log(tokenSet,tokenSet,"these are required")
 
 
 
-  res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected"); // redirect to frontend
+  ; // redirect to frontend
 })
 
 
