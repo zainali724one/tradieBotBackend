@@ -148,14 +148,32 @@ await sendWhatsApp(customerPhone, messageBody)
     "Invoices"
   );
 
+const invoiceData = {
+  Type: "ACCREC",
+  Contact: {
+    Name: customerName,
+    EmailAddress: customerEmail,
+    Phones: [
+      {
+        PhoneType: "DEFAULT",
+        PhoneNumber: customerPhone || "0000000000"
+      }
+    ]
+  },
+  LineItems: [
+    {
+      Description: jobDescription || "Service Description",
+      Quantity: 1,
+      UnitAmount: parseFloat(invoiceAmount),
+      AccountCode: "200" // Make sure this is valid in your Xero chart of accounts
+    }
+  ],
+  Date: new Date().toISOString().split("T")[0],       // today
+  DueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0], // in 7 days
+  Status: "AUTHORISED" // or "DRAFT"
+}
 
-  await createXeroDocumentForUser(userId, {customerName,
-      jobDescription,
-      invoiceAmount,
-      customerEmail,
-      telegramId,
-      customerPhone,
-      userId,}, "invoice")
+  await createXeroDocumentForUser(userId,invoiceData , "invoice")
 
   // Send Email
   const transporter = nodemailer.createTransport({
