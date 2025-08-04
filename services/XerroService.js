@@ -19,7 +19,7 @@ export async function createXeroDocumentForUser(userId, data, type) {
   const parsedTenantObj = JSON.parse(user.tenantId);
 const parsedTenantId = parsedTenantObj.tenantId || parsedTenantObj.id;
   xero.setTokenSet(tokenSet);
-  xero.setTenantId(parsedTenantId);
+//   xero.setTenantId(parsedTenantId);
 
   // 🔁 Refresh token if expired
   if (xero.isTokenExpired()) {
@@ -33,9 +33,9 @@ const parsedTenantId = parsedTenantObj.tenantId || parsedTenantObj.id;
     let response;
 
     if (type === "invoice") {
-      response = await xero.accountingApi.createInvoices(user.tenantId, { invoices: [data] });
+      response = await xero.accountingApi.createInvoices(user.parsedTenantId, { invoices: [data] });
     } else if (type === "quote") {
-      response = await xero.accountingApi.createQuotes(user.tenantId, { quotes: [data] });
+      response = await xero.accountingApi.createQuotes(user.parsedTenantId, { quotes: [data] });
     } else {
       throw new Error("Unsupported document type");
     }
