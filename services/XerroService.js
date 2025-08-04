@@ -15,6 +15,9 @@ export async function createXeroDocumentForUser(userId, data, type) {
 
   // Set user token and tenant in xero instance
 
+
+   await xero.initialize();
+
   const tokenSet = JSON.parse(user.xeroToken);
   const parsedTenantObj = JSON.parse(user.tenantId);
 const parsedTenantId = parsedTenantObj.tenantId || parsedTenantObj.id;
