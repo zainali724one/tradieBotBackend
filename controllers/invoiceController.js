@@ -199,7 +199,7 @@ const invoicesPayload = {
     from: "UK Tradie Bot",
     to: customerEmail,
     subject: "Your Invoice from UK Tradie",
-    text: "Please find your quote attached.",
+    text: "Please find your invoice attached.",
     attachments: [
       {
         filename: `Invoice_${newInvoice._id}.pdf`,
