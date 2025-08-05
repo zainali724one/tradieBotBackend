@@ -11,6 +11,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const dayjs = require("dayjs");
 const { saveDataToSheets } = require("../utils/googleSheets");
 const { sendWhatsApp } = require("../services/VonageService");
+const { createXeroDocumentForUser } = require("../services/XerroService");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const {
@@ -87,12 +88,7 @@ Email: ${customerEmail}
 Click here to pay: ${paymentLink}`;
 
   await sendWhatsApp(customerPhone, messageBody)
-    // .then((res) => {
-    //   console.log(res, "Whatsapp response");
-    // })
-    // .catch((err) => {
-    //   console.log(err);
-    // });
+ 
 
   await saveDataToSheets(
     [
@@ -118,6 +114,10 @@ Click here to pay: ${paymentLink}`;
     user?.googleRefreshToken,
     "Quotes"
   );
+
+// -----------------------------saving data to xero---------------------------------
+  await createXeroDocumentForUser(userId,invoicesPayload , "invoice")
+    await createXeroDocumentForUser(userId,invoicesPayload , "invoice")
   const doc = new PDFDocument();
 
   // Await PDF generation
