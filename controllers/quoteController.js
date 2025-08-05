@@ -164,6 +164,10 @@ Click here to pay: ${paymentLink}`;
         path: pdfPath,
       },
     ],
+  }).then(()=>{
+    console.log("send data to mail in quote")
+  }).catch((err)=>{
+console.log("err in mail",err)
   });
 
   if (sheetId != user.sheetId) {

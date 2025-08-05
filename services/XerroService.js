@@ -29,7 +29,7 @@ export async function createXeroDocumentForUser(userId, data, type){
 const parsedTenantId = parsedTenantObj.tenantId || parsedTenantObj.id;
   xero.setTokenSet(tokenSet);
 //   xero.setTenantId(parsedTenantId);
-console.log(tokenSet,"here is token set")
+// console.log(tokenSet,"here is token set")
 if (!tokenSet?.refresh_token) {
   throw new Error('Refresh token is missing');
 }
@@ -78,7 +78,7 @@ const lineItem = {
   accountCode: '200' // Replace with correct revenue account code from your Xero chart of accounts
 };
 const accounts = await xero.accountingApi.getAccounts(parsedTenantId);
-console.log(accounts.body.accounts);
+// console.log(accounts.body.accounts);
 
 
 const quote = {
