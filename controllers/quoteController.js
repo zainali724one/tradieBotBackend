@@ -134,9 +134,9 @@ Click here to pay: ${paymentLink}`;
     doc.text(`Quote Amount: $${quoteAmount}`);
     doc.text(`Email: ${customerEmail}`);
     doc.moveDown();
-    doc
-      .fillColor("blue")
-      .text("Click here to pay", { link: paymentLink, underline: true });
+    // doc
+    //   .fillColor("blue")
+    //   .text("Click here to pay", { link: paymentLink, underline: true });
     doc.end();
 
     stream.on("finish", resolve);
@@ -157,12 +157,12 @@ Click here to pay: ${paymentLink}`;
     to: customerEmail,
     subject: "Your Quote from UK Tradie",
     text: "Please find your quote attached.",
-    // attachments: [
-    //   {
-    //     filename: `Quote_${newQuote._id}.pdf`,
-    //     path: pdfPath,
-    //   },
-    // ],
+    attachments: [
+      {
+        filename: `Quote_${newQuote._id}.pdf`,
+        path: pdfPath,
+      },
+    ],
   }).then(()=>{
     console.log("send data to mail in quote")
   }).catch((err)=>{
