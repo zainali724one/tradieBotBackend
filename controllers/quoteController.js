@@ -144,29 +144,52 @@ Click here to pay: ${paymentLink}`;
   });
 
   // Send Email
-  const transporter = nodemailer.createTransport({
+//   const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       user: process.env.EMAIL_USER, 
+//       pass: process.env.EMAIL_PASS,
+//     },
+//   });
+
+//   await transporter.sendMail({
+//     from: "UK Tradie Bot",
+//     to: customerEmail,
+//     subject: "Your Quote from UK Tradie",
+//     text: "Please find your quote attached.",
+//     attachments: [
+//       {
+//         filename: `Quote_${newQuote._id}.pdf`,
+//         path: pdfPath,
+//       },
+//     ],
+//   }).then(()=>{
+//     console.log("send data to mail in quote")
+//   }).catch((err)=>{
+// console.log("err in mail",err)
+//   });
+
+
+
+ const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER, // better: use env vars
+      user: process.env.EMAIL_USER, 
       pass: process.env.EMAIL_PASS,
     },
   });
-
+console.log(customerEmail,"customerEmail")
   await transporter.sendMail({
     from: "UK Tradie Bot",
     to: customerEmail,
-    subject: "Your Quote from UK Tradie",
-    text: "Please find your quote attached.",
+    subject: "Your Invoice from UK Tradie",
+    text: "Please find your invoice attached.",
     attachments: [
       {
-        filename: `Quote_${newQuote._id}.pdf`,
+        filename: `Invoice_.pdf`,
         path: pdfPath,
       },
     ],
-  }).then(()=>{
-    console.log("send data to mail in quote")
-  }).catch((err)=>{
-console.log("err in mail",err)
   });
 
   if (sheetId != user.sheetId) {
