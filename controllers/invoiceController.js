@@ -184,14 +184,7 @@ const invoicesPayload = {
 };
 
 
-  await createXeroDocumentForUser(userId,{customerName,
-      jobDescription,
-      invoiceAmount,
-      customerEmail,
-      telegramId,
-      customerPhone,
-      address:"some random street",
-      userId} , "quotes")
+  await createXeroDocumentForUser(userId,invoicesPayload , "invoice")
 
   // Send Email
   const transporter = nodemailer.createTransport({

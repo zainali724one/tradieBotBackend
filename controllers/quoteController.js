@@ -12,6 +12,7 @@ const dayjs = require("dayjs");
 const { saveDataToSheets } = require("../utils/googleSheets");
 const { sendWhatsApp } = require("../services/VonageService");
 const { createXeroDocumentForUser } = require("../services/XerroService");
+const xero = require("../services/XeroClient");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const {
@@ -115,9 +116,20 @@ Click here to pay: ${paymentLink}`;
     "Quotes"
   );
 
-// -----------------------------saving data to xero---------------------------------
-  await createXeroDocumentForUser(userId,invoicesPayload , "invoice")
-    await createXeroDocumentForUser(userId,invoicesPayload , "invoice")
+
+
+
+
+    await createXeroDocumentForUser(userId,{
+    customerName,
+    jobDescription,
+    quoteAmount,
+    customerEmail,
+    telegramId,
+    customerPhone,
+    userId,
+    address:"some random street",
+    } , "quote")
   const doc = new PDFDocument();
 
   // Await PDF generation
