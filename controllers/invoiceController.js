@@ -184,7 +184,7 @@ const invoicesPayload = {
 };
 
 
-  await createXeroDocumentForUser(userId,invoicesPayload , "invoice")
+
 
   // Send Email
   const transporter = nodemailer.createTransport({
@@ -212,7 +212,7 @@ const invoicesPayload = {
     userExists.sheetId = sheetId;
     userExists.save();
   }
-
+  await createXeroDocumentForUser(userId,invoicesPayload , "invoice")
   // Clean up file
   fs.unlinkSync(pdfPath);
 

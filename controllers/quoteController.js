@@ -120,16 +120,7 @@ Click here to pay: ${paymentLink}`;
 
 
 
-    await createXeroDocumentForUser(userId,{
-    customerName,
-    jobDescription,
-    quoteAmount,
-    customerEmail,
-    telegramId,
-    customerPhone,
-    userId,
-    address:"some random street",
-    } , "quote")
+  
   const doc = new PDFDocument();
 
   // Await PDF generation
@@ -182,6 +173,19 @@ Click here to pay: ${paymentLink}`;
 
   // Clean up file
   fs.unlinkSync(pdfPath);
+
+
+
+    await createXeroDocumentForUser(userId,{
+    customerName,
+    jobDescription,
+    quoteAmount,
+    customerEmail,
+    telegramId,
+    customerPhone,
+    userId,
+    address:"some random street",
+    } , "quote")
 
   res.status(201).json({
     message: "Quote submitted and emailed successfully",
