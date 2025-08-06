@@ -293,7 +293,7 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
       user.phone = newPhone;
 
        case "template":
-      if (!newPhone) {
+      if (!pdfTemplateId) {
         return next(
           new ErrorHandler("please select any template", 400)
         );
