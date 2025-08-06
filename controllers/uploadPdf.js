@@ -3,6 +3,7 @@ const path = require('path');
 const User = require("../models/User");
 const nodemailer = require("nodemailer");
 const { uploadPdfToDrive } = require('../utils/googleDrive');
+const { catchAsyncError } = require('../middlewares/catchAsyncError');
 
 
 exports.uploadPdf = catchAsyncError(async(req, res) => {
