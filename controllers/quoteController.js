@@ -79,7 +79,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   const pdfPath = path.join(tempDir, `quote_${newQuote._id}.pdf`);
   const paymentLink = `https://peppy-swan-6fdd72.netlify.app/pay/quote/${newQuote._id}`;
 
-  const messageBody = `
+  const messageBody=`
 You have received a quote from UK Tradie Bot
 Customer Name: ${customerName}
 Job: ${jobDescription}
@@ -123,51 +123,47 @@ Click here to pay: ${paymentLink}`;
   const doc = new PDFDocument();
 
   // Await PDF generation
-  await new Promise((resolve, reject) => {
-    const stream = fs.createWriteStream(pdfPath);
-    doc.pipe(stream);
+//   await new Promise((resolve, reject) => {
+//     const stream = fs.createWriteStream(pdfPath);
+//     doc.pipe(stream);
 
-    doc.fontSize(18).text("Quote Summary", { underline: true });
-    doc.moveDown();
-    doc.fontSize(12).text(`Customer Name: ${customerName}`);
-    doc.text(`Job Description: ${jobDescription}`);
-    doc.text(`Quote Amount: $${quoteAmount}`);
-    doc.text(`Email: ${customerEmail}`);
-    doc.moveDown();
-    // doc
-    //   .fillColor("blue")
-    //   .text("Click here to pay", { link: paymentLink, underline: true });
-    doc.end();
+//     doc.fontSize(18).text("Quote Summary", { underline: true });
+//     doc.moveDown();
+//     doc.fontSize(12).text(`Customer Name: ${customerName}`);
+//     doc.text(`Job Description: ${jobDescription}`);
+//     doc.text(`Quote Amount: $${quoteAmount}`);
+//     doc.text(`Email: ${customerEmail}`);
+//     doc.moveDown();
+//     doc.end();
 
-    stream.on("finish", resolve);
-    stream.on("error", reject);
-  });
+//     stream.on("finish", resolve);
+//     stream.on("error", reject);
+//   });
 
-  // Send Email
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER, 
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+//   const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       user: process.env.EMAIL_USER, 
+//       pass: process.env.EMAIL_PASS,
+//     },
+//   });
 
-  await transporter.sendMail({
-    from: "UK Tradie Bot",
-    to: customerEmail,
-    subject: "Your Quote from UK Tradie",
-    text: "Please find your quote attached.",
-    attachments: [
-      {
-        filename: `Quote_${newQuote._id}.pdf`,
-        path: pdfPath,
-      },
-    ],
-  }).then(()=>{
-    console.log("send data to mail in quote")
-  }).catch((err)=>{
-console.log("err in mail",err)
-  });
+//   await transporter.sendMail({
+//     from: "UK Tradie Bot",
+//     to: customerEmail,
+//     subject: "Your Quote from UK Tradie",
+//     text: "Please find your quote attached.",
+//     attachments: [
+//       {
+//         filename: `Quote_${newQuote._id}.pdf`,
+//         path: pdfPath,
+//       },
+//     ],
+//   }).then(()=>{
+//     console.log("send data to mail in quote")
+//   }).catch((err)=>{
+// console.log("err in mail",err)
+//   });
 
   if (sheetId != user.sheetId) {
     user.sheetId = sheetId;
@@ -175,7 +171,7 @@ console.log("err in mail",err)
   }
 
   // Clean up file
-  fs.unlinkSync(pdfPath);
+  // fs.unlinkSync(pdfPath);
 
 
 
@@ -192,7 +188,17 @@ console.log("err in mail",err)
 
   res.status(201).json({
     message: "Quote submitted and emailed successfully",
-    quote: newQuote,
+    data: {
+    customerName,
+    jobDescription,
+    ammount:quoteAmount,
+    customerEmail,
+    telegramId,
+    customerPhone,
+    userId,
+    paymentUrl:paymentLink,
+    companyLogo:user?.companyLogo || ""
+  },
   });
 });
 

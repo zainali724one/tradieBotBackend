@@ -29,6 +29,12 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     sheetId,
   } = req.body;
 
+
+   const user = await User.findOne({ telegramId });
+    if (!user) {
+      return next(new ErrorHandler("User not found for this telegramId", 404));
+    }
+
   const isEmpty = (value) => !value || value.trim() === "";
 
   if (isEmpty(userId))
@@ -118,37 +124,37 @@ await sendWhatsApp(customerPhone, messageBody)
     "Invoices"
   );
 
-  const doc = new PDFDocument();
+  // const doc = new PDFDocument();
 
 
-  await new Promise((resolve, reject) => {
-    const stream = fs.createWriteStream(pdfPath);
-    doc.pipe(stream);
+  // await new Promise((resolve, reject) => {
+  //   const stream = fs.createWriteStream(pdfPath);
+  //   doc.pipe(stream);
 
-    doc.fontSize(18).text("Invoice Summary", { underline: true });
-    doc.moveDown();
-    doc.fontSize(12).text(`Customer Name: ${customerName}`);
-    doc.text(`Job Description: ${jobDescription}`);
-    doc.text(`Amount: $${invoiceAmount}`);
-    doc.text(`Email: ${customerEmail}`);
-    doc.moveDown();
-    doc.end();
+  //   doc.fontSize(18).text("Invoice Summary", { underline: true });
+  //   doc.moveDown();
+  //   doc.fontSize(12).text(`Customer Name: ${customerName}`);
+  //   doc.text(`Job Description: ${jobDescription}`);
+  //   doc.text(`Amount: $${invoiceAmount}`);
+  //   doc.text(`Email: ${customerEmail}`);
+  //   doc.moveDown();
+  //   doc.end();
 
-    stream.on("finish", resolve);
-    stream.on("error", reject);
-  });
+  //   stream.on("finish", resolve);
+  //   stream.on("error", reject);
+  // });
 
-  await uploadPdfToDrive(
-    {
-      accessToken: userExists.googleAccessToken,
-      refreshToken: userExists.googleRefreshToken,
-    },
-    pdfPath,
-    `Invoice_${newInvoice._id}.pdf`,
-    new Date().getFullYear(),
-    new Date().toLocaleString("default", { month: "long" }),
-    "Invoices"
-  );
+  // await uploadPdfToDrive(
+  //   {
+  //     accessToken: userExists.googleAccessToken,
+  //     refreshToken: userExists.googleRefreshToken,
+  //   },
+  //   pdfPath,
+  //   `Invoice_${newInvoice._id}.pdf`,
+  //   new Date().getFullYear(),
+  //   new Date().toLocaleString("default", { month: "long" }),
+  //   "Invoices"
+  // );
 
 
 
@@ -187,26 +193,26 @@ const invoicesPayload = {
 
 
   // Send Email
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER, 
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  // const transporter = nodemailer.createTransport({
+  //   service: "gmail",
+  //   auth: {
+  //     user: process.env.EMAIL_USER, 
+  //     pass: process.env.EMAIL_PASS,
+  //   },
+  // });
 
-  await transporter.sendMail({
-    from: "UK Tradie Bot",
-    to: customerEmail,
-    subject: "Your Invoice from UK Tradie",
-    text: "Please find your invoice attached.",
-    attachments: [
-      {
-        filename: `Invoice_${newInvoice._id}.pdf`,
-        path: pdfPath,
-      },
-    ],
-  });
+  // await transporter.sendMail({
+  //   from: "UK Tradie Bot",
+  //   to: customerEmail,
+  //   subject: "Your Invoice from UK Tradie",
+  //   text: "Please find your invoice attached.",
+  //   attachments: [
+  //     {
+  //       filename: `Invoice_${newInvoice._id}.pdf`,
+  //       path: pdfPath,
+  //     },
+  //   ],
+  // });
 
   if (sheetId != userExists.sheetId) {
     userExists.sheetId = sheetId;
@@ -214,12 +220,23 @@ const invoicesPayload = {
   }
   await createXeroDocumentForUser(userId,invoicesPayload , "invoice")
   // Clean up file
-  fs.unlinkSync(pdfPath);
+  // fs.unlinkSync(pdfPath);
 
   res.status(201).json({
     success: true,
     message: "Invoice created successfully",
-    invoice: newInvoice,
+    data: {
+    userId,
+    telegramId,
+    customerName,
+    jobDescription,
+    ammount:invoiceAmount,
+    customerEmail,
+    includeCost,
+    includeReceipt,
+    customerPhone,
+    companyLogo:user?.companyLogo ||""
+  },
   });
 });
 
