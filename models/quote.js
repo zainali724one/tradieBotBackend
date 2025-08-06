@@ -22,6 +22,7 @@ const quoteSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+      address: { type: String },
     telegramId: {
       type: String,
       required: true,

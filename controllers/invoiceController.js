@@ -22,6 +22,7 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     customerName,
     jobDescription,
     invoiceAmount,
+    address,
     customerEmail,
     includeCost,
     includeReceipt,
@@ -68,6 +69,7 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     customerEmail,
     includeCost,
     includeReceipt,
+    address,
     customerPhone,
   });
 
@@ -81,6 +83,7 @@ You have recieved the invoice by tradie bot
 Customer Name: ${customerName}
 Job: ${jobDescription}
 Amount: $${invoiceAmount}
+Address: ${address}
 Email: ${customerEmail}
 `;
 await sendWhatsApp(customerPhone, messageBody)
@@ -104,6 +107,7 @@ await sendWhatsApp(customerPhone, messageBody)
       customerName,
       jobDescription,
       invoiceAmount,
+      address,
       customerEmail,
       telegramId,
       customerPhone,
@@ -113,6 +117,7 @@ await sendWhatsApp(customerPhone, messageBody)
       "Customer Name",
       "Job",
       "Amount",
+      "Address",
       "Email",
       "Telegram ID",
       "Phone",
@@ -232,6 +237,7 @@ const invoicesPayload = {
     jobDescription,
     ammount:invoiceAmount,
     customerEmail,
+    address,
     includeCost,
     includeReceipt,
     customerPhone,

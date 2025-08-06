@@ -15,6 +15,7 @@ const jobRoutes = require("./routes/jobRoutes");
 const xeroRoutes = require("./routes/xeroRoutes");
 const stripeRoutes = require("./routes/stripeRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const uploadPdfRoutes = require("./routes/uploadPdfRoutes");
 const { sendWhatsApp } = require("./services/VonageService");
 const { verifyJWT } = require("./controllers/VonageWebhooks");
 
@@ -60,6 +61,7 @@ app.use(`/api/job`, jobRoutes);
 app.use(`/api/stripe`, stripeRoutes);
 app.use(`/api/admin`, adminRoutes);
 app.use(`/api`, xeroRoutes);
+app.use(`/api`, uploadPdfRoutes);
 app.post("/inbound", async (req, res) => {
 
 const { from: requesterNumber } = req.body;

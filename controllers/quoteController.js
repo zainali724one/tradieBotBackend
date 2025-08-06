@@ -19,6 +19,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     jobDescription,
     quoteAmount,
     customerEmail,
+    address,
     telegramId,
     userId,
     customerPhone,
@@ -32,6 +33,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     !customerEmail ||
     !telegramId ||
     !userId ||
+    !address ||
     !customerPhone ||
     !sheetId
   ) {
@@ -49,6 +51,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     quoteAmount,
     customerEmail,
     telegramId,
+    address,
     customerPhone,
     userId,
   });
@@ -82,6 +85,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   const messageBody=`
 You have received a quote from UK Tradie Bot
 Customer Name: ${customerName}
+Address: ${address}
 Job: ${jobDescription}
 Amount: $${quoteAmount}
 Email: ${customerEmail}
@@ -95,6 +99,7 @@ Click here to pay: ${paymentLink}`;
       customerName,
       jobDescription,
       quoteAmount,
+      address,
       customerEmail,
       telegramId,
       customerPhone,
@@ -104,6 +109,7 @@ Click here to pay: ${paymentLink}`;
       "Customer Name",
       "Job",
       "Amount",
+      "Address",
       "Email",
       "Telegram ID",
       "Phone",
@@ -193,6 +199,7 @@ Click here to pay: ${paymentLink}`;
     jobDescription,
     ammount:quoteAmount,
     customerEmail,
+    address,
     telegramId,
     customerPhone,
     userId,

@@ -11,6 +11,7 @@ const invoiceSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+      address: { type: String },
     customerName: {
       type: String,
       required: true,
