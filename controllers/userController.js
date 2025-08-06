@@ -248,7 +248,7 @@ console.log("password updated")
 });
 
 exports.updateProfile = catchAsyncError(async (req, res, next) => {
-  const { id, type, name, oldEmail, newEmail, oldPhone, newPhone } = req.body;
+  const { id, type, name, oldEmail, newEmail , newPhone,pdfTemplateId } = req.body;
 
   if (!id) {
     return next(new ErrorHandler("User ID and type are required", 400));
@@ -290,10 +290,15 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
           new ErrorHandler("phone number is required", 400)
         );
       }
-      // if (user.phone !== oldPhone) {
-      //   return next(new ErrorHandler("Old phone number does not match", 400));
-      // }
       user.phone = newPhone;
+
+       case "template":
+      if (!newPhone) {
+        return next(
+          new ErrorHandler("please select any template", 400)
+        );
+      }
+      user.pdfTemplateId = pdfTemplateId;
       break;
 
     default:
