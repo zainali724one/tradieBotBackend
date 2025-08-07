@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
   tenantId:{ type: String },
   xeroRefreshToken:{ type: String },
   sheetId: { type: String },
+  companyLogo:{ type: String },
   pdfTemplateId: { type: String,default: "1" },
   isApproved: { type: String, default: "Pending" }, // New field added
 }, { timestamps: true });

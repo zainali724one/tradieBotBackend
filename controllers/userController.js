@@ -248,7 +248,7 @@ console.log("password updated")
 });
 
 exports.updateProfile = catchAsyncError(async (req, res, next) => {
-  const { id, type, name, oldEmail, newEmail , newPhone,pdfTemplateId } = req.body;
+  const { id, type, name, oldEmail, newEmail , newPhone,pdfTemplateId, companyLogo } = req.body;
 
   if (!id) {
     return next(new ErrorHandler("User ID and type are required", 400));
@@ -299,6 +299,15 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
         );
       }
       user.pdfTemplateId = pdfTemplateId;
+
+
+        case "logo":
+      if (!companyLogo) {
+        return next(
+          new ErrorHandler("company logo is required", 400)
+        );
+      }
+      user.companyLogo = companyLogo;
       break;
 
     default:
