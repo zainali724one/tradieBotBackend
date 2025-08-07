@@ -95,7 +95,7 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
   let pdfPath;
   try {
     // Use /tmp directory in Lambda, or local directory otherwise
-    const baseDir = process.env.LAMBDA_TASK_ROOT ? '/tmp' : path.join(__dirname, '../temp');
+    const baseDir =  '/tmp' 
     const dirPath = path.join(baseDir, pdfType);
     
     // Create directory if it doesn't exist
