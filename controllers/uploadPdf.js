@@ -16,6 +16,11 @@ exports.uploadPdf = catchAsyncError(async(req, res) => {
       return next(new ErrorHandler("No user found with this Telegram ID", 404));
     }
 
+const dirPath = path.join(__dirname, `../${pdfType}`);
+if (!fs.existsSync(dirPath)) {
+  fs.mkdirSync(dirPath, { recursive: true });
+}
+
 const pdfPath = path.join(__dirname, `../${pdfType}`, `${pdfType}_${Date.now()}.pdf`);
 fs.writeFileSync(pdfPath, req.file.buffer);
 
@@ -56,6 +61,8 @@ fs.writeFileSync(pdfPath, req.file.buffer);
       },
     ],
   });
+
+  fs.unlinkSync(pdfPath);
 
   res.status(200).json({ message: 'PDF received', size: pdfBuffer.length });
 } )
