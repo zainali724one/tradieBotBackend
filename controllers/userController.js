@@ -299,7 +299,7 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
         );
       }
       user.pdfTemplateId = pdfTemplateId;
-
+break;
 
         case "logo":
       if (!companyLogo) {
