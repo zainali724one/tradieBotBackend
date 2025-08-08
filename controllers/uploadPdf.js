@@ -81,7 +81,7 @@ const { ErrorHandler } = require('../utils/ErrorHandler');
 
 exports.uploadPdf = catchAsyncError(async (req, res, next) => {
   const file = req.file;
-  const { telegramId, pdfType, customerEmail, customerName } = req.body;
+  const { telegramId, pdfType, customerEmail, customerName,amount,customerPhone,paymentUrl } = req.body;
   
   if (!file) {
     return next(new ErrorHandler('No file uploaded', 400));
@@ -137,7 +137,11 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
       from: "UK Tradie Bot",
       to: customerEmail,
       subject: `Your ${pdfType === "invoice" ? "Invoice" : "Quote"} from UK Tradie`,
-      text: `Please find your ${pdfType} attached.`,
+      text: `Please find your ${pdfType} attached.
+Customer Name: ${customerName}
+Amount: $${amount}
+Email: ${customerEmail}
+${pdfType === "invoice" ? "":`Click here to pay: ${paymentLink}`}`,
       attachments: [
         {
           filename: fileName,

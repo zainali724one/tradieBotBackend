@@ -3,12 +3,12 @@ const User = require("../models/User");
 const xero = require("../services/XeroClient");
 
 exports.getConsentUrl = catchAsyncError(async (req, res, next) => {
-  // const { userId } = req.query;
+  const { userId } = req.query;
   // const userId="6868056c5717c3a1bc283e1d"
   const url = await xero.buildConsentUrl();
   // res.send({ url });
 
-  const modifiedUrl = `${url}&state=6868056c5717c3a1bc283e1d`;
+  const modifiedUrl = `${url}&state=${userId}`;
   res.send({ url: modifiedUrl });
 })
 
