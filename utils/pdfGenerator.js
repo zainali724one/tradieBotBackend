@@ -275,7 +275,7 @@ await transporter.sendMail({
     // res.send(pdf);
 
   } catch (error) {
-    console.error(error);
+    console.error(error,"error");
     res.status(500).send("Error generating PDF");
   }
 }
