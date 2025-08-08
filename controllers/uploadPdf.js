@@ -145,6 +145,10 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
           contentType: 'application/pdf'
         },
       ],
+    }).then((res)=>{
+console.log(res,"emailed")
+    }).catch((err)=>{
+console.log(err)
     });
 
     res.status(200).json({ 
