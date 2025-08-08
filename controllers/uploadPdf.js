@@ -137,11 +137,7 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
       from: "UK Tradie Bot",
       to: customerEmail,
       subject: `Your ${pdfType === "invoice" ? "Invoice" : "Quote"} from UK Tradie`,
-      text: `Please find your ${pdfType} attached.
-Customer Name: ${customerName}
-Amount: $${amount}
-Email: ${customerEmail}
-${pdfType === "invoice" ? "":`Click here to pay: ${paymentUrl}`}`,
+      text: `Please find your ${pdfType} attached.`,
       attachments: [
         {
           filename: fileName,
