@@ -7,7 +7,7 @@ const { saveDataToSheets } = require("../utils/googleSheets");
 const { uploadPdfToDrive } = require("../utils/googleDrive");
 const path = require("path");
 const PDFDocument = require("pdfkit");
-const nodemailer = require("nodemailer");
+
 const fs = require("fs");
 // const sendWhatsAppMessage = require("../services/twillioService");
 const { sendWhatsApp } = require("../services/VonageService");
@@ -148,19 +148,20 @@ await sendWhatsApp(customerPhone, messageBody)
   //   stream.on("finish", resolve);
   //   stream.on("error", reject);
   // });
-
-  // await uploadPdfToDrive(
-  //   {
-  //     accessToken: userExists.googleAccessToken,
-  //     refreshToken: userExists.googleRefreshToken,
-  //   },
-  //   pdfPath,
-  //   `Invoice_${newInvoice._id}.pdf`,
-  //   new Date().getFullYear(),
-  //   new Date().toLocaleString("default", { month: "long" }),
-  //   "Invoices"
-  // );
-
+await generatePDF({
+    userId,
+    telegramId,
+    customerName,
+    jobDescription,
+    amount:invoiceAmount,
+    customerEmail,
+    address,
+    includeCost,
+    includeReceipt,
+    customerPhone,
+    companyLogo:user?.companyLogo ||"",
+    type:"invoice"
+  }, userExists?.pdfTemplateId,"invoice",userExists)
 
 
 const invoicesPayload = {
@@ -197,27 +198,6 @@ const invoicesPayload = {
 
 
 
-  // Send Email
-  // const transporter = nodemailer.createTransport({
-  //   service: "gmail",
-  //   auth: {
-  //     user: process.env.EMAIL_USER, 
-  //     pass: process.env.EMAIL_PASS,
-  //   },
-  // });
-
-  // await transporter.sendMail({
-  //   from: "UK Tradie Bot",
-  //   to: customerEmail,
-  //   subject: "Your Invoice from UK Tradie",
-  //   text: "Please find your invoice attached.",
-  //   attachments: [
-  //     {
-  //       filename: `Invoice_${newInvoice._id}.pdf`,
-  //       path: pdfPath,
-  //     },
-  //   ],
-  // });
 
   if (sheetId != userExists.sheetId) {
     userExists.sheetId = sheetId;

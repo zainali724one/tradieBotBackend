@@ -12,6 +12,7 @@ const dayjs = require("dayjs");
 const { saveDataToSheets } = require("../utils/googleSheets");
 const { sendWhatsApp } = require("../services/VonageService");
 const { createXeroDocumentForUser } = require("../services/XerroService");
+const { default: generatePDF } = require("../utils/pdfGenerator");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const {
@@ -170,6 +171,21 @@ Click here to pay: ${paymentLink}`;
 //   }).catch((err)=>{
 // console.log("err in mail",err)
 //   });
+
+
+await generatePDF({
+    customerName,
+    jobDescription,
+    amount:quoteAmount,
+    customerEmail,
+    address,
+    telegramId,
+    customerPhone,
+    userId,
+    paymentUrl:paymentLink,
+    companyLogo:user?.companyLogo || "",
+    type:"quote"
+  }, userExists?.pdfTemplateId,"quote",userExists)
 
   if (sheetId != user.sheetId) {
     user.sheetId = sheetId;
