@@ -141,7 +141,7 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
 Customer Name: ${customerName}
 Amount: $${amount}
 Email: ${customerEmail}
-${pdfType === "invoice" ? "":`Click here to pay: ${paymentLink}`}`,
+${pdfType === "invoice" ? "":`Click here to pay: ${paymentUrl}`}`,
       attachments: [
         {
           filename: fileName,
