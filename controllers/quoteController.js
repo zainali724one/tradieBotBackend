@@ -185,7 +185,7 @@ await generatePDF({
     paymentUrl:paymentLink,
     companyLogo:user?.companyLogo || "",
     type:"quote"
-  }, userExists?.pdfTemplateId,"quote",userExists)
+  }, user?.pdfTemplateId,"quote",user)
 
   if (sheetId != user.sheetId) {
     user.sheetId = sheetId;
