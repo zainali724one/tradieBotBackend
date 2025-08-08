@@ -91,7 +91,7 @@ Amount: $${quoteAmount}
 Email: ${customerEmail}
 Click here to pay: ${paymentLink}`;
 
-  await sendWhatsApp(customerPhone, messageBody)
+  // await sendWhatsApp(customerPhone, messageBody)
  
 
   await saveDataToSheets(
@@ -181,16 +181,16 @@ Click here to pay: ${paymentLink}`;
 
 
 
-    // await createXeroDocumentForUser(userId,{
-    // customerName,
-    // jobDescription,
-    // quoteAmount,
-    // customerEmail,
-    // telegramId,
-    // customerPhone,
-    // userId,
-    // address:"some random street",
-    // } , "quote")
+    await createXeroDocumentForUser(userId,{
+    customerName,
+    jobDescription,
+    quoteAmount,
+    customerEmail,
+    telegramId,
+    customerPhone,
+    userId,
+    adress:address,
+    } , "quote")
 
   res.status(201).json({
     message: "Quote submitted and emailed successfully",
