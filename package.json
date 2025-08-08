@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@sparticuz/chromium": "github:sparticuz/chromium",
+    "@sparticuz/chromium-min": "^138.0.2",
     "@vonage/jwt": "^1.11.0",
     "@vonage/messages": "^1.20.1",
     "@vonage/server-sdk": "^3.22.1",
