@@ -12,7 +12,7 @@ const dayjs = require("dayjs");
 const { saveDataToSheets } = require("../utils/googleSheets");
 const { sendWhatsApp } = require("../services/VonageService");
 const { createXeroDocumentForUser } = require("../services/XerroService");
-const { default: generatePDF } = require("../utils/pdfGenerator");
+// const { default: generatePDF } = require("../utils/pdfGenerator");
 
 exports.addQuote = catchAsyncError(async (req, res, next) => {
   const {
