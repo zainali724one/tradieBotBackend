@@ -111,7 +111,7 @@ const Chromium = require("@sparticuz/chromium");
     const browser = await puppeteer.launch({
       args: Chromium.args,
       defaultViewport: Chromium.defaultViewport,
-      executablePath: await Chromium.executablePath,
+      executablePath: await Chromium.executablePath(),
       headless: Chromium.headless,
     });
 
