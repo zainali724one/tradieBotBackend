@@ -139,7 +139,7 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
       subject: `Your ${pdfType === "invoice" ? "Invoice" : "Quote"} from UK Tradie`,
       text: `Please find your ${pdfType} attached.
        Thank you for chosing us for your for the servicr
-       here is the link to pay via stripe`,
+       here is the link to pay via stripe: ${paymentUrl}`,
       // attachments: [
       //   {
       //     filename: fileName,
