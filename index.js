@@ -26,6 +26,7 @@ const allowedOrigins = [
   "https://peppy-swan-6fdd72.netlify.app",
   "http://localhost:5173",
   "https://tradiebot-admin-panel.netlify.app",
+  "https://uktradie.netlify.app"
 ];
 
 app.use(
