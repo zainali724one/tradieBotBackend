@@ -173,19 +173,19 @@ Click here to pay: ${paymentLink}`;
 //   });
 
 
-await generatePDF({
-    customerName,
-    jobDescription,
-    amount:quoteAmount,
-    customerEmail,
-    address,
-    telegramId,
-    customerPhone,
-    userId,
-    paymentUrl:paymentLink,
-    companyLogo:user?.companyLogo || "",
-    type:"quote"
-  }, user?.pdfTemplateId,"quote",user)
+// await generatePDF({
+//     customerName,
+//     jobDescription,
+//     amount:quoteAmount,
+//     customerEmail,
+//     address,
+//     telegramId,
+//     customerPhone,
+//     userId,
+//     paymentUrl:paymentLink,
+//     companyLogo:user?.companyLogo || "",
+//     type:"quote"
+//   }, user?.pdfTemplateId,"quote",user)
 
   if (sheetId != user.sheetId) {
     user.sheetId = sheetId;
