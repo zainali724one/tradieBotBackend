@@ -154,14 +154,7 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
 //     });
 
 
-
-
-
-await transporter.sendMail({
-  from: "UK Tradie Bot", // Better to include email in from
-  to: customerEmail,
-  subject: `Your ${pdfType === "invoice" ? "Invoice" : "Quote"} from UK Tradie`,
-  html: `
+const quoteHtml=`
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
       <p>Dear Customer,</p>
       <p>Please find your ${pdfType} attached.</p>
@@ -175,11 +168,29 @@ await transporter.sendMail({
           Pay Now
         </a>
       </p>
-      <p>If the button above doesn’t work, copy and paste this link into your browser:</p>
-     
-      <p>Best regards,<br>UK Tradie Bot</p>
     </div>
-  `,
+  `
+
+  const invoiceHtml=`
+    <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
+      <p>Dear Customer,</p>
+      <p>Please find your ${pdfType} attached.</p>
+    </div>
+  `
+
+
+await transporter.sendMail({
+  from: "UK Tradie Bot", // Better to include email in from
+  to: customerEmail,
+  subject: `Your ${pdfType === "invoice" ? "Invoice" : "Quote"} from UK Tradie`,
+  html: pdfType === "invoice" ?invoiceHtml:quoteHtml ,
+   attachments: [
+        {
+          filename: fileName,
+          path: pdfPath,
+          contentType: 'application/pdf'
+        },
+      ],
 });
 
 
