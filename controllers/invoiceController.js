@@ -151,20 +151,20 @@ await sendWhatsApp(customerPhone, messageBody)
   //   stream.on("finish", resolve);
   //   stream.on("error", reject);
   // });
-await generatePDF({
-    userId,
-    telegramId,
-    customerName,
-    jobDescription,
-    amount:invoiceAmount,
-    customerEmail,
-    address,
-    includeCost,
-    includeReceipt,
-    customerPhone,
-    companyLogo:user?.companyLogo ||"",
-    type:"invoice"
-  }, userExists?.pdfTemplateId,"invoice",userExists)
+// await generatePDF({
+//     userId,
+//     telegramId,
+//     customerName,
+//     jobDescription,
+//     amount:invoiceAmount,
+//     customerEmail,
+//     address,
+//     includeCost,
+//     includeReceipt,
+//     customerPhone,
+//     companyLogo:user?.companyLogo ||"",
+//     type:"invoice"
+//   }, userExists?.pdfTemplateId,"invoice",userExists)
 
 
 const invoicesPayload = {
