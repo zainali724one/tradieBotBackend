@@ -11,10 +11,12 @@ const PDFDocument = require("pdfkit");
 const fs = require("fs");
 // const sendWhatsAppMessage = require("../services/twillioService");
 const { sendWhatsApp } = require("../services/VonageService");
-const { createXeroDocumentForUser } = require("../services/XerroService");
+
 // import { Invoice } from "xero-node";
 const { Invoice } = require('xero-node');
-const { default: generatePDF } = require("../utils/pdfGenerator");
+// const { default: generatePDF } = require("../utils/pdfGenerator");
+const { createXeroDocumentForUser } = require("../services/XerroService");
+const generatePDF = require("../utils/pdfGenerator");
 
 exports.addInvoice = catchAsyncError(async (req, res, next) => {
   const {

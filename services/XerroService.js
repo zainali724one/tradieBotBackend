@@ -3,7 +3,7 @@
 const User = require("../models/User");
 const xero = require("./XeroClient");
 
-export async function createXeroDocumentForUser(userId, data, type){
+ async function createXeroDocumentForUser(userId, data, type){
   if (!userId || !data || !type) {
     throw new Error("Missing required parameters");
   }
@@ -105,3 +105,6 @@ const quotes = {
     throw err;
   }
 }
+
+
+module.exports = {createXeroDocumentForUser}

@@ -98,19 +98,21 @@
 // };
 
 
-import puppeteer from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
-import { uploadPdfToDrive } from "./googleDrive";
+// import puppeteer from "puppeteer-core";
+// import chromium from "@sparticuz/chromium";
+// import { uploadPdfToDrive } from "./googleDrive";
 const nodemailer = require("nodemailer");
-// const { uploadPdfToDrive } = require('../utils/googleDrive');
+const puppeteer = require("puppeteer-core")
+const { uploadPdfToDrive } = require('../utils/googleDrive');
+const Chromium = require("@sparticuz/chromium");
 
-export default async function generatePDF(data, selectedTemplate,pdfType,userExists) {
+ async function generatePDF(data, selectedTemplate,pdfType,userExists) {
   try {
     const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
+      args: Chromium.args,
+      defaultViewport: Chromium.defaultViewport,
+      executablePath: await Chromium.executablePath,
+      headless: Chromium.headless,
     });
 
     const page = await browser.newPage();
@@ -279,4 +281,6 @@ await transporter.sendMail({
     // res.status(500).send("Error generating PDF");
   }
 }
+
+module.exports = generatePDF
 
