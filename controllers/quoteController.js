@@ -81,7 +81,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   // Use /tmp directory in Vercel
   const tempDir = "/tmp";
   const pdfPath = path.join(tempDir, `quote_${newQuote._id}.pdf`);
-  const paymentLink = `https://peppy-swan-6fdd72.netlify.app/pay/quote/${newQuote._id}`;
+  const paymentLink = `https://uktradie.netlify.app/pay/quote/${newQuote._id}`;
 
   const messageBody=`
 You have received a quote from UK Tradie Bot
