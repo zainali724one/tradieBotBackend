@@ -104,9 +104,11 @@
 const nodemailer = require("nodemailer");
 const puppeteer = require("puppeteer-core")
 const { uploadPdfToDrive } = require('../utils/googleDrive');
-const Chromium = require("@sparticuz/chromium");
+const { default: Chromium } = require("@sparticuz/chromium-min");
+// const Chromium = require("@sparticuz/chromium");
 
  async function generatePDF(data, selectedTemplate,pdfType,userExists) {
+  console.log(Chromium,"Chromium")
   try {
     const browser = await puppeteer.launch({
       args: Chromium.args,
