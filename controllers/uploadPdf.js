@@ -133,13 +133,13 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
       },
     });
 
-    await transporter.sendMail({
-      from: "UK Tradie Bot",
-      to: customerEmail,
-      subject: `Your ${pdfType === "invoice" ? "Invoice" : "Quote"} from UK Tradie`,
-      text: `Please find your ${pdfType} attached.
-       Thank you for chosing us for your for the servicr
-       here is the link to pay via stripe: ${paymentUrl}`,
+    // await transporter.sendMail({
+    //   from: "UK Tradie Bot",
+    //   to: customerEmail,
+    //   subject: `Your ${pdfType === "invoice" ? "Invoice" : "Quote"} from UK Tradie`,
+    //   text: `Please find your ${pdfType} attached.
+    //    Thank you for chosing us for your for the servicr
+    //    here is the link to pay via stripe: ${paymentUrl}`,
       // attachments: [
       //   {
       //     filename: fileName,
@@ -147,11 +147,46 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
       //     contentType: 'application/pdf'
       //   },
       // ],
-    }).then((res)=>{
-console.log(res,"emailed")
-    }).catch((err)=>{
-console.log(err)
-    });
+//     }).then((res)=>{
+// console.log(res,"emailed")
+//     }).catch((err)=>{
+// console.log(err)
+//     });
+
+
+
+
+
+await transporter.sendMail({
+  from: "UK Tradie Bot", // Better to include email in from
+  to: customerEmail,
+  subject: `Your ${pdfType === "invoice" ? "Invoice" : "Quote"} from UK Tradie`,
+  html: `
+    <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
+      <p>Dear Customer,</p>
+      <p>Please find your ${pdfType} attached.</p>
+      <p>Thank you for choosing us for your service.</p>
+      <p>Here is the link to pay via Stripe:</p>
+      <p>
+        <a href="${paymentUrl}" 
+           style="display: inline-block; padding: 10px 20px; 
+                  font-size: 16px; color: #fff; background-color: #28a745; 
+                  text-decoration: none; border-radius: 5px;">
+          Pay Now
+        </a>
+      </p>
+      <p>If the button above doesn’t work, copy and paste this link into your browser:</p>
+     
+      <p>Best regards,<br>UK Tradie Bot</p>
+    </div>
+  `,
+});
+
+
+
+
+
+    
 
     res.status(200).json({ 
       success: true,
