@@ -14,16 +14,18 @@ const FormData = require("form-data");
     if (!imageResponse.ok) {
       return res.status(400).json({ error: 'Failed to download image from Tensor Art' });
     }
-    const buffer = await imageResponse.arrayBuffer();
+    // const buffer = await imageResponse.arrayBuffer();
+     const blob = await imageResponse.blob();
 
     // 2️⃣ Prepare upload to your backend
     const formData = new FormData();
     formData.append('loginCode', loginCode);
     formData.append('op', 'file-upload');
-    formData.append('file', buffer, {
-      filename: `ai_image_${Date.now()}.png`,
-      contentType: 'image/png'
-    });
+    // formData.append('file', buffer, {
+    //   filename: `ai_image_${Date.now()}.png`,
+    //   contentType: 'image/png'
+    // });
+     formData.append('file', blob, `ai_image_${Date.now()}.png`);
 
     // 3️⃣ Upload to backend storage
     const uploadResponse = await fetch(apiUrl, {
