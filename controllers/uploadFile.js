@@ -1,5 +1,8 @@
-import fetch from 'node-fetch';
-import FormData from 'form-data';
+// import fetch from 'node-fetch';
+// import FormData from 'form-data';
+
+const FormData = require("form-data");
+const { default: fetch } = require("node-fetch");
 
  async function downloadAndUpload(req, res) {
   try {
