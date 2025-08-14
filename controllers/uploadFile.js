@@ -14,7 +14,7 @@ const FormData = require("form-data");
     if (!imageResponse.ok) {
       return res.status(400).json({ error: 'Failed to download image from Tensor Art' });
     }
-    const buffer = await imageResponse.buffer();
+    const buffer = await imageResponse.arrayBuffer();
 
     // 2️⃣ Prepare upload to your backend
     const formData = new FormData();
