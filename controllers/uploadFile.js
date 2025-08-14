@@ -31,7 +31,12 @@ const FormData = require("form-data");
     const uploadResponse = await fetch(apiUrl, {
       method: 'POST',
       body: formData
+    }).then(()=>{
+        console.log("uploaded")
+    }).catch((err)=>{
+console.log(err)
     });
+     console.log(imageUrl)
     let imageUrl = await uploadResponse.text();
     imageUrl = imageUrl?.replace(/^"|"$/g, '');
 
