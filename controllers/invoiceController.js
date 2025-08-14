@@ -218,7 +218,7 @@ const invoicesPayload = {
     telegramId,
     customerName,
     jobDescription,
-    ammount:invoiceAmount,
+    amount:invoiceAmount,
     customerEmail,
     address,
     includeCost,

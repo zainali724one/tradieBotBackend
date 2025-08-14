@@ -213,7 +213,7 @@ Click here to pay: ${paymentLink}`;
     data: {
     customerName,
     jobDescription,
-    ammount:quoteAmount,
+    amount:quoteAmount,
     customerEmail,
     address,
     telegramId,

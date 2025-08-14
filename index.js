@@ -16,6 +16,7 @@ const xeroRoutes = require("./routes/xeroRoutes");
 const stripeRoutes = require("./routes/stripeRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const uploadPdfRoutes = require("./routes/uploadPdfRoutes");
+const uploadFileRoutes = require("./routes/uploadFileRoutes");
 const { sendWhatsApp } = require("./services/VonageService");
 const { verifyJWT } = require("./controllers/VonageWebhooks");
 
@@ -26,7 +27,9 @@ const allowedOrigins = [
   "https://peppy-swan-6fdd72.netlify.app",
   "http://localhost:5173",
   "https://tradiebot-admin-panel.netlify.app",
-  "https://uktradie.netlify.app"
+  "https://uktradie.netlify.app",
+  "http://127.0.0.1:5501",
+  "https://letsgomanga.com"
 ];
 
 app.use(
@@ -62,7 +65,10 @@ app.use(`/api/job`, jobRoutes);
 app.use(`/api/stripe`, stripeRoutes);
 app.use(`/api/admin`, adminRoutes);
 app.use(`/api`, xeroRoutes);
-app.use(`/api`, uploadPdfRoutes);
+app.use(`/api`, uploadPdfRoutes)
+app.use(`/api`, uploadFileRoutes);
+// CLIENT_ID=832861452898-icpkrq7gi151jhb4h1ktqo26jqq214ql.apps.googleusercontent.com  testing only
+// CLIENT_SECRET=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
 app.post("/inbound", async (req, res) => {
 
 const { from: requesterNumber } = req.body;
