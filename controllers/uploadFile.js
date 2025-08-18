@@ -27,7 +27,7 @@ async function saveTensorArtImage(tensorArtUrl, fileName = "ai-image.png") {
 
     // 2. Upload it to Supabase Storage
     const { data, error } = await supabase.storage
-      .from("your-bucket-name") // 👈 replace with your bucket name
+      .from("aiGenImgs") // 👈 replace with your bucket name
       .upload(`ai-images/${fileName}`, buffer, {
         contentType: "image/png", // or "image/jpeg" if needed
         upsert: true,
