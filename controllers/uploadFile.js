@@ -1,54 +1,60 @@
-
-
 const FormData = require("form-data");
-;
 
- async function downloadAndUpload(req, res) {
+// import { createClient } from "@supabase/supabase-js";
+
+const { createClient } = require("@supabase/supabase-js");
+
+// 🔹 Your Supabase credentials
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+async function saveTensorArtImage(tensorArtUrl, fileName = "ai-image.png") {
   try {
-    const { tensorArtUrl, loginCode } = req.body;
-    const apiUrl = 'https://nftdata.lightningworks.io/creator/restapi';
-
-    // 1️⃣ Download image from Tensor Art
-    const imageResponse = await fetch(tensorArtUrl);
-    if (!imageResponse.ok) {
-      return res.status(400).json({ error: 'Failed to download image from Tensor Art' });
+    // 1. Download the image from TensorArt URL
+    const response = await fetch(tensorArtUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.statusText}`);
     }
-    // const buffer = await imageResponse.arrayBuffer();
-     const blob = await imageResponse.blob();
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    // 2️⃣ Prepare upload to your backend
-    const formData = new FormData();
-    formData.append('loginCode', loginCode);
-    formData.append('op', 'file-upload');
-    // formData.append('file', buffer, {
-    //   filename: `ai_image_${Date.now()}.png`,
-    //   contentType: 'image/png'
-    // });
-     formData.append('file', blob, `ai_image_${Date.now()}.png`);
+    // 2. Upload it to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from("your-bucket-name") // 👈 replace with your bucket name
+      .upload(`ai-images/${fileName}`, buffer, {
+        contentType: "image/png", // or "image/jpeg" if needed
+        upsert: true,
+      });
 
-    // 3️⃣ Upload to backend storage
-    const uploadResponse = await fetch(apiUrl, {
-      method: 'POST',
-      body: formData
-    }).then(()=>{
-        console.log("uploaded")
-    }).catch((err)=>{
-console.log(err)
-    });
-     console.log(imageUrl)
-    let imageUrl = await uploadResponse.text();
-    imageUrl = imageUrl?.replace(/^"|"$/g, '');
+    if (error) throw error;
 
-    // 4️⃣ Send permanent URL back to frontend
-    res.json({ permanentUrl: imageUrl });
+    console.log("✅ Uploaded to Supabase:", data);
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Something went wrong' });
+    // 3. (Optional) Generate a public URL
+    const { data: publicUrlData } = supabase.storage
+      .from("your-bucket-name")
+      .getPublicUrl(`ai-images/${fileName}`);
+
+    console.log("🌍 Public URL:", publicUrlData.publicUrl);
+    return publicUrlData.publicUrl;
+  } catch (err) {
+    console.error("❌ Error saving image:", err.message);
+    throw err;
   }
 }
 
+async function downloadAndUpload(req, res) {
+  try {
+    const { tensorArtUrl } = req.body;
 
-
+    const imageUrl = await saveTensorArtImage(tensorArtUrl, `ai-image.png`);
+    res.json({ permanentUrl: imageUrl });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+}
 
 module.exports = { downloadAndUpload };

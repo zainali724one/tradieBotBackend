@@ -11,6 +11,7 @@
   "dependencies": {
     "@sparticuz/chromium": "^106.0.2",
     "@sparticuz/chromium-min": "^138.0.2",
+    "@supabase/supabase-js": "^2.55.0",
     "@vonage/jwt": "^1.11.0",
     "@vonage/messages": "^1.20.1",
     "@vonage/server-sdk": "^3.22.1",
