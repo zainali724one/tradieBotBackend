@@ -36,10 +36,15 @@ const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 //   console.log("✅ Invoice row added to sheet");
 // }
 
+
+export const getSheetId=(url)=> {
+  return url.split("/d/")[1].split("/")[0];
+}
+
 async function saveDataToSheets(
   data,
   headings,
-  spreadsheetId,
+  spreadsheetUrl,
   accessToken,
   refreshToken,
   type
@@ -49,6 +54,9 @@ async function saveDataToSheets(
     process.env.CLIENT_SECRET,
     process.env.REDIRECT_URI
   );
+
+  const spreadsheetId = getSheetId(spreadsheetUrl)
+  console.log(spreadsheetId)
 
   oauth2Client.setCredentials({
     access_token: accessToken,
