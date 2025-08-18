@@ -87,7 +87,7 @@ bot.start(async (ctx) => {
           [
             {
               text: "Open Tradie Bot App",
-              web_app: { url: "https://peppy-swan-6fdd72.netlify.app" },
+              web_app: { url: "https://uktradie.netlify.app/" },
             },
           ],
         ],
