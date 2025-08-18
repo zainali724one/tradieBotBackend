@@ -1,13 +1,18 @@
-const FormData = require("form-data");
+// const FormData = require("form-data");
 
 // import { createClient } from "@supabase/supabase-js";
 
 const { createClient } = require("@supabase/supabase-js");
 
 // 🔹 Your Supabase credentials
+// const supabase = createClient(
+//   process.env.SUPABASE_URL,
+//   process.env.SUPABASE_SERVICE_ROLE_KEY
+// );
+
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  "https://dwnobjuzokczdcbbyubz.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3bm9ianV6b2tjemRjYmJ5dWJ6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDE2NTU0NSwiZXhwIjoyMDY1NzQxNTQ1fQ._6ULaGf5RmKRp2TboIyXO0iaJlCleo7lZYp1bhzvNfQ"
 );
 
 async function saveTensorArtImage(tensorArtUrl, fileName = "ai-image.png") {
