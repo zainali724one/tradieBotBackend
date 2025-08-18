@@ -15,7 +15,10 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3bm9ianV6b2tjemRjYmJ5dWJ6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDE2NTU0NSwiZXhwIjoyMDY1NzQxNTQ1fQ._6ULaGf5RmKRp2TboIyXO0iaJlCleo7lZYp1bhzvNfQ"
 );
 
-async function saveTensorArtImage(tensorArtUrl, fileName = "ai-image.png") {
+async function saveTensorArtImage(
+  tensorArtUrl,
+  fileName = `ai-${Date.now()}.png`
+) {
   try {
     // 1. Download the image from TensorArt URL
     const response = await fetch(tensorArtUrl);
@@ -54,7 +57,10 @@ async function downloadAndUpload(req, res) {
   try {
     const { tensorArtUrl } = req.body;
 
-    const imageUrl = await saveTensorArtImage(tensorArtUrl, `ai-image.png`);
+    const imageUrl = await saveTensorArtImage(
+      tensorArtUrl,
+      `ai-${Date.now()}.png`
+    );
     res.json({ permanentUrl: imageUrl });
   } catch (error) {
     console.error(error);
