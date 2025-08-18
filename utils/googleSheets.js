@@ -56,7 +56,7 @@ async function saveDataToSheets(
   );
 
   const spreadsheetId = getSheetId(spreadsheetUrl)
-  console.log(spreadsheetId)
+  console.log(spreadsheetId,"spreadsheetId")
 
   oauth2Client.setCredentials({
     access_token: accessToken,
