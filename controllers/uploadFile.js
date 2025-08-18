@@ -39,7 +39,7 @@ async function saveTensorArtImage(tensorArtUrl, fileName = "ai-image.png") {
 
     // 3. (Optional) Generate a public URL
     const { data: publicUrlData } = supabase.storage
-      .from("your-bucket-name")
+      .from("aiGenImgs")
       .getPublicUrl(`ai-images/${fileName}`);
 
     console.log("🌍 Public URL:", publicUrlData.publicUrl);
