@@ -17,6 +17,7 @@ const { Invoice } = require('xero-node');
 // const { default: generatePDF } = require("../utils/pdfGenerator");
 const { createXeroDocumentForUser } = require("../services/XerroService");
 const generatePDF = require("../utils/pdfGenerator");
+const mongoose = require("mongoose");
 
 exports.addInvoice = catchAsyncError(async (req, res, next) => {
   const {
@@ -251,5 +252,77 @@ exports.getChasesByTelegramId = catchAsyncError(async (req, res, next) => {
     success: true,
     count: data.length,
     data,
+  });
+});
+
+
+
+
+
+
+exports.deleteChaseById = catchAsyncError(async (req, res, next) => {
+  // accept id either as /:id or ?id=...
+  const rawId = req.params.id || req.query.id;
+  const { type } = req.query;
+  const telegramId = req.query.telegramId; // optional safety scope
+
+  const id = (rawId || "").trim();
+
+  if (!id || !type) {
+    return next(new ErrorHandler("id and type are required", 400));
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(new ErrorHandler("Invalid id", 400));
+  }
+
+  // choose model by type
+  let Model;
+  if (type.toLowerCase() === "quote") {
+    Model = quote;
+  } else if (type.toLowerCase() === "invoice") {
+    Model = invoice;
+  } else {
+    return next(
+      new ErrorHandler("Invalid type. Must be 'quote' or 'invoice'", 400)
+    );
+  }
+
+  // Build filter (optionally require telegramId if provided)
+  const filter = telegramId ? { _id: id, telegramId } : { _id: id };
+
+  // Try deleting from the intended collection first
+  let deleted = await Model.findOneAndDelete(filter);
+
+  // If nothing found, try the other collection in case the UI sent the wrong type
+  if (!deleted) {
+    try {
+      const OtherModel = type.toLowerCase() === "quote" ? invoice : quote;
+      const fallbackDeleted = await OtherModel.findOneAndDelete(
+        telegramId ? { _id: id, telegramId } : { _id: id }
+      );
+      if (fallbackDeleted) {
+        return res.status(200).json({
+          success: true,
+          message: `${
+            type.toLowerCase() === "quote" ? "invoice" : "quote"
+          } deleted successfully`,
+          id: fallbackDeleted._id,
+          note: "Type mismatch auto-corrected",
+        });
+      }
+    } catch (e) {
+      // ignore fallback errors; will return not found below
+    }
+  }
+
+  if (!deleted) {
+    return next(new ErrorHandler(`${type} not found`, 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: `${type} deleted successfully`,
+    id: deleted._id,
   });
 });
