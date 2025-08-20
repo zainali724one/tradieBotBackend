@@ -36,10 +36,9 @@ const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 //   console.log("✅ Invoice row added to sheet");
 // }
 
-
-export const getSheetId=(url)=> {
+const getSheetId = (url) => {
   return url.split("/d/")[1].split("/")[0];
-}
+};
 
 async function saveDataToSheets(
   data,
@@ -55,8 +54,8 @@ async function saveDataToSheets(
     process.env.REDIRECT_URI
   );
 
-  const spreadsheetId = getSheetId(spreadsheetUrl)
-  console.log(spreadsheetId,"spreadsheetId")
+  const spreadsheetId = getSheetId(spreadsheetUrl);
+  console.log(spreadsheetId, "spreadsheetId");
 
   oauth2Client.setCredentials({
     access_token: accessToken,
@@ -109,4 +108,4 @@ async function saveDataToSheets(
   console.log("✅ Invoice row added to sheet");
 }
 
-module.exports = { saveDataToSheets };
+module.exports = { saveDataToSheets, getSheetId };
