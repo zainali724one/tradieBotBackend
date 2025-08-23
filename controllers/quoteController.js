@@ -67,6 +67,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
       quoteId: newQuote._id.toString(),
       userId: user._id.toString(),
     },
+    on_behalf_of: user?.stripeAccountId,
     transfer_data: {
       destination: user?.stripeAccountId,
     },
@@ -83,7 +84,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   const pdfPath = path.join(tempDir, `quote_${newQuote._id}.pdf`);
   const paymentLink = `https://uktradie.netlify.app/pay/quote/${newQuote._id}`;
 
-  const messageBody=`
+  const messageBody = `
 You have received a quote from UK Tradie Bot
 Customer Name: ${customerName}
 Address: ${address}
@@ -93,7 +94,6 @@ Email: ${customerEmail}
 Click here to pay: ${paymentLink}`;
 
   // await sendWhatsApp(customerPhone, messageBody)
- 
 
   await saveDataToSheets(
     [
@@ -122,70 +122,64 @@ Click here to pay: ${paymentLink}`;
     "Quotes"
   );
 
-
-
-
-
-  
   const doc = new PDFDocument();
 
   // Await PDF generation
-//   await new Promise((resolve, reject) => {
-//     const stream = fs.createWriteStream(pdfPath);
-//     doc.pipe(stream);
+  //   await new Promise((resolve, reject) => {
+  //     const stream = fs.createWriteStream(pdfPath);
+  //     doc.pipe(stream);
 
-//     doc.fontSize(18).text("Quote Summary", { underline: true });
-//     doc.moveDown();
-//     doc.fontSize(12).text(`Customer Name: ${customerName}`);
-//     doc.text(`Job Description: ${jobDescription}`);
-//     doc.text(`Quote Amount: $${quoteAmount}`);
-//     doc.text(`Email: ${customerEmail}`);
-//     doc.moveDown();
-//     doc.end();
+  //     doc.fontSize(18).text("Quote Summary", { underline: true });
+  //     doc.moveDown();
+  //     doc.fontSize(12).text(`Customer Name: ${customerName}`);
+  //     doc.text(`Job Description: ${jobDescription}`);
+  //     doc.text(`Quote Amount: $${quoteAmount}`);
+  //     doc.text(`Email: ${customerEmail}`);
+  //     doc.moveDown();
+  //     doc.end();
 
-//     stream.on("finish", resolve);
-//     stream.on("error", reject);
-//   });
+  //     stream.on("finish", resolve);
+  //     stream.on("error", reject);
+  //   });
 
-//   const transporter = nodemailer.createTransport({
-//     service: "gmail",
-//     auth: {
-//       user: process.env.EMAIL_USER, 
-//       pass: process.env.EMAIL_PASS,
-//     },
-//   });
+  //   const transporter = nodemailer.createTransport({
+  //     service: "gmail",
+  //     auth: {
+  //       user: process.env.EMAIL_USER,
+  //       pass: process.env.EMAIL_PASS,
+  //     },
+  //   });
 
-//   await transporter.sendMail({
-//     from: "UK Tradie Bot",
-//     to: customerEmail,
-//     subject: "Your Quote from UK Tradie",
-//     text: "Please find your quote attached.",
-//     attachments: [
-//       {
-//         filename: `Quote_${newQuote._id}.pdf`,
-//         path: pdfPath,
-//       },
-//     ],
-//   }).then(()=>{
-//     console.log("send data to mail in quote")
-//   }).catch((err)=>{
-// console.log("err in mail",err)
-//   });
+  //   await transporter.sendMail({
+  //     from: "UK Tradie Bot",
+  //     to: customerEmail,
+  //     subject: "Your Quote from UK Tradie",
+  //     text: "Please find your quote attached.",
+  //     attachments: [
+  //       {
+  //         filename: `Quote_${newQuote._id}.pdf`,
+  //         path: pdfPath,
+  //       },
+  //     ],
+  //   }).then(()=>{
+  //     console.log("send data to mail in quote")
+  //   }).catch((err)=>{
+  // console.log("err in mail",err)
+  //   });
 
-
-// await generatePDF({
-//     customerName,
-//     jobDescription,
-//     amount:quoteAmount,
-//     customerEmail,
-//     address,
-//     telegramId,
-//     customerPhone,
-//     userId,
-//     paymentUrl:paymentLink,
-//     companyLogo:user?.companyLogo || "",
-//     type:"quote"
-//   }, user?.pdfTemplateId,"quote",user)
+  // await generatePDF({
+  //     customerName,
+  //     jobDescription,
+  //     amount:quoteAmount,
+  //     customerEmail,
+  //     address,
+  //     telegramId,
+  //     customerPhone,
+  //     userId,
+  //     paymentUrl:paymentLink,
+  //     companyLogo:user?.companyLogo || "",
+  //     type:"quote"
+  //   }, user?.pdfTemplateId,"quote",user)
 
   if (sheetId != user.sheetId) {
     user.sheetId = sheetId;
@@ -195,33 +189,35 @@ Click here to pay: ${paymentLink}`;
   // Clean up file
   // fs.unlinkSync(pdfPath);
 
-
-
-    await createXeroDocumentForUser(userId,{
-    customerName,
-    jobDescription,
-    quoteAmount,
-    customerEmail,
-    telegramId,
-    customerPhone,
+  await createXeroDocumentForUser(
     userId,
-    adress:address,
-    } , "quote")
+    {
+      customerName,
+      jobDescription,
+      quoteAmount,
+      customerEmail,
+      telegramId,
+      customerPhone,
+      userId,
+      adress: address,
+    },
+    "quote"
+  );
 
   res.status(201).json({
     message: "Quote submitted and emailed successfully",
     data: {
-    customerName,
-    jobDescription,
-    amount:quoteAmount,
-    customerEmail,
-    address,
-    telegramId,
-    customerPhone,
-    userId,
-    paymentUrl:paymentLink,
-    companyLogo:user?.companyLogo || ""
-  },
+      customerName,
+      jobDescription,
+      amount: quoteAmount,
+      customerEmail,
+      address,
+      telegramId,
+      customerPhone,
+      userId,
+      paymentUrl: paymentLink,
+      companyLogo: user?.companyLogo || "",
+    },
   });
 });
 
