@@ -129,8 +129,8 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
     // Send Email
     const transporter = nodemailer.createTransport({
       host: "smtp.hostinger.com",
-      port: 465, // try 465 first, fallback 587 if needed
-      secure: true,
+      port: 587, // try 465 first, fallback 587 if needed
+      secure: false,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
