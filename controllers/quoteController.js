@@ -59,21 +59,43 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
 
   // Create Stripe PaymentIntent
   const paymentAmount = Math.round(Number(quoteAmount) * 100); // in cents
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: paymentAmount,
-    currency: "usd",
-    automatic_payment_methods: { enabled: true },
-    metadata: {
-      quoteId: newQuote._id.toString(),
-      userId: user._id.toString(),
+  // const paymentIntent = await stripe.paymentIntents.create({
+  //   amount: paymentAmount,
+  //   currency: "usd",
+  //   automatic_payment_methods: { enabled: true },
+  //   metadata: {
+  //     quoteId: newQuote._id.toString(),
+  //     userId: user._id.toString(),
+  //   },
+  //   on_behalf_of: user?.stripeAccountId,
+  //   transfer_data: {
+  //     destination: user?.stripeAccountId,
+  //   },
+  //   receipt_email: customerEmail,
+  //   description: `Quote for ${customerName}`,
+  // });
+
+  const account = await stripe.accounts.retrieve(user?.stripeAccountId);
+
+  // Use their default currency
+  const currency = account.default_currency || "usd";
+
+  const paymentIntent = await stripe.paymentIntents.create(
+    {
+      amount: paymentAmount,
+      currency,
+      automatic_payment_methods: { enabled: true },
+      metadata: {
+        quoteId: newQuote._id.toString(),
+        userId: user._id.toString(),
+      },
+      receipt_email: customerEmail,
+      description: `Quote for ${customerName}`,
     },
-    on_behalf_of: user?.stripeAccountId,
-    transfer_data: {
-      destination: user?.stripeAccountId,
-    },
-    receipt_email: customerEmail,
-    description: `Quote for ${customerName}`,
-  });
+    {
+      stripeAccount: user?.stripeAccountId,
+    }
+  );
 
   // Save paymentIntent ID in quote
   newQuote.paymentIntentId = paymentIntent.id;
