@@ -5,7 +5,6 @@
 // const { uploadPdfToDrive } = require('../utils/googleDrive');
 // const { catchAsyncError } = require('../middlewares/catchAsyncError');
 
-
 // exports.uploadPdf = catchAsyncError(async(req, res) => {
 //   const file = req.file;
 //   const {telegramId,pdfType,customerEmail,customerName}=req.body
@@ -24,7 +23,6 @@
 // const pdfPath = path.join(__dirname, `../${pdfType}`, `${pdfType}_${Date.now()}.pdf`);
 // fs.writeFileSync(pdfPath, req.file.buffer);
 
-
 //   await uploadPdfToDrive(
 //     {
 //       accessToken: userExists.googleAccessToken,
@@ -39,12 +37,11 @@
 //     pdfType==="invoice"?"Invoices":"Quotes"
 //   );
 
-
 // //   Send Email
 //   const transporter = nodemailer.createTransport({
 //     service: "gmail",
 //     auth: {
-//       user: process.env.EMAIL_USER, 
+//       user: process.env.EMAIL_USER,
 //       pass: process.env.EMAIL_PASS,
 //     },
 //   });
@@ -67,24 +64,29 @@
 //   res.status(200).json({ message: 'PDF received', size: pdfBuffer.length });
 // } )
 
-
-
-
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 const User = require("../models/User");
 const nodemailer = require("nodemailer");
-const { uploadPdfToDrive } = require('../utils/googleDrive');
-const { catchAsyncError } = require('../middlewares/catchAsyncError');
-const { ErrorHandler } = require('../utils/ErrorHandler');
+const { uploadPdfToDrive } = require("../utils/googleDrive");
+const { catchAsyncError } = require("../middlewares/catchAsyncError");
+const { ErrorHandler } = require("../utils/ErrorHandler");
 // const ErrorHandler = require('../utils/errorHandler');
 
 exports.uploadPdf = catchAsyncError(async (req, res, next) => {
   const file = req.file;
-  const { telegramId, pdfType, customerEmail, customerName,amount,customerPhone,paymentUrl } = req.body;
-  
+  const {
+    telegramId,
+    pdfType,
+    customerEmail,
+    customerName,
+    amount,
+    customerPhone,
+    paymentUrl,
+  } = req.body;
+
   if (!file) {
-    return next(new ErrorHandler('No file uploaded', 400));
+    return next(new ErrorHandler("No file uploaded", 400));
   }
 
   const userExists = await User.findOne({ telegramId });
@@ -95,9 +97,9 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
   let pdfPath;
   try {
     // Use /tmp directory in Lambda, or local directory otherwise
-    const baseDir =  '/tmp' 
+    const baseDir = "/tmp";
     const dirPath = path.join(baseDir, pdfType);
-    
+
     // Create directory if it doesn't exist
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
@@ -126,7 +128,9 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
 
     // Send Email
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.hostinger.com",
+      port: 465, // try 465 first, fallback 587 if needed
+      secure: true,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
@@ -140,21 +144,20 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
     //   text: `Please find your ${pdfType} attached.
     //    Thank you for chosing us for your for the servicr
     //    here is the link to pay via stripe: ${paymentUrl}`,
-      // attachments: [
-      //   {
-      //     filename: fileName,
-      //     path: pdfPath,
-      //     contentType: 'application/pdf'
-      //   },
-      // ],
-//     }).then((res)=>{
-// console.log(res,"emailed")
-//     }).catch((err)=>{
-// console.log(err)
-//     });
+    // attachments: [
+    //   {
+    //     filename: fileName,
+    //     path: pdfPath,
+    //     contentType: 'application/pdf'
+    //   },
+    // ],
+    //     }).then((res)=>{
+    // console.log(res,"emailed")
+    //     }).catch((err)=>{
+    // console.log(err)
+    //     });
 
-
-const quoteHtml=`
+    const quoteHtml = `
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
       <p>Dear Customer,</p>
       <p>Please find your ${pdfType} attached.</p>
@@ -169,50 +172,46 @@ const quoteHtml=`
         </a>
       </p>
     </div>
-  `
+  `;
 
-  const invoiceHtml=`
+    const invoiceHtml = `
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
       <p>Dear Customer,</p>
       <p>Please find your ${pdfType} attached.</p>
     </div>
-  `
+  `;
 
-
-await transporter.sendMail({
-  from: "UK Tradie Bot", // Better to include email in from
-  to: customerEmail,
-  subject: `Your ${pdfType === "invoice" ? "Invoice" : "Quote"} from UK Tradie`,
-  html: pdfType === "invoice" ?invoiceHtml:quoteHtml ,
-   attachments: [
+    await transporter.sendMail({
+      from: "UK Tradie Bot", // Better to include email in from
+      to: customerEmail,
+      subject: `Your ${
+        pdfType === "invoice" ? "Invoice" : "Quote"
+      } from UK Tradie`,
+      html: pdfType === "invoice" ? invoiceHtml : quoteHtml,
+      attachments: [
         {
           filename: fileName,
           path: pdfPath,
-          contentType: 'application/pdf'
+          contentType: "application/pdf",
         },
       ],
-});
-
-
-
-
-
-    
-
-    res.status(200).json({ 
-      success: true,
-      message: 'PDF processed successfully' 
     });
 
+    res.status(200).json({
+      success: true,
+      message: "PDF processed successfully",
+    });
   } catch (error) {
-    return next(new ErrorHandler(`Error processing PDF: ${error.message}`, 500));
+    return next(
+      new ErrorHandler(`Error processing PDF: ${error.message}`, 500)
+    );
   } finally {
     // Clean up: Delete the temporary file if it exists
     if (pdfPath && fs.existsSync(pdfPath)) {
       try {
         fs.unlinkSync(pdfPath);
       } catch (cleanupError) {
-        console.error('Error cleaning up temp file:', cleanupError);
+        console.error("Error cleaning up temp file:", cleanupError);
       }
     }
   }
