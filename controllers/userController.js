@@ -69,21 +69,18 @@ exports.signupUser = catchAsyncError(async (req, res, next) => {
 
   // Check for existing user
   const existingUser = await User.findOne({ telegramId });
-    const existingUsercheck2 = await User.findOne({ email });
+  const existingUsercheck2 = await User.findOne({ email });
   if (existingUser) {
     return next(
       new ErrorHandler("User with this Telegram ID already exists", 409)
     );
   }
 
-   if (existingUsercheck2) {
-    return next(
-      new ErrorHandler("User with this Email already exists", 409)
-    );
+  if (existingUsercheck2) {
+    return next(new ErrorHandler("User with this Email already exists", 409));
   }
 
-
-    const salt = await bcrypt.genSalt(10);
+  const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
   // Create new user
@@ -94,7 +91,7 @@ exports.signupUser = catchAsyncError(async (req, res, next) => {
     phone,
     country,
     username,
-    password:hashedPassword,
+    password: hashedPassword,
     languageCode,
     userImage,
   });
@@ -182,7 +179,8 @@ exports.sendOTP = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User not found with this email", 404));
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  const expiry = new Date(Date.now() + 1 * 60 * 1000);
+  // const expiry = new Date(Date.now() + 1 * 60 * 1000);
+  const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
   user.resetOTP = otp;
   user.resetOTPExpires = expiry;
@@ -238,7 +236,7 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
   user.resetOTP = undefined;
   user.resetOTPExpires = undefined;
   // req.body.password=newPassword
-console.log("password updated")
+  console.log("password updated");
   await user.save();
 
   res.status(200).json({
@@ -248,7 +246,16 @@ console.log("password updated")
 });
 
 exports.updateProfile = catchAsyncError(async (req, res, next) => {
-  const { id, type, name, oldEmail, newEmail , newPhone,pdfTemplateId, companyLogo } = req.body;
+  const {
+    id,
+    type,
+    name,
+    oldEmail,
+    newEmail,
+    newPhone,
+    pdfTemplateId,
+    companyLogo,
+  } = req.body;
 
   if (!id) {
     return next(new ErrorHandler("User ID and type are required", 400));
@@ -286,26 +293,20 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
 
     case "phone":
       if (!newPhone) {
-        return next(
-          new ErrorHandler("phone number is required", 400)
-        );
+        return next(new ErrorHandler("phone number is required", 400));
       }
       user.phone = newPhone;
 
-       case "template":
+    case "template":
       if (!pdfTemplateId) {
-        return next(
-          new ErrorHandler("please select any template", 400)
-        );
+        return next(new ErrorHandler("please select any template", 400));
       }
       user.pdfTemplateId = pdfTemplateId;
-break;
+      break;
 
-        case "logo":
+    case "logo":
       if (!companyLogo) {
-        return next(
-          new ErrorHandler("company logo is required", 400)
-        );
+        return next(new ErrorHandler("company logo is required", 400));
       }
       user.companyLogo = companyLogo;
       break;
