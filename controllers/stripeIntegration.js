@@ -5,7 +5,7 @@ const { catchAsyncError } = require("../middlewares/catchAsyncError");
 const quote = require("../models/quote");
 const User = require("../models/User");
 
-exports.getStripeData = catchAsyncError(async (req, res) => {
+exports.getStripeData = catchAsyncError(async (req, res)=>{
   const { quoteId } = req.params;
 
   const singlequote = await quote.findById(quoteId);
@@ -25,7 +25,7 @@ exports.getStripeData = catchAsyncError(async (req, res) => {
   });
 });
 
-exports.stripeWebhookHandler = async (req, res) => {
+exports.stripeWebhookHandler = async (req, res)=>{
   const sig = req.headers["stripe-signature"];
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
