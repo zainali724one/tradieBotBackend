@@ -48,64 +48,68 @@ async function saveDataToSheets(
   refreshToken,
   type
 ) {
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET,
-    process.env.REDIRECT_URI
-  );
+  try {
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.CLIENT_ID,
+      process.env.CLIENT_SECRET,
+      process.env.REDIRECT_URI
+    );
 
-  const spreadsheetId = getSheetId(spreadsheetUrl);
-  console.log(spreadsheetId, "spreadsheetId");
+    const spreadsheetId = getSheetId(spreadsheetUrl);
+    console.log(spreadsheetId, "spreadsheetId");
 
-  oauth2Client.setCredentials({
-    access_token: accessToken,
-    refresh_token: refreshToken,
-  });
+    oauth2Client.setCredentials({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
 
-  const sheets = google.sheets({ version: "v4", auth: oauth2Client });
+    const sheets = google.sheets({ version: "v4", auth: oauth2Client });
 
-  const sheetMeta = await sheets.spreadsheets.get({ spreadsheetId });
-  const sheetExists = sheetMeta.data.sheets.some(
-    (s) => s.properties.title === type
-  );
+    const sheetMeta = await sheets.spreadsheets.get({ spreadsheetId });
+    const sheetExists = sheetMeta.data.sheets.some(
+      (s) => s.properties.title === type
+    );
 
-  // Create "Invoices" sheet if it doesn't exist
-  if (!sheetExists) {
-    await sheets.spreadsheets.batchUpdate({
-      spreadsheetId,
-      resource: {
-        requests: [
-          {
-            addSheet: {
-              properties: { title: type },
+    // Create "Invoices" sheet if it doesn't exist
+    if (!sheetExists) {
+      await sheets.spreadsheets.batchUpdate({
+        spreadsheetId,
+        resource: {
+          requests: [
+            {
+              addSheet: {
+                properties: { title: type },
+              },
             },
-          },
-        ],
-      },
-    });
+          ],
+        },
+      });
 
-    // Optionally add headers after creation
-    await sheets.spreadsheets.values.update({
+      // Optionally add headers after creation
+      await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `${type}!A1:G1`,
+        valueInputOption: "RAW",
+        resource: {
+          values: [headings],
+        },
+      });
+    }
+
+    // Append new row
+    await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: `${type}!A1:G1`,
-      valueInputOption: "RAW",
+      range: `${type}!A:F`,
+      valueInputOption: "USER_ENTERED",
       resource: {
-        values: [headings],
+        values: [data],
       },
     });
+
+    console.log("✅ Invoice row added to sheet");
+  } catch (error) {
+    console.log(error);
   }
-
-  // Append new row
-  await sheets.spreadsheets.values.append({
-    spreadsheetId,
-    range: `${type}!A:F`,
-    valueInputOption: "USER_ENTERED",
-    resource: {
-      values: [data],
-    },
-  });
-
-  console.log("✅ Invoice row added to sheet");
 }
 
 module.exports = { saveDataToSheets, getSheetId };
