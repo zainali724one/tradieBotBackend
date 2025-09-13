@@ -13,7 +13,7 @@ const fs = require("fs");
 const { sendWhatsApp } = require("../services/VonageService");
 
 // import { Invoice } from "xero-node";
-const { Invoice } = require('xero-node');
+const { Invoice } = require("xero-node");
 // const { default: generatePDF } = require("../utils/pdfGenerator");
 const { createXeroDocumentForUser } = require("../services/XerroService");
 const generatePDF = require("../utils/pdfGenerator");
@@ -34,11 +34,10 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     sheetId,
   } = req.body;
 
-
-   const user = await User.findOne({ telegramId });
-    if (!user) {
-      return next(new ErrorHandler("User not found for this telegramId", 404));
-    }
+  const user = await User.findOne({ telegramId });
+  if (!user) {
+    return next(new ErrorHandler("User not found for this telegramId", 404));
+  }
 
   const isEmpty = (value) => !value || value.trim() === "";
 
@@ -90,14 +89,14 @@ Amount: $${invoiceAmount}
 Address: ${address}
 Email: ${customerEmail}
 `;
-await sendWhatsApp(customerPhone, messageBody)
+  await sendWhatsApp(customerPhone, messageBody);
 
-// .then((res) => {
-//       console.log(res, "Whatsapp response");
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
+  // .then((res) => {
+  //       console.log(res, "Whatsapp response");
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
   // sendWhatsAppMessage(customerPhone, messageBody)
   //   .then((res) => {
   //     console.log(res, "Whatsapp response");
@@ -130,11 +129,11 @@ await sendWhatsApp(customerPhone, messageBody)
     sheetId,
     userExists?.googleAccessToken,
     userExists?.googleRefreshToken,
-    "Invoices"
+    "Invoices",
+    userId
   );
 
   // const doc = new PDFDocument();
-
 
   // await new Promise((resolve, reject) => {
   //   const stream = fs.createWriteStream(pdfPath);
@@ -152,62 +151,59 @@ await sendWhatsApp(customerPhone, messageBody)
   //   stream.on("finish", resolve);
   //   stream.on("error", reject);
   // });
-// await generatePDF({
-//     userId,
-//     telegramId,
-//     customerName,
-//     jobDescription,
-//     amount:invoiceAmount,
-//     customerEmail,
-//     address,
-//     includeCost,
-//     includeReceipt,
-//     customerPhone,
-//     companyLogo:user?.companyLogo ||"",
-//     type:"invoice"
-//   }, userExists?.pdfTemplateId,"invoice",userExists)
+  // await generatePDF({
+  //     userId,
+  //     telegramId,
+  //     customerName,
+  //     jobDescription,
+  //     amount:invoiceAmount,
+  //     customerEmail,
+  //     address,
+  //     includeCost,
+  //     includeReceipt,
+  //     customerPhone,
+  //     companyLogo:user?.companyLogo ||"",
+  //     type:"invoice"
+  //   }, userExists?.pdfTemplateId,"invoice",userExists)
 
-
-const invoicesPayload = {
-  invoices: [
-    {
-      type: Invoice.TypeEnum.ACCREC,
-      contact: {
-        name: customerName,
-        emailAddress: customerEmail,
-        phones: [
+  const invoicesPayload = {
+    invoices: [
+      {
+        type: Invoice.TypeEnum.ACCREC,
+        contact: {
+          name: customerName,
+          emailAddress: customerEmail,
+          phones: [
+            {
+              phoneType: "DEFAULT",
+              phoneNumber: customerPhone || "0000000000",
+            },
+          ],
+        },
+        lineItems: [
           {
-            phoneType: "DEFAULT",
-            phoneNumber: customerPhone || "0000000000"
-          }
-        ]
+            description: jobDescription || "Service Description",
+            quantity: 1,
+            unitAmount: parseFloat(invoiceAmount),
+            accountCode: "200", // Double check this is valid in your Xero chart
+            taxType: "NONE",
+            lineAmount: parseFloat(invoiceAmount),
+          },
+        ],
+        date: new Date().toISOString().split("T")[0],
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0],
+        status: Invoice.StatusEnum.AUTHORISED,
       },
-      lineItems: [
-        {
-          description: jobDescription || "Service Description",
-          quantity: 1,
-          unitAmount: parseFloat(invoiceAmount),
-          accountCode: "200", // Double check this is valid in your Xero chart
-          taxType: "NONE",
-          lineAmount: parseFloat(invoiceAmount)
-        }
-      ],
-      date: new Date().toISOString().split("T")[0],
-      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-      status: Invoice.StatusEnum.AUTHORISED
-    }
-  ]
-};
-
-
-
-
+    ],
+  };
 
   if (sheetId != userExists.sheetId) {
     userExists.sheetId = sheetId;
     userExists.save();
   }
-  await createXeroDocumentForUser(userId,invoicesPayload , "invoice")
+  await createXeroDocumentForUser(userId, invoicesPayload, "invoice");
   // Clean up file
   // fs.unlinkSync(pdfPath);
 
@@ -215,18 +211,18 @@ const invoicesPayload = {
     success: true,
     message: "Invoice created successfully",
     data: {
-    userId,
-    telegramId,
-    customerName,
-    jobDescription,
-    amount:invoiceAmount,
-    customerEmail,
-    address,
-    includeCost,
-    includeReceipt,
-    customerPhone,
-    companyLogo:user?.companyLogo ||""
-  },
+      userId,
+      telegramId,
+      customerName,
+      jobDescription,
+      amount: invoiceAmount,
+      customerEmail,
+      address,
+      includeCost,
+      includeReceipt,
+      customerPhone,
+      companyLogo: user?.companyLogo || "",
+    },
   });
 });
 
@@ -254,11 +250,6 @@ exports.getChasesByTelegramId = catchAsyncError(async (req, res, next) => {
     data,
   });
 });
-
-
-
-
-
 
 exports.deleteChaseById = catchAsyncError(async (req, res, next) => {
   // accept id either as /:id or ?id=...

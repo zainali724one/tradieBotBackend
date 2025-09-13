@@ -1,4 +1,5 @@
 const { google } = require("googleapis");
+const User = require("../models/User");
 
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 
@@ -46,7 +47,8 @@ async function saveDataToSheets(
   spreadsheetUrl,
   accessToken,
   refreshToken,
-  type
+  type,
+  userId
 ) {
   try {
     const oauth2Client = new google.auth.OAuth2(
@@ -109,6 +111,13 @@ async function saveDataToSheets(
     console.log("✅ Invoice row added to sheet");
   } catch (error) {
     console.log("catch is working -----", error.message);
+
+    if (error.message === "invalid_grant") {
+      await User.findByIdAndUpdate(userId, {
+        googleAccessToken: "",
+        googleRefreshToken: "",
+      });
+    }
   }
 }
 

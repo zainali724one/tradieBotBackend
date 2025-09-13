@@ -140,7 +140,8 @@ Click here to pay: ${paymentLink}`;
     sheetId,
     user?.googleAccessToken,
     user?.googleRefreshToken,
-    "Quotes"
+    "Quotes",
+    userId
   );
 
   const doc = new PDFDocument();
