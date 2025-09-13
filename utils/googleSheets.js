@@ -108,7 +108,7 @@ async function saveDataToSheets(
 
     console.log("✅ Invoice row added to sheet");
   } catch (error) {
-    console.log(error);
+    console.log("catch is working -----", error);
   }
 }
 
