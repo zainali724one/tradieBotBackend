@@ -31,7 +31,7 @@ bot.start(async (ctx) => {
   //   ? msg.text.split(" ")[1].substring(4)
   //   : null;
 
-  const welcomeMessage = `Hi, ${userFirstName}!👋\n\nWelcome to Tradir Bot!🥳\n\nRun your business efficiently and effortlessly. Streamline operations, save time, and boost productivity with smart tools that keep everything organized and on track.🚀`;
+  const welcomeMessage = `Hi, ${userFirstName}!👋\n\nWelcome to Tradie Bot!🥳\n\nRun your business efficiently and effortlessly. Streamline operations, save time, and boost productivity with smart tools that keep everything organized and on track.🚀`;
 
   try {
     // let user = await User.findOne({ telegramId: userId });
