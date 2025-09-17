@@ -40,7 +40,10 @@ exports.addJob = catchAsyncError(async (req, res, next) => {
     new Date(endTime).getTime() + 60 * 60 * 1000
   ).toISOString();
   await createCalendarEvent(
-    { ...userExists },
+    {
+      googleAccessToken: userExists.googleAccessToken,
+      googleRefreshToken: userExists.googleRefreshToken,
+    },
     {
       customerName,
       jobDescription,
