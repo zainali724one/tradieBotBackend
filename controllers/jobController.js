@@ -44,7 +44,6 @@ exports.addJob = catchAsyncError(async (req, res, next) => {
     {
       customerName,
       jobDescription,
-      quoteAmount,
       startTime,
       endTime: endTimeISO,
     }
