@@ -5,6 +5,8 @@ const { google } = require("googleapis");
  */
 async function createCalendarEvent(user, jobData) {
   try {
+    console.log(user.googleAccessToken, "user.googleAccessToken");
+    console.log(user, "user");
     const oauth2Client = new google.auth.OAuth2(
       process.env.CLIENT_ID,
       process.env.CLIENT_SECRET,
