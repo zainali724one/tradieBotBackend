@@ -2,6 +2,8 @@ const Job = require("../models/job");
 const User = require("../models/User");
 const { catchAsyncError } = require("../middlewares/catchAsyncError");
 const { ErrorHandler } = require("../utils/ErrorHandler");
+const { createCalendarEvent } = require("../utils/googleCalendar");
+const { combineDateTime } = require("../utils/combineDateTime");
 
 exports.addJob = catchAsyncError(async (req, res, next) => {
   const { customerName, jobDescription, date, time, telegramId, userId } =
@@ -32,7 +34,21 @@ exports.addJob = catchAsyncError(async (req, res, next) => {
   if (!userExists) {
     return next(new ErrorHandler("No user found with this Telegram ID", 404));
   }
-
+  const startTime = combineDateTime(date, time);
+  const endTime = combineDateTime(date, time); // simple 1-hour duration
+  const endTimeISO = new Date(
+    new Date(endTime).getTime() + 60 * 60 * 1000
+  ).toISOString();
+  await createCalendarEvent(
+    { ...userExists },
+    {
+      customerName,
+      jobDescription,
+      quoteAmount,
+      startTime,
+      endTime: endTimeISO,
+    }
+  );
   const newJob = new Job({
     customerName,
     jobDescription,
