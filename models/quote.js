@@ -22,7 +22,7 @@ const quoteSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-      address: { type: String },
+    address: { type: String },
     telegramId: {
       type: String,
       required: true,
@@ -38,6 +38,7 @@ const quoteSchema = new mongoose.Schema(
     },
     isPaid: {
       type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
