@@ -29,7 +29,8 @@ const allowedOrigins = [
   "https://tradiebot-admin-panel.netlify.app",
   "https://uktradie.netlify.app",
   "http://127.0.0.1:5501",
-  "https://letsgomanga.com"
+  "https://letsgomanga.com",
+  "https://tradiebot.netlify.app"
 ];
 
 app.use(
@@ -71,25 +72,25 @@ app.use(`/api`, uploadFileRoutes);
 // CLIENT_SECRET=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
 app.post("/inbound", async (req, res) => {
 
-const { from: requesterNumber } = req.body;
+  const { from: requesterNumber } = req.body;
 
-console.log(`Received message from ${requesterNumber}`);
+  console.log(`Received message from ${requesterNumber}`);
 
-try {
+  try {
 
-// Send the "Message received" reply
+    // Send the "Message received" reply
 
-await sendWhatsApp(requesterNumber);
+    await sendWhatsApp(requesterNumber);
 
-res.status(200).send(); // Acknowledge the received message
+    res.status(200).send(); // Acknowledge the received message
 
-} catch (error) {
+  } catch (error) {
 
-console.error("Error handling incoming message:", error);
+    console.error("Error handling incoming message:", error);
 
-res.status(500).send("An error occurred while processing the message.");
+    res.status(500).send("An error occurred while processing the message.");
 
-}
+  }
 
 });
 
