@@ -34,60 +34,13 @@ bot.start(async (ctx) => {
   const welcomeMessage = `Hi, ${userFirstName}!👋\n\nWelcome to Tradie Bot!🥳\n\nRun your business efficiently and effortlessly. Streamline operations, save time, and boost productivity with smart tools that keep everything organized and on track.🚀`;
 
   try {
-    // let user = await User.findOne({ telegramId: userId });
-
-    // if (!user) {
-    //   const userData = {
-    //     telegramId: userId,
-    //     firstName: userFirstName,
-    //     lastName: userLastName,
-    //     username: userUsername,
-    //     languageCode: userLanguageCode,
-    //     isPremium,
-    //     referredBy: refCode || null,
-    //     pollens: 0,
-    //   };
-
-    //   if (refCode) {
-    //     const refererUser = await User.findOne({ telegramId: refCode });
-    //     if (refererUser) {
-    //       const refererReward = isPremium ? 5000 : 500;
-    //       if (
-    //         refererUser.pollens < 100000 &&
-    //         refererUser.pollens + refererReward >= 100000
-    //       ) {
-    //         refererUser.isQueen = true;
-    //       }
-
-    //       refererUser.pollens += refererReward;
-    //       await refererUser.save();
-
-    //       const historyData = {
-    //         type: "pollens",
-    //         reward: refererReward,
-    //         userId: userId,
-    //         refererId: refCode,
-    //         message: "accepted your invite",
-    //       };
-
-    //       const history = new History(historyData);
-    //       await history.save();
-    //     } else {
-    //       userData.referredBy = null;
-    //     }
-    //   }
-
-    //   user = new User(userData);
-    //   await user.save();
-    // }
-
     await ctx.reply(welcomeMessage, {
       reply_markup: {
         inline_keyboard: [
           [
             {
               text: "Open Tradie Bot App",
-              web_app: { url: "https://tradiebot.netlify.app" },
+              web_app: { url: "https://tradie-bot.vercel.app" },
             },
           ],
         ],

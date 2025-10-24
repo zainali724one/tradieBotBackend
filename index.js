@@ -30,7 +30,8 @@ const allowedOrigins = [
   "https://uktradie.netlify.app",
   "http://127.0.0.1:5501",
   "https://letsgomanga.com",
-  "https://tradiebot.netlify.app"
+  "https://tradiebot.netlify.app",
+  "https://tradie-bot.vercel.app"
 ];
 
 app.use(
