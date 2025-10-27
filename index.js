@@ -65,7 +65,7 @@ app.use(`/api/invoice`, invoiceRoutes);
 app.use(`/api/job`, jobRoutes);
 app.use(`/api/stripe`, stripeRoutes);
 app.use(`/api/admin`, adminRoutes);
-app.use(`/api`, xeroRoutes);
+app.use(`/api/xero`, xeroRoutes);
 app.use(`/api`, uploadPdfRoutes)
 app.use(`/api`, uploadFileRoutes);
 // CLIENT_ID=832861452898-icpkrq7gi151jhb4h1ktqo26jqq214ql.apps.googleusercontent.com  testing only
