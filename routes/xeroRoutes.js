@@ -4,7 +4,7 @@ const { getConsentUrl, handleXeroCallback } = require("../controllers/xeroAuth")
 
 const router = express.Router();
 
-router.get("/xero/consetUrl", getConsentUrl);
+router.post("/xero/consetUrl", getConsentUrl);
 router.get(
   "/xero/callback",
   handleXeroCallback
