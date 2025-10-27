@@ -36,7 +36,7 @@ exports.handleXeroCallback = catchAsyncError(async (req, res) => {
       tenantId: JSON.stringify(tenantId),
     });
 
-    res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected")
+    res.redirect("https://tradie-bot.vercel.app/xeroconnected")
   } catch (error) {
     console.error("Xero callback error", error);
     console.log(req.query.state, "req.query.state")
