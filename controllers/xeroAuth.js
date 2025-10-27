@@ -4,6 +4,7 @@ const xero = require("../services/XeroClient");
 
 exports.getConsentUrl = catchAsyncError(async (req, res, next) => {
   const { userId } = req.query;
+  console.log(userId, "api running")
   // const userId="6868056c5717c3a1bc283e1d"
   const url = await xero.buildConsentUrl();
   // res.send({ url });
@@ -17,28 +18,28 @@ exports.getConsentUrl = catchAsyncError(async (req, res, next) => {
 
 // 2. Handle callback
 exports.handleXeroCallback = catchAsyncError(async (req, res) => {
-try {
+  try {
     // ⚠️ Use the full req object here, not req.url
     const state = req.query.state;
-console.log(state,"here is state")
-console.log(req.url,"req.url")
+    console.log(state, "here is state")
+    console.log(req.url, "req.url")
     await xero.apiCallback(req.url); // ✅ FIXED
-console.log("before updateTenants")
+    console.log("before updateTenants")
     await xero.updateTenants(); // Populates tenantIds
-console.log("after updateTenants")
+    console.log("after updateTenants")
     const tokenSet = xero.readTokenSet(); // { access_token, refresh_token, etc. }
     const tenantId = xero.tenants[0];
-console.log(tokenSet,tokenSet,"these are required")
+    console.log(tokenSet, tokenSet, "these are required")
     // Save the tokenSet & tenantId in your database against the user
     await User.findByIdAndUpdate(state, {
-      xeroToken:JSON.stringify(tokenSet),
+      xeroToken: JSON.stringify(tokenSet),
       tenantId: JSON.stringify(tenantId),
     });
 
     res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected")
   } catch (error) {
     console.error("Xero callback error", error);
-    console.log(req.query.state,"req.query.state")
+    console.log(req.query.state, "req.query.state")
     res.status(500).json({ success: false, message: "Callback failed" });
   }
 
