@@ -24,14 +24,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const allowedOrigins = [
-  "https://peppy-swan-6fdd72.netlify.app",
+  "https://tradie-bot.vercel.app", ,
   "http://localhost:5173",
   "https://tradiebot-admin-panel.netlify.app",
   "https://uktradie.netlify.app",
   "http://127.0.0.1:5501",
   "https://letsgomanga.com",
   "https://tradiebot.netlify.app",
-  "https://tradie-bot.vercel.app"
+
 ];
 
 app.use(
