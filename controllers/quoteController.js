@@ -103,7 +103,7 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   // Use /tmp directory in Vercel
   const tempDir = "/tmp";
   const pdfPath = path.join(tempDir, `quote_${newQuote._id}.pdf`);
-  const paymentLink = `https://uktradie.netlify.app/pay/quote/${newQuote._id}`;
+  const paymentLink = `https://tradie-bot.vercel.app/pay/quote/${newQuote._id}`;
 
   const messageBody = `
 You have received a quote from UK Tradie Bot
@@ -260,7 +260,7 @@ exports.paymentReminder = catchAsyncError(async (req, res) => {
 
     // Skip if no whatsapp number is provided
     if (!customerPhone) continue;
-    const paymentLink = `https://peppy-swan-6fdd72.netlify.app/pay/quote/${_id}`;
+    const paymentLink = `https://tradie-bot.vercel.app/pay/quote/${_id}`;
     const messageBody = `Hi ${customerName}, this is a friendly reminder from UK Tradie. You have an unpaid quote of $${quoteAmount}. Please complete your payment. click here to pay ${paymentLink} `;
 
     sendWhatsAppMessage(customerPhone, messageBody)
