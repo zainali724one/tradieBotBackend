@@ -2,16 +2,24 @@ const { catchAsyncError } = require("../middlewares/catchAsyncError");
 const User = require("../models/User");
 const xero = require("../services/XeroClient");
 
-exports.getConsentUrl = catchAsyncError(async (req, res, next) => {
-  const { userId } = req.body;
-  console.log(userId, "api running")
-  // const userId="6868056c5717c3a1bc283e1d"
-  const url = await xero.buildConsentUrl();
-  // res.send({ url });
+exports.getConsentUrl = async (req, res, next) => {
+  try {
+    const { userId } = req.body;
+    console.log(userId, "api running")
+    // const userId="6868056c5717c3a1bc283e1d"
+    const url = await xero.buildConsentUrl();
+    // res.send({ url });
 
-  const modifiedUrl = `${url}&state=${userId}`;
-  res.send({ url: modifiedUrl });
-})
+    const modifiedUrl = `${url}&state=${userId}`;
+    res.send({ url: modifiedUrl });
+  } catch (error) {
+    console.log(error, "consent error")
+    res.status(500).json({ message: "something went wrong", error })
+  }
+
+
+
+}
 
 
 
