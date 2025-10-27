@@ -27,7 +27,6 @@ const allowedOrigins = [
   "https://tradie-bot.vercel.app", ,
   "http://localhost:5173",
   "https://tradiebot-admin-panel.netlify.app",
-  "https://uktradie.netlify.app",
   "http://127.0.0.1:5501",
   "https://letsgomanga.com",
   "https://tradiebot.netlify.app",
