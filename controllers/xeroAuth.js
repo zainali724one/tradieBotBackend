@@ -31,7 +31,18 @@ exports.handleXeroCallback = catchAsyncError(async (req, res) => {
     const state = req.query.state;
     console.log(state, "here is state")
     console.log(req.url, "req.url")
-    await xero.apiCallback(req.url); // ✅ FIXED
+
+const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+        const host = req.get('host');
+        
+        // req.originalUrl includes the path and query string (e.g., /callback?code=...)
+        const fullCallbackUrl = `${protocol}://${host}${req.originalUrl}`; 
+        
+        console.log(fullCallbackUrl, "Full Callback URL passed to Xero");
+
+
+
+    await xero.apiCallback(fullCallbackUrl); 
     console.log("before updateTenants")
     await xero.updateTenants(); // Populates tenantIds
     console.log("after updateTenants")
