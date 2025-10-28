@@ -13,6 +13,9 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 
 function getAuthUrl(userId) {
+  console.log(process.env.CLIENT_ID, "process.env.CLIENT_ID")
+  console.log(process.env.CLIENT_SECRET, "process.env.CLIENT_SECRET")
+  console.log(process.env.REDIRECT_URI, "process.env.REDIRECT_URI")
   return oAuth2Client.generateAuthUrl({
     access_type: "offline",
     prompt: "consent",
