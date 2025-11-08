@@ -8,11 +8,11 @@ const {
 const router = express.Router();
 
 router.get("/quote-payment/:quoteId", getStripeData);
-router.post(
-  "/webhook",
-  express.raw({ type: "application/json" }),
-  stripeWebhookHandler
-);
+// router.post(
+//   "/webhook",
+//   express.raw({ type: "application/json" }),
+//   stripeWebhookHandler
+// );
 
 router.get("/oauth/callback", stripeCallback);
 

@@ -135,25 +135,6 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
       },
     });
 
-    // await transporter.sendMail({
-    //   from: "UK Tradie Bot",
-    //   to: customerEmail,
-    //   subject: `Your ${pdfType === "invoice" ? "Invoice" : "Quote"} from UK Tradie`,
-    //   text: `Please find your ${pdfType} attached.
-    //    Thank you for chosing us for your for the servicr
-    //    here is the link to pay via stripe: ${paymentUrl}`,
-    // attachments: [
-    //   {
-    //     filename: fileName,
-    //     path: pdfPath,
-    //     contentType: 'application/pdf'
-    //   },
-    // ],
-    //     }).then((res)=>{
-    // console.log(res,"emailed")
-    //     }).catch((err)=>{
-    // console.log(err)
-    //     });
 
     const quoteHtml = `
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
