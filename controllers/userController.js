@@ -312,13 +312,10 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
       break;
 
     case "onboarding":
-      if (!companyLogo || !pdfTemplateId) {
-        return next(
-          new ErrorHandler("company logo and PDF template are required", 400)
-        );
+      if (companyLogo) {
+        user.companyLogo = companyLogo;
       }
       user.pdfTemplateId = pdfTemplateId;
-      user.companyLogo = companyLogo;
       break;
 
     default:
