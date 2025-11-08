@@ -40,7 +40,7 @@ exports.stripeWebhookHandler = async (req, res) => {
 
   if (event.type === "payment_intent.succeeded") {
     const paymentIntent = event.data.object;
-    const quoteId = paymentIntent.metadata.quote_id;
+    const quoteId = paymentIntent.metadata.quoteId;
 
     try {
       await quote.findByIdAndUpdate(quoteId, { isPaid: true });
