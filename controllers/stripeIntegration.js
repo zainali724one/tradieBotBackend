@@ -2,6 +2,7 @@
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { catchAsyncError } = require("../middlewares/catchAsyncError");
+const job = require("../models/job");
 const quote = require("../models/quote");
 const User = require("../models/User");
 
@@ -44,6 +45,7 @@ exports.stripeWebhookHandler = async (req, res) => {
 
     try {
       await quote.findByIdAndUpdate(quoteId, { isPaid: true });
+      await job.findOneAndUpdate({ quoteId: quoteId }, { status: "Completed" });
       console.log(`Quote ${quoteId} marked as paid.`);
     } catch (err) {
       console.error("Failed to update quote:", err);

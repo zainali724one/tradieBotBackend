@@ -32,6 +32,11 @@ const jobSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    quoteId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Quote",
+      required: true,
+    },
   },
   { timestamps: true }
 );
