@@ -9,6 +9,8 @@ const User = require("../models/User");
 exports.getStripeData = catchAsyncError(async (req, res) => {
   const { quoteId } = req.params;
 
+  console.log("Fetching stripe data for quoteId:", quoteId);
+
   const singlequote = await quote.findById(quoteId);
   if (!singlequote) return res.status(404).json({ error: "Quote not found" });
 
