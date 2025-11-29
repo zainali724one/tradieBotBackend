@@ -46,6 +46,12 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("User not found for this telegramId", 404));
   }
 
+  if (!user?.stripeAccountId) {
+    return next(
+      new ErrorHandler("User does not have a connected Stripe account", 404)
+    );
+  }
+
   const newQuote = new quote({
     customerName,
     jobDescription,
@@ -75,27 +81,6 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     description: `Quote for ${customerName}`,
   });
 
-  // const account = await stripe.accounts.retrieve(user?.stripeAccountId);
-
-  // const currency = account.default_currency || "usd";
-
-  // const paymentIntent = await stripe.paymentIntents.create(
-  //   {
-  //     amount: paymentAmount,
-  //     currency,
-  //     automatic_payment_methods: { enabled: true },
-  //     metadata: {
-  //       quoteId: newQuote._id.toString(),
-  //       userId: user._id.toString(),
-  //     },
-  //     receipt_email: customerEmail,
-  //     description: `Quote for ${customerName}`,
-  //   },
-  //   {
-  //     stripeAccount: user?.stripeAccountId,
-  //   }
-  // );
-
   // Save paymentIntent ID in quote
   newQuote.paymentIntentId = paymentIntent.id;
   await newQuote.save();
@@ -115,34 +100,35 @@ Email: ${customerEmail}
 Click here to pay: ${paymentLink}`;
 
   // await sendWhatsApp(customerPhone, messageBody)
-
-  await saveDataToSheets(
-    [
-      customerName,
-      jobDescription,
-      quoteAmount,
-      address,
-      customerEmail,
-      telegramId,
-      customerPhone,
-      userId,
-    ],
-    [
-      "Customer Name",
-      "Job",
-      "Amount",
-      "Address",
-      "Email",
-      "Telegram ID",
-      "Phone",
-      "User ID",
-    ],
-    sheetId,
-    user?.googleAccessToken,
-    user?.googleRefreshToken,
-    "Quotes",
-    userId
-  );
+  if (user?.googleAccessToken && user?.googleRefreshToken) {
+    await saveDataToSheets(
+      [
+        customerName,
+        jobDescription,
+        quoteAmount,
+        address,
+        customerEmail,
+        telegramId,
+        customerPhone,
+        userId,
+      ],
+      [
+        "Customer Name",
+        "Job",
+        "Amount",
+        "Address",
+        "Email",
+        "Telegram ID",
+        "Phone",
+        "User ID",
+      ],
+      sheetId,
+      user?.googleAccessToken,
+      user?.googleRefreshToken,
+      "Quotes",
+      userId
+    );
+  }
 
   const doc = new PDFDocument();
 
@@ -211,20 +197,23 @@ Click here to pay: ${paymentLink}`;
   // Clean up file
   // fs.unlinkSync(pdfPath);
 
-  await createXeroDocumentForUser(
-    userId,
-    {
-      customerName,
-      jobDescription,
-      quoteAmount,
-      customerEmail,
-      telegramId,
-      customerPhone,
+  if (user.tenantId && user.xeroToken) {
+    await createXeroDocumentForUser(
       userId,
-      adress: address,
-    },
-    "quote"
-  );
+      {
+        
+        customerName,
+        jobDescription,
+        quoteAmount,
+        customerEmail,
+        telegramId,
+        customerPhone,
+        userId,
+        adress: address,
+      },
+      "quote"
+    );
+  }
 
   res.status(201).json({
     message: "Quote submitted and emailed successfully",

@@ -53,18 +53,21 @@ exports.addJob = catchAsyncError(async (req, res, next) => {
   const endTimeISO = new Date(
     new Date(endTime).getTime() + 60 * 60 * 1000
   ).toISOString();
-  await createCalendarEvent(
-    {
-      googleAccessToken: userExists.googleAccessToken,
-      googleRefreshToken: userExists.googleRefreshToken,
-    },
-    {
-      customerName,
-      jobDescription,
-      startTime,
-      endTime: endTimeISO,
-    }
-  );
+
+  if (userExists.googleAccessToken && userExists.googleRefreshToken) {
+    await createCalendarEvent(
+      {
+        googleAccessToken: userExists.googleAccessToken,
+        googleRefreshToken: userExists.googleRefreshToken,
+      },
+      {
+        customerName,
+        jobDescription,
+        startTime,
+        endTime: endTimeISO,
+      }
+    );
+  }
   const newJob = new Job({
     customerName,
     jobDescription,

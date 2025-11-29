@@ -104,34 +104,35 @@ Email: ${customerEmail}
   //   .catch((err) => {
   //     console.log(err);
   //   });
-
-  await saveDataToSheets(
-    [
-      customerName,
-      jobDescription,
-      invoiceAmount,
-      address,
-      customerEmail,
-      telegramId,
-      customerPhone,
-      userId,
-    ],
-    [
-      "Customer Name",
-      "Job",
-      "Amount",
-      "Address",
-      "Email",
-      "Telegram ID",
-      "Phone",
-      "User ID",
-    ],
-    sheetId,
-    userExists?.googleAccessToken,
-    userExists?.googleRefreshToken,
-    "Invoices",
-    userId
-  );
+  if (user?.googleAccessToken && user?.googleRefreshToken) {
+    await saveDataToSheets(
+      [
+        customerName,
+        jobDescription,
+        invoiceAmount,
+        address,
+        customerEmail,
+        telegramId,
+        customerPhone,
+        userId,
+      ],
+      [
+        "Customer Name",
+        "Job",
+        "Amount",
+        "Address",
+        "Email",
+        "Telegram ID",
+        "Phone",
+        "User ID",
+      ],
+      sheetId,
+      userExists?.googleAccessToken,
+      userExists?.googleRefreshToken,
+      "Invoices",
+      userId
+    );
+  }
 
   // const doc = new PDFDocument();
 
@@ -203,7 +204,10 @@ Email: ${customerEmail}
     userExists.sheetId = sheetId;
     userExists.save();
   }
-  await createXeroDocumentForUser(userId, invoicesPayload, "invoice");
+  if (userExists.tenantId && userExists.xeroToken) {
+    await createXeroDocumentForUser(userId, invoicesPayload, "invoice");
+  }
+
   // Clean up file
   // fs.unlinkSync(pdfPath);
 
