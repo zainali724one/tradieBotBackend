@@ -112,19 +112,21 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
     fs.writeFileSync(pdfPath, file.buffer);
 
     // Upload to Google Drive
-    await uploadPdfToDrive(
-      {
-        accessToken: userExists.googleAccessToken,
-        refreshToken: userExists.googleRefreshToken,
-      },
-      pdfPath,
-      fileName,
-      new Date().getFullYear(),
-      new Date().toLocaleString("default", { month: "long" }),
-      new Date().getDate(),
-      customerName,
-      pdfType === "invoice" ? "Invoices" : "Quotes"
-    );
+    if (userExists.googleAccessToken && userExists.googleRefreshToken) {
+      await uploadPdfToDrive(
+        {
+          accessToken: userExists.googleAccessToken,
+          refreshToken: userExists.googleRefreshToken,
+        },
+        pdfPath,
+        fileName,
+        new Date().getFullYear(),
+        new Date().toLocaleString("default", { month: "long" }),
+        new Date().getDate(),
+        customerName,
+        pdfType === "invoice" ? "Invoices" : "Quotes"
+      );
+    }
 
     // Send Email
     const transporter = nodemailer.createTransport({
@@ -134,7 +136,6 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
         pass: process.env.EMAIL_PASS,
       },
     });
-
 
     const quoteHtml = `
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
