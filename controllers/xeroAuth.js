@@ -11,6 +11,7 @@ exports.getConsentUrl = async (req, res, next) => {
     // res.send({ url });
 
     const modifiedUrl = `${url}&state=${userId}`;
+    console.log(modifiedUrl, "modifiedUrl");
     res.send({ url: modifiedUrl });
   } catch (error) {
     console.log(error, "consent error");
