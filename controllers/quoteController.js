@@ -197,23 +197,22 @@ Click here to pay: ${paymentLink}`;
   // Clean up file
   // fs.unlinkSync(pdfPath);
 
-  // if (user.tenantId && user.xeroToken) {
-  //   await createXeroDocumentForUser(
-  //     userId,
-  //     {
-
-  //       customerName,
-  //       jobDescription,
-  //       quoteAmount,
-  //       customerEmail,
-  //       telegramId,
-  //       customerPhone,
-  //       userId,
-  //       adress: address,
-  //     },
-  //     "quote"
-  //   );
-  // }
+  if (user.tenantId && user.xeroToken) {
+    await createXeroDocumentForUser(
+      userId,
+      {
+        customerName,
+        jobDescription,
+        quoteAmount,
+        customerEmail,
+        telegramId,
+        customerPhone,
+        userId,
+        adress: address,
+      },
+      "quote"
+    );
+  }
 
   res.status(201).json({
     message: "Quote submitted and emailed successfully",
