@@ -23,7 +23,7 @@ exports.handleXeroCallback = catchAsyncError(async (req, res) => {
   try {
     // ⚠️ Use the full req object here, not req.url
     const state = req.query.state;
-    console.log(state, "here is state---------");
+    console.log(state, "here is state");
     console.log(req.url, "req.url");
 
     const protocol =
