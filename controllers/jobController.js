@@ -5,6 +5,7 @@ const { catchAsyncError } = require("../middlewares/catchAsyncError");
 const { ErrorHandler } = require("../utils/ErrorHandler");
 const { createCalendarEvent } = require("../utils/googleCalendar");
 const { combineDateTime } = require("../utils/combineDateTime");
+const { saveDataToSheets } = require("../utils/googleSheets");
 
 exports.addJob = catchAsyncError(async (req, res, next) => {
   const {
@@ -15,6 +16,7 @@ exports.addJob = catchAsyncError(async (req, res, next) => {
     telegramId,
     userId,
     quoteId,
+    sheetId
   } = req.body;
 
   const isEmpty = (value) => !value || value.toString().trim() === "";
@@ -67,6 +69,33 @@ exports.addJob = catchAsyncError(async (req, res, next) => {
         endTime: endTimeISO,
       }
     );
+
+
+
+        await saveDataToSheets(
+          [
+            customerName,
+            jobDescription,
+            date,
+            time,
+            quoteId,
+            userId,
+          ],
+          [
+            "Customer Name",
+            "Job",
+            "Date",
+            "Time",
+            "Quote ID",
+            "User ID",
+          ],
+          sheetId,
+          userExists?.googleAccessToken,
+          userExists?.googleRefreshToken,
+          "Jobs",
+          userId
+        );
+      
   }
   const newJob = new Job({
     customerName,
