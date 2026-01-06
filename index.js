@@ -119,6 +119,9 @@ app.use(ErrorMiddleware);
 
 // Health Check
 
+// XERO_CLIENT_ID=51A32B19A81140C4AC8E625126EB961A
+// XERO_CLIENT_SECRET=SeJ8LgxzBXzzJuIEDpo3JmYdL827vJCnYSWdC00OE2HAlQ0G
+
 connectDb();
 // Start Server
 app.listen(PORT, () => {
