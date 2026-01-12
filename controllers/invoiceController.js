@@ -89,7 +89,7 @@ Amount: $${invoiceAmount}
 Address: ${address}
 Email: ${customerEmail}
 `;
-  await sendWhatsApp(customerPhone, messageBody);
+  // await sendWhatsApp(customerPhone, messageBody);
 
   // .then((res) => {
   //       console.log(res, "Whatsapp response");
@@ -133,39 +133,6 @@ Email: ${customerEmail}
       userId
     );
   }
-
-  // const doc = new PDFDocument();
-
-  // await new Promise((resolve, reject) => {
-  //   const stream = fs.createWriteStream(pdfPath);
-  //   doc.pipe(stream);
-
-  //   doc.fontSize(18).text("Invoice Summary", { underline: true });
-  //   doc.moveDown();
-  //   doc.fontSize(12).text(`Customer Name: ${customerName}`);
-  //   doc.text(`Job Description: ${jobDescription}`);
-  //   doc.text(`Amount: $${invoiceAmount}`);
-  //   doc.text(`Email: ${customerEmail}`);
-  //   doc.moveDown();
-  //   doc.end();
-
-  //   stream.on("finish", resolve);
-  //   stream.on("error", reject);
-  // });
-  // await generatePDF({
-  //     userId,
-  //     telegramId,
-  //     customerName,
-  //     jobDescription,
-  //     amount:invoiceAmount,
-  //     customerEmail,
-  //     address,
-  //     includeCost,
-  //     includeReceipt,
-  //     customerPhone,
-  //     companyLogo:user?.companyLogo ||"",
-  //     type:"invoice"
-  //   }, userExists?.pdfTemplateId,"invoice",userExists)
 
   const invoicesPayload = {
     invoices: [
