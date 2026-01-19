@@ -19,6 +19,7 @@ const { Invoice } = require("xero-node");
 const { createXeroDocumentForUser } = require("../services/XerroService");
 const generatePDF = require("../utils/pdfGenerator");
 const mongoose = require("mongoose");
+const job = require("../models/job");
 
 exports.addInvoice = catchAsyncError(async (req, res, next) => {
   const {
@@ -33,6 +34,7 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     includeReceipt,
     customerPhone,
     sheetId,
+    jobId
   } = req.body;
 
   // const user = await User.findOne({ telegramId });
@@ -58,8 +60,15 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Include Cost is required", 400));
   if (isEmpty(includeReceipt))
     return next(new ErrorHandler("Include Receipt is required", 400));
+    if (isEmpty(jobId))
+    return next(new ErrorHandler("Job ID is required", 400));
 
   const userExists = await User.findOne({ telegramId });
+
+    const jobExists = await job.findOne({ _id: jobId });
+  if (!jobExists) {
+    return next(new ErrorHandler("No job found with this ID", 404));
+  }
   if (!userExists) {
     return next(new ErrorHandler("No user found with this Telegram ID", 404));
   }
@@ -81,6 +90,7 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     includeReceipt,
     address,
     customerPhone,
+    jobId
   });
 
 

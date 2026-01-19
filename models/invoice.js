@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const job = require("./job");
 
 const invoiceSchema = new mongoose.Schema(
   {
@@ -46,6 +47,11 @@ const invoiceSchema = new mongoose.Schema(
     isPaid: {
       type: Boolean,
       default: false,
+    },
+
+    jobId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Job",
     },
   },
   { timestamps: true }

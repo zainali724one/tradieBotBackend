@@ -29,8 +29,8 @@ exports.addJob = catchAsyncError(async (req, res, next) => {
   if (isEmpty(time)) return next(new ErrorHandler("Time is required", 400));
   if (isEmpty(telegramId))
     return next(new ErrorHandler("Telegram ID is required", 400));
-  if (isEmpty(quoteId))
-    return next(new ErrorHandler("Quote ID is required", 400));
+  // if (isEmpty(quoteId))
+  //   return next(new ErrorHandler("Quote ID is required", 400));
   if (isEmpty(userId))
     return next(new ErrorHandler("User ID is required", 400));
 
@@ -43,10 +43,10 @@ exports.addJob = catchAsyncError(async (req, res, next) => {
     );
   }
   const userExists = await User.findOne({ telegramId });
-  const quoteExists = await Quote.findOne({ _id: quoteId });
-  if (!quoteExists) {
-    return next(new ErrorHandler("No quote found with this ID", 404));
-  }
+  // const quoteExists = await Quote.findOne({ _id: quoteId });
+  // if (!quoteExists) {
+  //   return next(new ErrorHandler("No quote found with this ID", 404));
+  // }
   if (!userExists) {
     return next(new ErrorHandler("No user found with this Telegram ID", 404));
   }
@@ -78,7 +78,7 @@ exports.addJob = catchAsyncError(async (req, res, next) => {
             jobDescription,
             date,
             time,
-            quoteId,
+            // quoteId,
             userId,
           ],
           [
@@ -104,7 +104,7 @@ exports.addJob = catchAsyncError(async (req, res, next) => {
     time,
     telegramId,
     userId,
-    quoteId,
+    // quoteId,
   });
 
   await newJob.save();
