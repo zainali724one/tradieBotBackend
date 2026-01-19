@@ -12,8 +12,8 @@ exports.getStripeData = catchAsyncError(async (req, res) => {
 
   console.log("Fetching stripe data for quoteId:", quoteId);
 
-  const singlequote = await quote.findById(quoteId);
-  if (!singlequote) return res.status(404).json({ error: "Quote not found" });
+  const singlequote = await invoice.findById(quoteId);
+  if (!singlequote) return res.status(404).json({ error: "Invoice not found" });
 
   if (!singlequote.paymentIntentId) {
     return res.status(400).json({ error: "No payment intent for this quote" });
