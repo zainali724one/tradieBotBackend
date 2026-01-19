@@ -142,6 +142,13 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
       <p>Dear Customer,</p>
       <p>Please find your ${pdfType} attached.</p>
       <p>Thank you for choosing us for your service.</p>
+    </div>
+  `;
+
+    const invoiceHtml = `
+    <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
+      <p>Dear Customer,</p>
+      <p>Please find your ${pdfType} attached.</p>
       <p>Here is the link to pay via Stripe:</p>
       <p>
         <a href="${paymentUrl}" 
@@ -151,13 +158,6 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
           Pay Now
         </a>
       </p>
-    </div>
-  `;
-
-    const invoiceHtml = `
-    <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
-      <p>Dear Customer,</p>
-      <p>Please find your ${pdfType} attached.</p>
     </div>
   `;
 
