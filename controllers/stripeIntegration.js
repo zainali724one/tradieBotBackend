@@ -24,7 +24,7 @@ exports.getStripeData = catchAsyncError(async (req, res) => {
   );
   res.json({
     clientSecret: paymentIntent.client_secret,
-    quoteAmount: singlequote.quoteAmount,
+    quoteAmount: singlequote.invoiceAmount,
     customerName: singlequote.customerName,
   });
 });
