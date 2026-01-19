@@ -7,6 +7,7 @@ const { saveDataToSheets } = require("../utils/googleSheets");
 const { uploadPdfToDrive } = require("../utils/googleDrive");
 const path = require("path");
 const PDFDocument = require("pdfkit");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const fs = require("fs");
 // const sendWhatsAppMessage = require("../services/twillioService");
@@ -34,10 +35,10 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     sheetId,
   } = req.body;
 
-  const user = await User.findOne({ telegramId });
-  if (!user) {
-    return next(new ErrorHandler("User not found for this telegramId", 404));
-  }
+  // const user = await User.findOne({ telegramId });
+  // if (!user) {
+  //   return next(new ErrorHandler("User not found for this telegramId", 404));
+  // }
 
   const isEmpty = (value) => !value || value.trim() === "";
 
@@ -63,6 +64,12 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("No user found with this Telegram ID", 404));
   }
 
+   if (!userExists?.stripeAccountId) {
+    return next(
+      new ErrorHandler("User does not have a connected Stripe account", 404)
+    );
+  }
+
   const newInvoice = new invoice({
     userId,
     telegramId,
@@ -76,10 +83,35 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     customerPhone,
   });
 
+
+
+    // Create Stripe PaymentIntent
+    const paymentAmount = Math.round(Number(invoiceAmount) * 100); // in cents
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: paymentAmount,
+      currency: "gbp",
+      automatic_payment_methods: { enabled: true },
+      metadata: {
+        invoiceId: newInvoice._id.toString(),
+        userId: userExists._id.toString(),
+      },
+      on_behalf_of: userExists?.stripeAccountId,
+      transfer_data: {
+        destination: userExists?.stripeAccountId,
+      },
+      receipt_email: customerEmail,
+      description: `Invoice for ${customerName}`,
+    });
+
+    // Save paymentIntent ID in invoice
+    newInvoice.paymentIntentId = paymentIntent.id;
+    await newInvoice.save();
+    const paymentLink = `https://tradie-bot.vercel.app/pay/quote/${newInvoice._id}`;
+
   await newInvoice.save();
 
   const tempDir = "/tmp";
-  const pdfPath = path.join(tempDir, `quote_${newInvoice._id}.pdf`);
+  const pdfPath = path.join(tempDir, `invoice_${newInvoice._id}.pdf`);
 
   const messageBody = `
 You have recieved the invoice by tradie bot
@@ -104,7 +136,7 @@ Email: ${customerEmail}
   //   .catch((err) => {
   //     console.log(err);
   //   });
-  if (user?.googleAccessToken && user?.googleRefreshToken) {
+  if (userExists?.googleAccessToken && userExists?.googleRefreshToken) {
     await saveDataToSheets(
       [
         customerName,
@@ -192,7 +224,8 @@ Email: ${customerEmail}
       includeCost,
       includeReceipt,
       customerPhone,
-      companyLogo: user?.companyLogo || "",
+      paymentUrl: paymentLink,
+      companyLogo: userExists?.companyLogo || "",
     },
   });
 });

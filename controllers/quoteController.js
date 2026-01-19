@@ -64,31 +64,31 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
   });
 
   // Create Stripe PaymentIntent
-  const paymentAmount = Math.round(Number(quoteAmount) * 100); // in cents
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: paymentAmount,
-    currency: "usd",
-    automatic_payment_methods: { enabled: true },
-    metadata: {
-      quoteId: newQuote._id.toString(),
-      userId: user._id.toString(),
-    },
-    on_behalf_of: user?.stripeAccountId,
-    transfer_data: {
-      destination: user?.stripeAccountId,
-    },
-    receipt_email: customerEmail,
-    description: `Quote for ${customerName}`,
-  });
+  // const paymentAmount = Math.round(Number(quoteAmount) * 100); // in cents
+  // const paymentIntent = await stripe.paymentIntents.create({
+  //   amount: paymentAmount,
+  //   currency: "usd",
+  //   automatic_payment_methods: { enabled: true },
+  //   metadata: {
+  //     quoteId: newQuote._id.toString(),
+  //     userId: user._id.toString(),
+  //   },
+  //   on_behalf_of: user?.stripeAccountId,
+  //   transfer_data: {
+  //     destination: user?.stripeAccountId,
+  //   },
+  //   receipt_email: customerEmail,
+  //   description: `Quote for ${customerName}`,
+  // });
 
   // Save paymentIntent ID in quote
-  newQuote.paymentIntentId = paymentIntent.id;
-  await newQuote.save();
+  // newQuote.paymentIntentId = paymentIntent.id;
+  // await newQuote.save();
 
   // Use /tmp directory in Vercel
   const tempDir = "/tmp";
   const pdfPath = path.join(tempDir, `quote_${newQuote._id}.pdf`);
-  const paymentLink = `https://tradie-bot.vercel.app/pay/quote/${newQuote._id}`;
+  // const paymentLink = `https://tradie-bot.vercel.app/pay/quote/${newQuote._id}`;
 
   const messageBody = `
 You have received a quote from UK Tradie Bot
@@ -225,7 +225,6 @@ Click here to pay: ${paymentLink}`;
       telegramId,
       customerPhone,
       userId,
-      paymentUrl: paymentLink,
       companyLogo: user?.companyLogo || "",
     },
   });

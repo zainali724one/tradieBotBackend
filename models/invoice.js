@@ -39,6 +39,14 @@ const invoiceSchema = new mongoose.Schema(
       enum: ["Yes", "No"],
       required: true,
     },
+
+     paymentIntentId: {
+      type: String,
+    },
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

@@ -26,20 +26,47 @@ const xero = require("./XeroClient");
 
   const tokenSet = JSON.parse(user.xeroToken);
   const parsedTenantObj = JSON.parse(user.tenantId);
-const parsedTenantId = parsedTenantObj.tenantId || parsedTenantObj.id;
+  const parsedTenantId = parsedTenantObj.tenantId || parsedTenantObj.id;
   xero.setTokenSet(tokenSet);
-//   xero.setTenantId(parsedTenantId);
-// console.log(tokenSet,"here is token set")
-if (!tokenSet?.refresh_token) {
-  throw new Error('Refresh token is missing');
-}
-  // 🔁 Refresh token if expired
-//   if (xero.isTokenExpired()) {
-    const newTokenSet = await xero.refreshToken();
-    xero.setTokenSet(newTokenSet);
-    user.xeroToken =JSON.stringify(newTokenSet)
-    await user.save();
-//   }
+
+  if (!tokenSet?.refresh_token) {
+    throw new Error("Refresh token is missing");
+  }
+
+  // Only refresh when the token is near expiry to avoid race conditions
+  const nowSec = Math.floor(Date.now() / 1000);
+  const expiresAt = tokenSet.expires_at || (tokenSet.expires_in ? nowSec + tokenSet.expires_in : null);
+
+  if (expiresAt && expiresAt < nowSec + 60) {
+    try {
+      const newTokenSet = await xero.refreshToken();
+      xero.setTokenSet(newTokenSet);
+      user.xeroToken = JSON.stringify(newTokenSet);
+      await user.save();
+    } catch (err) {
+      // Handle invalid_grant which commonly occurs when a refresh token was already rotated/revoked
+      const msg = err?.message || err?.toString();
+      console.error('[Xero] refreshToken failed:', msg);
+
+      if (msg && msg.includes('invalid_grant')) {
+        // Re-read user's token from DB - maybe another process already refreshed and saved a new token
+        const latestUser = await User.findById(userId);
+        if (latestUser && latestUser.xeroToken) {
+          try {
+            const latestTokenSet = JSON.parse(latestUser.xeroToken);
+            xero.setTokenSet(latestTokenSet);
+            // proceed without throwing; attempt to use the updated token
+          } catch (e) {
+            throw new Error('Xero refresh failed and stored token is invalid. Please reconnect Xero.');
+          }
+        } else {
+          throw new Error('Xero refresh failed and no replacement token found. Please reconnect Xero.');
+        }
+      } else {
+        throw err;
+      }
+    }
+  }
 
 
 
