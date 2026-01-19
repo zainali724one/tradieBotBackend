@@ -96,8 +96,7 @@ Customer Name: ${customerName}
 Address: ${address}
 Job: ${jobDescription}
 Amount: $${quoteAmount}
-Email: ${customerEmail}
-Click here to pay: ${paymentLink}`;
+Email: ${customerEmail}`;
 
   // await sendWhatsApp(customerPhone, messageBody)
   if (user?.googleAccessToken && user?.googleRefreshToken) {
