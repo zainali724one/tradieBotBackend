@@ -10,7 +10,7 @@ const User = require("../models/User");
 exports.getStripeData = catchAsyncError(async (req, res) => {
   const { quoteId } = req.params;
 
-  console.log("Fetching stripe data for quoteId:", quoteId);
+  console.log("quoteId:", quoteId);
 
   const singlequote = await invoice.findById(quoteId);
   if (!singlequote) return res.status(404).json({ error: "Invoice not found" });
