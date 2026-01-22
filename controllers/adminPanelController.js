@@ -647,14 +647,14 @@ exports.updateUserApprovalStatus = catchAsyncError(async (req, res, next) => {
 
 exports.getUserStats = catchAsyncError(async (req, res, next) => {
   // 1. Calculate Total Users
-  const totalUsers = await User.countDocuments({ isApproved: true });
+  const totalUsers = await User.countDocuments({ isApproved: "Accepted" });
 
   // 2. Calculate Users Created This Week
   const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7); // Set date to 7 days in the past
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7); 
 
   const usersThisWeek = await User.countDocuments({
-    createdAt: { $gte: sevenDaysAgo } // Query for users created on or after 'sevenDaysAgo'
+    createdAt: { $gte: sevenDaysAgo }
   });
 
   // 3. Calculate Total Pending Requests
