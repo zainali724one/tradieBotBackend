@@ -647,7 +647,7 @@ exports.updateUserApprovalStatus = catchAsyncError(async (req, res, next) => {
 
 exports.getUserStats = catchAsyncError(async (req, res, next) => {
   // 1. Calculate Total Users
-  const totalUsers = await User.countDocuments();
+  const totalUsers = await User.countDocuments({ isApproved: true });
 
   // 2. Calculate Users Created This Week
   const sevenDaysAgo = new Date();
