@@ -31,13 +31,12 @@ const PORT = process.env.PORT || 3000;
 // ... (Your allowedOrigins array)
 const allowedOrigins = [
   "https://tradie-bot.vercel.app",
-  ,
   "http://localhost:5173",
   "https://tradiebot-admin-panel.netlify.app",
   "http://127.0.0.1:5501",
   "https://letsgomanga.com",
   "https://tradiebot.netlify.app",
-  "admintradiebot.netlify.app"
+  "https://admintradiebot.netlify.app"
 ];
 
 app.use(
