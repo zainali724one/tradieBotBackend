@@ -37,6 +37,7 @@ const allowedOrigins = [
   "http://127.0.0.1:5501",
   "https://letsgomanga.com",
   "https://tradiebot.netlify.app",
+  "admintradiebot.netlify.app"
 ];
 
 app.use(
