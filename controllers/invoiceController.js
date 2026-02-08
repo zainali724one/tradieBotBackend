@@ -34,7 +34,9 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     includeReceipt,
     customerPhone,
     sheetId,
-    jobId
+    jobId,
+    materialCost,
+    profit
   } = req.body;
 
   // const user = await User.findOne({ telegramId });
@@ -79,8 +81,8 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     );
   }
 
-  const newInvoice = new invoice({
-    userId,
+  let invoiceData = {
+   userId,
     telegramId,
     customerName,
     jobDescription,
@@ -90,8 +92,18 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     includeReceipt,
     address,
     customerPhone,
-    jobId
-  });
+    jobId,
+  }
+
+  if (materialCost) {
+    invoiceData.materialCost = materialCost || 0;
+  }
+  if (profit) {
+    invoiceData.profit = profit || 0;
+  }
+
+  const newInvoice = new invoice(invoiceData);
+  // });
 
 
 
@@ -174,6 +186,35 @@ Email: ${customerEmail}
       "Invoices",
       userId
     );
+
+
+    await saveDataToSheets(
+      [
+        customerName,
+        jobDescription,
+        invoiceAmount,
+        address,
+        customerEmail,
+        telegramId,
+        customerPhone,
+        userId,
+      ],
+      [
+        "Customer Name",
+        "Job",
+        "Amount",
+        "Address",
+        "Email",
+        "Telegram ID",
+        "Phone",
+        "User ID",
+      ],
+      sheetId,
+      userExists?.googleAccessToken,
+      userExists?.googleRefreshToken,
+      "Recipts",
+      userId
+    );
   }
 
   const invoicesPayload = {
@@ -226,6 +267,7 @@ Email: ${customerEmail}
     data: {
       userId,
       telegramId,
+      _id: newInvoice._id.toString(),
       customerName,
       jobDescription,
       amount: invoiceAmount,
@@ -234,6 +276,8 @@ Email: ${customerEmail}
       includeCost,
       includeReceipt,
       customerPhone,
+      materialCost: invoiceData.materialCost || 0,
+      profit: invoiceData.profit || 0,
       paymentUrl: paymentLink,
       companyLogo: userExists?.companyLogo || "",
     },

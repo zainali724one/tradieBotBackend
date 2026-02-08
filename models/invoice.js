@@ -53,6 +53,15 @@ const invoiceSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Job",
     },
+
+      materialCost: {
+        type: Number,
+      
+      },
+    profit: {
+        type: Number,
+
+      },
   },
   { timestamps: true }
 );

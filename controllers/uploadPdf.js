@@ -1,68 +1,3 @@
-//   const fs = require('fs');
-// const path = require('path');
-// const User = require("../models/User");
-// const nodemailer = require("nodemailer");
-// const { uploadPdfToDrive } = require('../utils/googleDrive');
-// const { catchAsyncError } = require('../middlewares/catchAsyncError');
-
-// exports.uploadPdf = catchAsyncError(async(req, res) => {
-//   const file = req.file;
-//   const {telegramId,pdfType,customerEmail,customerName}=req.body
-//   if (!file) return res.status(400).send('No file uploaded');
-
-//    const userExists = await User.findOne({ telegramId });
-//     if (!userExists) {
-//       return next(new ErrorHandler("No user found with this Telegram ID", 404));
-//     }
-
-// const dirPath = path.join(__dirname, `../${pdfType}`);
-// if (!fs.existsSync(dirPath)) {
-//   fs.mkdirSync(dirPath, { recursive: true });
-// }
-
-// const pdfPath = path.join(__dirname, `../${pdfType}`, `${pdfType}_${Date.now()}.pdf`);
-// fs.writeFileSync(pdfPath, req.file.buffer);
-
-//   await uploadPdfToDrive(
-//     {
-//       accessToken: userExists.googleAccessToken,
-//       refreshToken: userExists.googleRefreshToken,
-//     },
-//     pdfPath,
-//     `${pdfType}_${Date.now()}.pdf`,
-//     new Date().getFullYear(),
-//     new Date().toLocaleString("default", { month: "long" }),
-//     new Date().getDay(),
-//     customerName,
-//     pdfType==="invoice"?"Invoices":"Quotes"
-//   );
-
-// //   Send Email
-//   const transporter = nodemailer.createTransport({
-//     service: "gmail",
-//     auth: {
-//       user: process.env.EMAIL_USER,
-//       pass: process.env.EMAIL_PASS,
-//     },
-//   });
-
-//   await transporter.sendMail({
-//     from: "UK Tradie Bot",
-//     to: customerEmail,
-//     subject: `Your ${pdfType==="invoice"?"Invoice":"Quote"} from UK Tradie`,
-//     text: `Please find your ${pdfType} attached.`,
-//     attachments: [
-//       {
-//         filename: `${pdfType}_${Date.now()}.pdf`,
-//         path: pdfPath,
-//       },
-//     ],
-//   });
-
-//   fs.unlinkSync(pdfPath);
-
-//   res.status(200).json({ message: 'PDF received', size: pdfBuffer.length });
-// } )
 
 const fs = require("fs");
 const path = require("path");
@@ -71,6 +6,7 @@ const nodemailer = require("nodemailer");
 const { uploadPdfToDrive } = require("../utils/googleDrive");
 const { catchAsyncError } = require("../middlewares/catchAsyncError");
 const { ErrorHandler } = require("../utils/ErrorHandler");
+const { saveDataToSheets } = require("../utils/googleSheets");
 // const ErrorHandler = require('../utils/errorHandler');
 
 exports.uploadPdf = catchAsyncError(async (req, res, next) => {
@@ -80,6 +16,10 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
     pdfType,
     customerEmail,
     customerName,
+    _id,
+    jobDescription,
+    profit,
+    materialCost,
     amount,
     customerPhone,
     paymentUrl,
@@ -112,7 +52,7 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
     fs.writeFileSync(pdfPath, file.buffer);
 
     // Upload to Google Drive
-    if (userExists.googleAccessToken && userExists.googleRefreshToken) {
+    if (userExists.googleAccessToken && userExists.googleRefreshToken){
       await uploadPdfToDrive(
         {
           accessToken: userExists.googleAccessToken,
@@ -124,11 +64,12 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
         new Date().toLocaleString("default", { month: "long" }),
         new Date().getDate(),
         customerName,
-        pdfType === "invoice" ? "Invoices" : "Quotes"
+        pdfType === "invoice" ? "Invoices" : pdfType === "receipt" ? "Receipts" : "Quotes"
       );
     }
 
     // Send Email
+    if(pdfType != "receipt") {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -176,6 +117,40 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
         },
       ],
     });
+
+  }
+
+  if (pdfType === "receipt" && userExists.googleAccessToken && userExists.googleRefreshToken && userExists.sheetId) {
+      await saveDataToSheets(
+          [
+            _id,
+            customerName,
+            jobDescription,
+
+            customerEmail,
+            customerPhone,
+                        amount,
+            materialCost,
+            profit
+          ],
+          [
+            "Receipt ID",
+            "Customer Name",
+            "Job",
+
+            "Email",
+            "Phone",
+                        "Amount",
+"Material Cost",
+"Profit"
+          ],
+          userExists?.sheetId,
+          userExists?.googleAccessToken,
+          userExists?.googleRefreshToken,
+          "Receipts",
+          userExists?._id.toString()
+        );
+  }
 
     res.status(200).json({
       success: true,
