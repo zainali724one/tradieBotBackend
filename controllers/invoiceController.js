@@ -188,33 +188,7 @@ Email: ${customerEmail}
     );
 
 
-    await saveDataToSheets(
-      [
-        customerName,
-        jobDescription,
-        invoiceAmount,
-        address,
-        customerEmail,
-        telegramId,
-        customerPhone,
-        userId,
-      ],
-      [
-        "Customer Name",
-        "Job",
-        "Amount",
-        "Address",
-        "Email",
-        "Telegram ID",
-        "Phone",
-        "User ID",
-      ],
-      sheetId,
-      userExists?.googleAccessToken,
-      userExists?.googleRefreshToken,
-      "Recipts",
-      userId
-    );
+  
   }
 
   const invoicesPayload = {
