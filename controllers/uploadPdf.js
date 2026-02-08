@@ -137,12 +137,11 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
             "Receipt ID",
             "Customer Name",
             "Job",
-
             "Email",
             "Phone",
-                        "Amount",
-"Material Cost",
-"Profit"
+            "Amount",
+            "Material Cost",
+            "Profit"
           ],
           userExists?.sheetId,
           userExists?.googleAccessToken,
