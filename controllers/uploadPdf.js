@@ -237,64 +237,17 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
 
 
 
-
 if (pdfType !== "receipt") {
   
   let transporter;
-  let senderEmail; // <--- 1. Define this variable here
+  let senderEmail; 
 
-  // 1. DYNAMIC TRANSPORTER CREATION
-  if (userExists.emailProvider === 'gmail' || userExists.googleAccessToken) {
+  // 1. DYNAMIC TRANSPORTER SELECTION
+  if (userExists.emailProvider === 'smtp') {
     
-    // --- GMAIL OAUTH LOGIC ---
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.CLIENT_ID,
-      process.env.CLIENT_SECRET,
-      process.env.REDIRECT_URI
-    );
-
-    oauth2Client.setCredentials({
-      refresh_token: userExists.googleRefreshToken,
-      access_token: userExists.googleAccessToken
-    });
-
-    // Auto-refresh token
-    const accessTokenResponse = await oauth2Client.getAccessToken();
-    const accessToken = accessTokenResponse.token; // Safe extraction
-
-    // Fetch user email
- 
-    
-const userInfoResponse = await oauth2Client.request({
-      url: 'https://www.googleapis.com/oauth2/v2/userinfo'
-    });
-
-    oauth2Client.setCredentials({
-  access_token: accessToken,
-  refresh_token: userExists.googleRefreshToken,
-});
-
-    const userEmail = userInfoResponse.data.email;
-    const userName = userInfoResponse.data.name;
-    senderEmail = userEmail; // <--- 2. Assign to shared variable
-
-    console.log(`📧 Authenticated as: ${senderEmail}`);
-
-    transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        type: "OAuth2",
-        user: senderEmail,
-        clientId: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-        refreshToken: userExists.googleRefreshToken,
-        accessToken: accessToken,
-      },
-    });
-
-  } else {
-    // --- CUSTOM SMTP LOGIC ---
-    senderEmail = userExists.smtpUser; // <--- 3. Assign here for SMTP users
+    // --- OPTION A: CUSTOM SMTP (User's Private Email) ---
+    console.log("👉 Sending via User's Custom SMTP");
+    senderEmail = userExists.smtpUser; 
 
     transporter = nodemailer.createTransport({
       host: userExists.smtpHost,
@@ -303,6 +256,21 @@ const userInfoResponse = await oauth2Client.request({
       auth: {
         user: userExists.smtpUser,
         pass: decrypt(userExists.smtpPass), 
+      },
+    });
+
+  } else {
+    
+    // --- OPTION B: PLATFORM EMAIL (Default / Your Server Email) ---
+    // This replaces the complex Gmail OAuth flow with your fixed credentials
+    console.log("👉 Sending via Platform Email");
+    senderEmail = process.env.EMAIL_USER; 
+
+    transporter = nodemailer.createTransport({
+      service: "gmail", // Or whatever service your platform uses
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
   }
@@ -334,12 +302,15 @@ const userInfoResponse = await oauth2Client.request({
   `;
 
   // 3. SEND MAIL
-  // Now we use the 'senderEmail' variable we ensured is set above
+  // Critical: Even if using Platform Email, we use the User's Business Name as the "Display Name"
+  // Format: "John's Plumbing" <platform@your-app.com>
   const senderIdentity = `"${userExists.businessName || userExists.name}" <${senderEmail}>`;
 
   await transporter.sendMail({
     from: senderIdentity, 
     to: customerEmail,
+    // Reply-To is helpful here: If customer replies, it goes to the user, not the platform bot
+    replyTo: userExists.email, 
     subject: `Your ${
       pdfType === "invoice" ? "Invoice" : "Quote"
     } from ${userExists.businessName || "UK Tradie"}`,
@@ -353,7 +324,7 @@ const userInfoResponse = await oauth2Client.request({
     ],
   });
 
-  console.log(`✅ Email sent from ${senderIdentity}`);
+  console.log(`✅ Email sent via ${userExists.emailProvider === 'smtp' ? 'SMTP' : 'Platform'} as ${senderIdentity}`);
 }
 
   if (pdfType === "receipt" && userExists.googleAccessToken && userExists.googleRefreshToken && userExists.sheetId) {
