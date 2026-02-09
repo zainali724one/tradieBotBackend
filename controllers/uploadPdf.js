@@ -147,11 +147,26 @@ if (pdfType !== "receipt") {
     // Auto-refresh the token if needed
     const accessToken = await oauth2Client.getAccessToken();
 
+
+
+    const { token } = await oauth2Client.getAccessToken();
+
+    // Fetch the email address associated with this token
+    const oauth2 = google.oauth2({
+      auth: oauth2Client,
+      version: "v2",
+    });
+    
+    const userInfo = await oauth2.userinfo.get();
+    const userEmail = userInfo.data.email; // <--- THIS IS THE MISSING KEY
+
+    console.log(`📧 Authenticated as: ${userEmail}`);
+
     transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         type: "OAuth2",
-        user: userExists.email, // The user's Gmail address
+        user: userEmail, // The user's Gmail address
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
         refreshToken: userExists.googleRefreshToken,
