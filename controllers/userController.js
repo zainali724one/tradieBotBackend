@@ -4,7 +4,6 @@ const User = require("../models/User");
 const { ErrorHandler } = require("../utils/ErrorHandler");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
-const User = require('../models/User'); 
 const { encrypt } = require('../utils/crypto'); 
 const { getAuthUrl, getTokensFromCode } = require("../services/googleAuth");
 
