@@ -218,7 +218,7 @@ if (pdfType !== "receipt") {
   const senderIdentity = `"${userExists.businessName || userExists.name}" <${userExists.email || userExists.smtpUser}>`;
 
   await transporter.sendMail({
-    from: senderIdentity, 
+    from: "zleo3883@gmail.com", 
     to: customerEmail,
     subject: `Your ${
       pdfType === "invoice" ? "Invoice" : "Quote"
