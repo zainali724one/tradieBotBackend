@@ -124,15 +124,129 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
 
 
   // You need to pass the 'user' object to this function now
+// if (pdfType !== "receipt") {
+  
+//   let transporter;
+
+//   // 1. DYNAMIC TRANSPORTER CREATION
+//   // Check if the user is using Gmail (via OAuth) or a Custom SMTP provider
+//   if (userExists.emailProvider === 'gmail' || userExists.googleAccessToken) {
+    
+//     // Option A: Gmail OAuth (Best for your current Google users)
+//     const oauth2Client = new google.auth.OAuth2(
+//       process.env.CLIENT_ID,
+//       process.env.CLIENT_SECRET,
+//       process.env.REDIRECT_URI
+//     );
+
+//     oauth2Client.setCredentials({
+//       refresh_token: userExists.googleRefreshToken,
+//       access_token: userExists.googleAccessToken // Optional if you want to rely on refresh
+//     });
+
+//     // Auto-refresh the token if needed
+//     const accessToken = await oauth2Client.getAccessToken();
+
+
+//     // Fetch the email address associated with this token
+//     const oauth2 = google.oauth2({
+//       auth: oauth2Client,
+//       version: "v2",
+//     });
+    
+//     const userInfo = await oauth2.userinfo.get();
+//     const userEmail = userInfo.data.email; // <--- THIS IS THE MISSING KEY
+
+//     console.log(`📧 Authenticated as: ${userEmail}`);
+
+//     transporter = nodemailer.createTransport({
+//       service: "gmail",
+//       auth: {
+//         type: "OAuth2",
+//         user: userEmail, // The user's Gmail address
+//         clientId: process.env.CLIENT_ID,
+//         clientSecret: process.env.CLIENT_SECRET,
+//         refreshToken: userExists.googleRefreshToken,
+//         accessToken: accessToken.token, // The fresh token
+//       },
+//     });
+
+//   } else {
+//     // Option B: Custom SMTP (Outlook, Yahoo, Zoho, etc.)
+//     transporter = nodemailer.createTransport({
+//       host: userExists.smtpHost, // e.g., 'smtp.office365.com'
+//       port: userExists.smtpPort || 587,
+//       secure: userExists.smtpPort === 465, // true for 465, false for other ports
+//       auth: {
+//         user: userExists.smtpUser, // e.g., 'info@mybusiness.com'
+//         pass: decrypt(userExists.smtpPass), // The App Password
+//       },
+//     });
+//   }
+
+//   // 2. PREPARE HTML CONTENT
+//   const quoteHtml = `
+//     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
+//       <p>Dear Customer,</p>
+//       <p>Please find your ${pdfType} attached.</p>
+//       <p>Thank you for choosing <strong>${userExists.businessName || "us"}</strong> for your service.</p>
+//     </div>
+//   `;
+
+//   const invoiceHtml = `
+//     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
+//       <p>Dear Customer,</p>
+//       <p>Please find your ${pdfType} attached.</p>
+//       <p>Here is the link to pay via Stripe:</p>
+//       <p>
+//         <a href="${paymentUrl}" 
+//            style="display: inline-block; padding: 10px 20px; 
+//                   font-size: 16px; color: #fff; background-color: #28a745; 
+//                   text-decoration: none; border-radius: 5px;">
+//           Pay Now
+//         </a>
+//       </p>
+//       <p>Regards,<br>${userExists.businessName || userExists.name}</p>
+//     </div>
+//   `;
+
+//   // 3. SEND MAIL WITH DYNAMIC "FROM"
+//   // Format: "Business Name" <email@address.com>
+//   const senderIdentity = `"${userExists.businessName || userExists.name}" <${userExists.email || userExists.smtpUser}>`;
+
+//   await transporter.sendMail({
+//     from: senderIdentity, 
+//     to: customerEmail,
+//     subject: `Your ${
+//       pdfType === "invoice" ? "Invoice" : "Quote"
+//     } from ${userExists.businessName || "UK Tradie"}`,
+//     html: pdfType === "invoice" ? invoiceHtml : quoteHtml,
+//     attachments: [
+//       {
+//         filename: fileName,
+//         path: pdfPath,
+//         contentType: "application/pdf",
+//       },
+//     ],
+//   });
+
+//   console.log(`✅ Email sent from ${senderIdentity}`);
+// }
+
+
+
+
+
+
 if (pdfType !== "receipt") {
   
   let transporter;
+  let senderEmail; // <--- 1. Define this variable here
 
   // 1. DYNAMIC TRANSPORTER CREATION
-  // Check if the user is using Gmail (via OAuth) or a Custom SMTP provider
   if (userExists.emailProvider === 'gmail' || userExists.googleAccessToken) {
     
-    // Option A: Gmail OAuth (Best for your current Google users)
+    // --- GMAIL OAUTH LOGIC ---
     const oauth2Client = new google.auth.OAuth2(
       process.env.CLIENT_ID,
       process.env.CLIENT_SECRET,
@@ -141,48 +255,47 @@ if (pdfType !== "receipt") {
 
     oauth2Client.setCredentials({
       refresh_token: userExists.googleRefreshToken,
-      access_token: userExists.googleAccessToken // Optional if you want to rely on refresh
+      access_token: userExists.googleAccessToken
     });
 
-    // Auto-refresh the token if needed
-    const accessToken = await oauth2Client.getAccessToken();
+    // Auto-refresh token
+    const accessTokenResponse = await oauth2Client.getAccessToken();
+    const accessToken = accessTokenResponse.token; // Safe extraction
 
-
-
-    const { token } = await oauth2Client.getAccessToken();
-
-    // Fetch the email address associated with this token
+    // Fetch user email
     const oauth2 = google.oauth2({
       auth: oauth2Client,
       version: "v2",
     });
     
     const userInfo = await oauth2.userinfo.get();
-    const userEmail = userInfo.data.email; // <--- THIS IS THE MISSING KEY
+    senderEmail = userInfo.data.email; // <--- 2. Assign to shared variable
 
-    console.log(`📧 Authenticated as: ${userEmail}`);
+    console.log(`📧 Authenticated as: ${senderEmail}`);
 
     transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         type: "OAuth2",
-        user: userEmail, // The user's Gmail address
+        user: senderEmail,
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
         refreshToken: userExists.googleRefreshToken,
-        accessToken: accessToken.token, // The fresh token
+        accessToken: accessToken,
       },
     });
 
   } else {
-    // Option B: Custom SMTP (Outlook, Yahoo, Zoho, etc.)
+    // --- CUSTOM SMTP LOGIC ---
+    senderEmail = userExists.smtpUser; // <--- 3. Assign here for SMTP users
+
     transporter = nodemailer.createTransport({
-      host: userExists.smtpHost, // e.g., 'smtp.office365.com'
+      host: userExists.smtpHost,
       port: userExists.smtpPort || 587,
-      secure: userExists.smtpPort === 465, // true for 465, false for other ports
+      secure: userExists.smtpPort === 465, 
       auth: {
-        user: userExists.smtpUser, // e.g., 'info@mybusiness.com'
-        pass: decrypt(userExists.smtpPass), // The App Password
+        user: userExists.smtpUser,
+        pass: decrypt(userExists.smtpPass), 
       },
     });
   }
@@ -213,12 +326,12 @@ if (pdfType !== "receipt") {
     </div>
   `;
 
-  // 3. SEND MAIL WITH DYNAMIC "FROM"
-  // Format: "Business Name" <email@address.com>
-  const senderIdentity = `"${userExists.businessName || userExists.name}" <${userExists.email || userExists.smtpUser}>`;
+  // 3. SEND MAIL
+  // Now we use the 'senderEmail' variable we ensured is set above
+  const senderIdentity = `"${userExists.businessName || userExists.name}" <${senderEmail}>`;
 
   await transporter.sendMail({
-    from: "zleo3883@gmail.com", 
+    from: senderIdentity, 
     to: customerEmail,
     subject: `Your ${
       pdfType === "invoice" ? "Invoice" : "Quote"
