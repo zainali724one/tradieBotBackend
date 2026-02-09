@@ -263,14 +263,16 @@ if (pdfType !== "receipt") {
     const accessToken = accessTokenResponse.token; // Safe extraction
 
     // Fetch user email
-    const oauth2 = google.oauth2({
-      auth: oauth2Client,
-      version: "v2",
-    });
+ 
     
 const userInfoResponse = await oauth2Client.request({
       url: 'https://www.googleapis.com/oauth2/v2/userinfo'
     });
+
+    oauth2Client.setCredentials({
+  access_token: accessToken,
+  refresh_token: userExists.googleRefreshToken,
+});
 
     const userEmail = userInfoResponse.data.email;
     const userName = userInfoResponse.data.name;
