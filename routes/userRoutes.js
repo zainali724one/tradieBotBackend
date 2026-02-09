@@ -13,6 +13,7 @@ const {
   deleteAccount,
   connectToGoogle,
   googleOAuth2Callback,
+  emailSettings,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -25,6 +26,7 @@ router.post("/sendOTP", sendOTP);
 router.post("/verifyOTP", verifyOTP);
 router.post("/updatePassword", updatePassword);
 router.put("/updateProfile", updateProfile);
+router.put("/emailSettings", emailSettings);
 router.put("/changePassword", changePassword);
 router.delete("/deleteAccount", deleteAccount);
 router.get("/getUser/:telegramId", getUser);

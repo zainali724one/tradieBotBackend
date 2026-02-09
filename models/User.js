@@ -27,6 +27,19 @@ const userSchema = new mongoose.Schema(
     companyLogo: { type: String },
     pdfTemplateId: { type: String, default: "1" },
     isApproved: { type: String, default: "Pending" }, // New field added
+    businessName: { 
+    type: String, 
+    default: "" // e.g. "John's Plumbing"
+  },
+  emailProvider: { 
+    type: String, 
+    enum: ['gmail', 'smtp'], 
+    default: 'gmail' 
+  },
+  smtpHost: { type: String },      
+  smtpPort: { type: Number },    
+  smtpUser: { type: String },      
+  smtpPass: { type: String },
   },
   { timestamps: true }
 );

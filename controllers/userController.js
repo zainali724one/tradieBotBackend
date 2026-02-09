@@ -4,6 +4,8 @@ const User = require("../models/User");
 const { ErrorHandler } = require("../utils/ErrorHandler");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
+const User = require('../models/User'); 
+const { encrypt } = require('../utils/crypto'); 
 const { getAuthUrl, getTokensFromCode } = require("../services/googleAuth");
 
 exports.userAuthenticator = catchAsyncError(async (req, res, next) => {
@@ -407,3 +409,42 @@ exports.googleOAuth2Callback = catchAsyncError(async (req, res) => {
     res.status(500).send("❌ Error connecting Google account.");
   }
 });
+  
+exports.emailSettings = async (req, res) => {
+  try {
+    const { userId } = req.body; // Or get from req.user.id if using middleware
+    const { 
+      businessName, 
+      emailProvider, 
+      smtpHost, 
+      smtpPort, 
+      smtpUser, 
+      smtpPass 
+    } = req.body;
+
+    const updates = {
+      businessName,
+      emailProvider,
+    };
+
+    // Only update SMTP fields if provider is NOT gmail
+    if (emailProvider === 'smtp') {
+      updates.smtpHost = smtpHost;
+      updates.smtpPort = smtpPort;
+      updates.smtpUser = smtpUser;
+      
+      // Only encrypt and update password if the user actually typed a new one
+      // (Don't overwrite existing password with empty string if they left it blank)
+      if (smtpPass && smtpPass.trim() !== "") {
+        updates.smtpPass = encrypt(smtpPass);
+      }
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updates, { new: true });
+    
+    res.json({ success: true, user: updatedUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+}

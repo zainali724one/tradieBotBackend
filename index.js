@@ -82,7 +82,7 @@ app.use(`/api/history`, historyRoutes);
 app.use(`/api/quote`, quoteRoute);
 app.use(`/api/invoice`, invoiceRoutes);
 app.use(`/api/job`, jobRoutes);
-app.use(`/api/stripe`, stripeRoutes); // <-- This file should NOT contain the /webhook route anymore
+app.use(`/api/stripe`, stripeRoutes);
 app.use(`/api/admin`, adminRoutes);
 app.use(`/api/xero`, xeroRoutes);
 app.use(`/api`, uploadPdfRoutes);
