@@ -268,10 +268,13 @@ if (pdfType !== "receipt") {
       version: "v2",
     });
     
-    const userInfo = await oauth2.userinfo.get({
-      auth: oauth2Client 
+const userInfoResponse = await oauth2Client.request({
+      url: 'https://www.googleapis.com/oauth2/v2/userinfo'
     });
-    senderEmail = userInfo.data.email; // <--- 2. Assign to shared variable
+
+    const userEmail = userInfoResponse.data.email;
+    const userName = userInfoResponse.data.name;
+    senderEmail = userEmail; // <--- 2. Assign to shared variable
 
     console.log(`📧 Authenticated as: ${senderEmail}`);
 
