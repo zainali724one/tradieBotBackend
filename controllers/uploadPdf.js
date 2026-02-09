@@ -268,7 +268,9 @@ if (pdfType !== "receipt") {
       version: "v2",
     });
     
-    const userInfo = await oauth2.userinfo.get();
+    const userInfo = await oauth2.userinfo.get({
+      auth: oauth2Client 
+    });
     senderEmail = userInfo.data.email; // <--- 2. Assign to shared variable
 
     console.log(`📧 Authenticated as: ${senderEmail}`);
