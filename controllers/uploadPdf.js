@@ -8,6 +8,7 @@ const { catchAsyncError } = require("../middlewares/catchAsyncError");
 const { ErrorHandler } = require("../utils/ErrorHandler");
 const { saveDataToSheets } = require("../utils/googleSheets");
 const { decrypt } = require("../utils/crypto");
+const { google } = require("googleapis");
 
 exports.uploadPdf = catchAsyncError(async (req, res, next) => {
   const file = req.file;
@@ -250,7 +251,6 @@ if (pdfType !== "receipt") {
           userExists?._id.toString()
         );
   }
-
     res.status(200).json({
       success: true,
       message: "PDF processed successfully",
