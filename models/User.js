@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
   },
   emailProvider: { 
     type: String, 
-    enum: ['gmail', 'smtp'], 
+    enum: ['gmail', 'smtp','platform'], 
     default: 'gmail' 
   },
   smtpHost: { type: String },      
