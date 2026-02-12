@@ -26,6 +26,8 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
     paymentUrl,
   } = req.body;
 
+  let uploadPdfData;
+
   if (!file) {
     return next(new ErrorHandler("No file uploaded", 400));
   }
@@ -54,7 +56,7 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
 
     // Upload to Google Drive
     if (userExists.googleAccessToken && userExists.googleRefreshToken){
-      await uploadPdfToDrive(
+    uploadPdfData = await uploadPdfToDrive(
         {
           accessToken: userExists.googleAccessToken,
           refreshToken: userExists.googleRefreshToken,
@@ -338,7 +340,8 @@ if (pdfType !== "receipt") {
             customerPhone,
                         amount,
             materialCost,
-            profit
+            profit,
+            uploadPdfData ? uploadPdfData?.webViewLink : "No Link"
           ],
           [
             "Receipt ID",
@@ -348,7 +351,8 @@ if (pdfType !== "receipt") {
             "Phone",
             "Amount",
             "Material Cost",
-            "Profit"
+            "Profit",
+            "receiptPdfUrl"
           ],
           userExists?.sheetId,
           userExists?.googleAccessToken,
