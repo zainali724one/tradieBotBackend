@@ -245,7 +245,7 @@ if (pdfType !== "receipt") {
   let senderEmail; 
 
   // 1. DYNAMIC TRANSPORTER SELECTION
-  if (userExists.emailProvider === 'smtp') {
+  if (userExists.emailProvider === 'smtp'){
     
     // --- OPTION A: CUSTOM SMTP (User's Private Email) ---
     console.log("👉 Sending via User's Custom SMTP");
@@ -261,7 +261,7 @@ if (pdfType !== "receipt") {
       },
     });
 
-  } else {
+  }else{
     
     // --- OPTION B: PLATFORM EMAIL (Default / Your Server Email) ---
     // This replaces the complex Gmail OAuth flow with your fixed credentials
@@ -335,10 +335,9 @@ if (pdfType !== "receipt") {
             _id,
             customerName,
             jobDescription,
-
             customerEmail,
             customerPhone,
-                        amount,
+            amount,
             materialCost,
             profit,
             uploadPdfData ? uploadPdfData?.webViewLink : "No Link"
