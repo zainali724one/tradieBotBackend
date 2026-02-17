@@ -254,6 +254,9 @@ Email: ${customerEmail}
       profit: invoiceData.profit || 0,
       paymentUrl: paymentLink,
       companyLogo: userExists?.companyLogo || "",
+      businessEmail: userExists?.email || "",
+      businessName: userExists?.businessName || "",
+      businessPhone: userExists?.phone || "",
     },
   });
 });

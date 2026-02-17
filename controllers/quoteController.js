@@ -225,6 +225,9 @@ Email: ${customerEmail}`;
       customerPhone,
       userId,
       companyLogo: user?.companyLogo || "",
+      businessEmail: user?.email || "",
+      businessName: user?.businessName || "",
+      businessPhone: user?.phone || "",
     },
   });
 });
