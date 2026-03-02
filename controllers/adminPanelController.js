@@ -547,7 +547,7 @@ exports.updateUser = catchAsyncError(async (req, res, next) => {
     }
 
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `"UK Tradie Bot" <${process.env.EMAIL_USER}>`,
       to: updatedUser.email,
       subject: "Your TradieBot Account Has Been Accepted!",
       html: emailHtmlContent,
