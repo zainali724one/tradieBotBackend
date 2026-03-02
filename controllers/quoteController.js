@@ -63,6 +63,8 @@ exports.addQuote = catchAsyncError(async (req, res, next) => {
     userId,
   });
 
+  await newQuote.save();
+
   // Create Stripe PaymentIntent
   // const paymentAmount = Math.round(Number(quoteAmount) * 100); // in cents
   // const paymentIntent = await stripe.paymentIntents.create({
