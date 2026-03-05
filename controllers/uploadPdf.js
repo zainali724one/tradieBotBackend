@@ -56,7 +56,7 @@ exports.uploadPdf = catchAsyncError(async (req, res, next) => {
 
     // Upload to Google Drive
     if (userExists.googleAccessToken && userExists.googleRefreshToken){
-    uploadPdfData = await uploadPdfToDrive(
+        uploadPdfData = await uploadPdfToDrive(
         {
           accessToken: userExists.googleAccessToken,
           refreshToken: userExists.googleRefreshToken,
@@ -329,7 +329,7 @@ if (pdfType !== "receipt") {
   console.log(`✅ Email sent via ${userExists.emailProvider === 'smtp' ? 'SMTP' : 'Platform'} as ${senderIdentity}`);
 }
 
-  if (pdfType === "receipt" && userExists.googleAccessToken && userExists.googleRefreshToken && userExists.sheetId) {
+if (pdfType === "receipt" && userExists.googleAccessToken && userExists.googleRefreshToken && userExists.sheetId) {
       await saveDataToSheets(
           [
             _id,
@@ -359,7 +359,7 @@ if (pdfType !== "receipt") {
           "Receipts",
           userExists?._id.toString()
         );
-  }
+}
     res.status(200).json({
       success: true,
       message: "PDF processed successfully",
