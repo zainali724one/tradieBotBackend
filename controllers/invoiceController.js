@@ -36,7 +36,8 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
     sheetId,
     jobId,
     materialCost,
-    profit
+    profit,
+    materialInvoices,
   } = req.body;
 
   // const user = await User.findOne({ telegramId });
@@ -159,6 +160,9 @@ Email: ${customerEmail}
   //     console.log(err);
   //   });
   if (userExists?.googleAccessToken && userExists?.googleRefreshToken) {
+    const materialInvoicesValue = Array.isArray(materialInvoices)
+      ? materialInvoices.join(", ")
+      : materialInvoices || "";
     await saveDataToSheets(
       [
         customerName,
@@ -169,6 +173,7 @@ Email: ${customerEmail}
         telegramId,
         customerPhone,
         userId,
+        materialInvoicesValue,
       ],
       [
         "Customer Name",
@@ -179,6 +184,7 @@ Email: ${customerEmail}
         "Telegram ID",
         "Phone",
         "User ID",
+        "Material Invoices",
       ],
       sheetId,
       userExists?.googleAccessToken,
