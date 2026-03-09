@@ -166,7 +166,7 @@ Email: ${customerEmail}
       ? materialInvoices.join(", ")
       : materialInvoices || "";
 
-console.log("materialInvoicesValue:", materialInvoicesValue);
+console.log("materialInvoicesValue1:", materialInvoicesValue);
     await saveDataToSheets(
       [
         customerName,
