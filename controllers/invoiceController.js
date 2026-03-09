@@ -160,45 +160,100 @@ Email: ${customerEmail}
   //     console.log(err);
   //   });
   console.log("before google sheets");
-  if (userExists?.googleAccessToken && userExists?.googleRefreshToken) {
-    console.log("saving to google sheets");
-    const materialInvoicesValue = Array.isArray(materialInvoices)
-      ? materialInvoices.join(", ")
-      : materialInvoices || "";
+//   if (userExists?.googleAccessToken && userExists?.googleRefreshToken) {
+//     console.log("saving to google sheets");
+//     const materialInvoicesValue = Array.isArray(materialInvoices)
+//       ? materialInvoices.join(", ")
+//       : materialInvoices || "";
 
-console.log("materialInvoicesValue1:", materialInvoicesValue);
+// console.log("materialInvoicesValue1:", materialInvoicesValue);
+//     await saveDataToSheets(
+//       [
+//         customerName,
+//         jobDescription,
+//         invoiceAmount,
+//         address,
+//         customerEmail,
+//         telegramId,
+//         customerPhone,
+//         userId,
+//         materialInvoicesValue,
+//       ],
+//       [
+//         "Customer Name",
+//         "Job",
+//         "Amount",
+//         "Address",
+//         "Email",
+//         "Telegram ID",
+//         "Phone",
+//         "User ID",
+//         "Material Invoices",
+//       ],
+//       sheetId,
+//       userExists?.googleAccessToken,
+//       userExists?.googleRefreshToken,
+//       "Invoices",
+//       userId
+//     );
+
+
+  
+//   }
+
+
+if (userExists?.googleAccessToken && userExists?.googleRefreshToken) {
+    console.log("saving to google sheets");
+
+    // 1. Ensure materialInvoices is a valid array
+    const invoiceUrls = Array.isArray(materialInvoices) 
+      ? materialInvoices 
+      : (materialInvoices ? [materialInvoices] : []);
+
+    // 2. Prepare the base data and base headers
+    const rowData = [
+      customerName,
+      jobDescription,
+      invoiceAmount,
+      address,
+      customerEmail,
+      telegramId,
+      customerPhone,
+      userId,
+    ];
+
+    const headings = [
+      "Customer Name",
+      "Job",
+      "Amount",
+      "Address",
+      "Email",
+      "Telegram ID",
+      "Phone",
+      "User ID",
+    ];
+
+    // 3. Dynamically add a new column for EVERY image uploaded
+    // If they uploaded 3 images, it adds 3 extra columns to this specific row.
+    invoiceUrls.forEach((url, index) => {
+      headings.push(`Material Invoice ${index + 1}`);
+      
+      // We use the HYPERLINK formula so the spreadsheet looks clean
+      rowData.push(`=HYPERLINK("${url}", "View Receipt ${index + 1}")`); 
+    });
+
+    console.log("Appending row with columns:", rowData.length);
+
+    // 4. Send to Google Sheets
     await saveDataToSheets(
-      [
-        customerName,
-        jobDescription,
-        invoiceAmount,
-        address,
-        customerEmail,
-        telegramId,
-        customerPhone,
-        userId,
-        materialInvoicesValue,
-      ],
-      [
-        "Customer Name",
-        "Job",
-        "Amount",
-        "Address",
-        "Email",
-        "Telegram ID",
-        "Phone",
-        "User ID",
-        "Material Invoices",
-      ],
+      rowData,       // Dynamic row data
+      headings,      // Dynamic headings
       sheetId,
       userExists?.googleAccessToken,
       userExists?.googleRefreshToken,
       "Invoices",
       userId
     );
-
-
-  
   }
 
   const invoicesPayload = {
