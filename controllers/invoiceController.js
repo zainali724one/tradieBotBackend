@@ -159,10 +159,14 @@ Email: ${customerEmail}
   //   .catch((err) => {
   //     console.log(err);
   //   });
+  console.log("before google sheets");
   if (userExists?.googleAccessToken && userExists?.googleRefreshToken) {
+    console.log("saving to google sheets");
     const materialInvoicesValue = Array.isArray(materialInvoices)
       ? materialInvoices.join(", ")
       : materialInvoices || "";
+
+console.log("materialInvoicesValue:", materialInvoicesValue);
     await saveDataToSheets(
       [
         customerName,
