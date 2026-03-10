@@ -282,6 +282,15 @@ if (pdfType !== "receipt") {
     <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px;">
       <p>Dear Customer,</p>
       <p>Please find your ${pdfType} attached.</p>
+          <div>
+      <h3 style="margin-bottom: 8px;">Contact Us</h3>
+      <p style="margin: 4px 0;">
+        <strong>Email:</strong> ${userExists.email || "support@example.com"}
+      </p>
+      <p style="margin: 4px 0;">
+        <strong>Phone:</strong> ${userExists.phone || "+00 000 000000"}
+      </p>
+    </div>
       <p>Thank you for choosing <strong>${userExists.businessName || "us"}</strong> for your service.</p>
     </div>
   `;
@@ -299,6 +308,15 @@ if (pdfType !== "receipt") {
           Pay Now
         </a>
       </p>
+          <div>
+      <h3 style="margin-bottom: 8px;">Contact Us</h3>
+      <p style="margin: 4px 0;">
+        <strong>Email:</strong> ${userExists.email || "support@example.com"}
+      </p>
+      <p style="margin: 4px 0;">
+        <strong>Phone:</strong> ${userExists.phone || "+00 000 000000"}
+      </p>
+    </div>
       <p>Regards,<br>${userExists.businessName || userExists.name}</p>
     </div>
   `;

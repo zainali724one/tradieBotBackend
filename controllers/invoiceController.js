@@ -293,9 +293,9 @@ if (userExists?.googleAccessToken && userExists?.googleRefreshToken) {
     userExists.sheetId = sheetId;
     userExists.save();
   }
-  // if (userExists.tenantId && userExists.xeroToken) {
-  //   await createXeroDocumentForUser(userId, invoicesPayload, "invoice");
-  // }
+  if (userExists.tenantId && userExists.xeroToken) {
+    await createXeroDocumentForUser(userId, invoicesPayload, "invoice");
+  }
 
   // Clean up file
   // fs.unlinkSync(pdfPath);
