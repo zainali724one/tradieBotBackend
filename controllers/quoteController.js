@@ -127,7 +127,7 @@ Email: ${customerEmail}`;
       user?.googleAccessToken,
       user?.googleRefreshToken,
       "Quotes",
-      userId
+      user?._id.toString()
     );
   }
 
@@ -200,7 +200,7 @@ Email: ${customerEmail}`;
 
   if (user.tenantId && user.xeroToken) {
     await createXeroDocumentForUser(
-      userId,
+      user?._id,
       {
         customerName,
         jobDescription,
@@ -208,7 +208,7 @@ Email: ${customerEmail}`;
         customerEmail,
         telegramId,
         customerPhone,
-        userId,
+        userId: user?._id.toString(),
         adress: address,
       },
       "quote"
@@ -225,7 +225,7 @@ Email: ${customerEmail}`;
       address,
       telegramId,
       customerPhone,
-      userId,
+      userId: user?._id.toString(),
       companyLogo: user?.companyLogo || "",
       businessEmail: user?.email || "",
       businessName: user?.businessName || "",
