@@ -20,30 +20,68 @@ exports.getConsentUrl = async (req, res, next) => {
 };
 
 // 2. Handle callback
+// exports.handleXeroCallback = catchAsyncError(async (req, res) => {
+//   try {
+//     // ⚠️ Use the full req object here, not req.url
+//     const state = req.query.state;
+//     console.log(state, "here is state");
+//     console.log(req.url, "req.url");
+
+//     const protocol =
+//       req.headers["x-forwarded-proto"] || req.protocol || "https";
+//     const host = req.get("host");
+
+//     // req.originalUrl includes the path and query string (e.g., /callback?code=...)
+//     const fullCallbackUrl = `${protocol}://${host}${req.originalUrl}`;
+
+//     console.log(fullCallbackUrl, "Full Callback URL passed to Xero");
+
+//     await xero.apiCallback(fullCallbackUrl);
+//     console.log("before updateTenants");
+//     await xero.updateTenants(); // Populates tenantIds
+//     console.log("after updateTenants");
+//     const tokenSet = xero.readTokenSet(); // { access_token, refresh_token, etc. }
+//     const tenantId = xero.tenants[0];
+//     console.log(tokenSet, tokenSet, "these are required");
+//     // Save the tokenSet & tenantId in your database against the user
+//     await User.findByIdAndUpdate(state, {
+//       xeroToken: JSON.stringify(tokenSet),
+//       tenantId: JSON.stringify(tenantId),
+//     });
+
+//     res.redirect("https://tradie-bot.vercel.app/xeroconnected");
+//   } catch (error) {
+//     console.error("Xero callback error", error);
+//     console.log(req.query.state, "req.query.state");
+//     res.status(500).json({ success: false, message: "Callback failed" });
+//   } // redirect to frontend
+// });
+
+
+
 exports.handleXeroCallback = catchAsyncError(async (req, res) => {
   try {
-    // ⚠️ Use the full req object here, not req.url
     const state = req.query.state;
-    console.log(state, "here is state");
-    console.log(req.url, "req.url");
+    console.log("State:", state);
+    console.log("Req URL:", req.url);
 
-    const protocol =
-      req.headers["x-forwarded-proto"] || req.protocol || "https";
-    const host = req.get("host");
+    // 1. Initialize the client (CRITICAL for serverless environments like Vercel)
+    await xero.initialize();
 
-    // req.originalUrl includes the path and query string (e.g., /callback?code=...)
-    const fullCallbackUrl = `${protocol}://${host}${req.originalUrl}`;
-
-    console.log(fullCallbackUrl, "Full Callback URL passed to Xero");
-
-    await xero.apiCallback(fullCallbackUrl);
-    console.log("before updateTenants");
-    await xero.updateTenants(); // Populates tenantIds
-    console.log("after updateTenants");
-    const tokenSet = xero.readTokenSet(); // { access_token, refresh_token, etc. }
+    // 2. Pass the standard req.url directly to apiCallback
+    // It contains the '?code=...' needed to fetch the access token.
+    await xero.apiCallback(req.url); 
+    
+    console.log("Token exchanged successfully, fetching tenants...");
+    
+    // 3. Update tenants and read tokens
+    await xero.updateTenants(); 
+    const tokenSet = xero.readTokenSet(); 
     const tenantId = xero.tenants[0];
-    console.log(tokenSet, tokenSet, "these are required");
-    // Save the tokenSet & tenantId in your database against the user
+    
+    console.log("TokenSet acquired:", !!tokenSet.access_token);
+
+    // 4. Save to database
     await User.findByIdAndUpdate(state, {
       xeroToken: JSON.stringify(tokenSet),
       tenantId: JSON.stringify(tenantId),
@@ -51,60 +89,8 @@ exports.handleXeroCallback = catchAsyncError(async (req, res) => {
 
     res.redirect("https://tradie-bot.vercel.app/xeroconnected");
   } catch (error) {
-    console.error("Xero callback error", error);
-    console.log(req.query.state, "req.query.state");
+    console.error("Xero callback error:", error?.response?.body || error.message);
     res.status(500).json({ success: false, message: "Callback failed" });
-  } // redirect to frontend
+  } 
 });
 
-// exports.handleXeroCallback = catchAsyncError(async (req, res) => {
-//   const { state } = req.query;
-
-//   // Ensure state is passed into checks object
-//   await xero.apiCallback(req.url, {
-//     state,
-//   });
-
-//   await xero.updateTenants();
-
-//   const tokenSet = xero.readTokenSet();
-//   const tenantId = xero.tenantIds[0];
-
-//   // Use state as the userId, since you passed it when generating the consent URL
-//   const userId = state;
-
-//   await User.findByIdAndUpdate(userId, {
-//     xeroTokenSet: tokenSet,
-//     xeroTenantId: tenantId,
-//   });
-
-//   // Redirect to frontend
-//   res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected");
-// });
-
-// exports.handleXeroCallback = catchAsyncError(async (req, res) => {
-//   try {
-//     // Verify state parameter exists
-//     if (!req.query.state) {
-//       throw new Error("State parameter missing");
-//     }
-
-//     await xero.apiCallback(req.url);
-//     await xero.updateTenants();
-
-//     const tokenSet = xero.readTokenSet();
-//     const tenantId = xero.tenantIds[0];
-//     const userId = req.query.state;
-
-//     await User.findByIdAndUpdate(userId, {
-//       xeroTokenSet: tokenSet,
-//       xeroTenantId: tenantId,
-//     });
-
-//     res.redirect("https://peppy-swan-6fdd72.netlify.app/xeroconnected");
-//   } catch (error) {
-//     console.error("Xero callback error:", error);
-//     // Redirect to an error page or handle appropriately
-//     // res.redirect("https://peppy-swan-6fdd72.netlify.app/xero-error");
-//   }
-// });
