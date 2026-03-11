@@ -11,7 +11,9 @@ const xero = require("./XeroClient");
   const user = await User.findById(userId);
   console.log(user, "user in xero service");
   if (!user || !user.xeroToken || !user.tenantId) {
-    throw new Error("User not connected to Xero");
+    // throw new Error("User not connected to Xero");
+    console.warn(`User ${userId} not connected to Xero. Skipping Xero document creation.`);
+    return;
   }
 
   // Set user token and tenant in xero instance

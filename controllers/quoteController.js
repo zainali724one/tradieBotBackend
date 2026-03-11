@@ -198,22 +198,22 @@ Email: ${customerEmail}`;
   // Clean up file
   // fs.unlinkSync(pdfPath);
 
-  if (user.tenantId && user.xeroToken) {
-    await createXeroDocumentForUser(
-      user?._id,
-      {
-        customerName,
-        jobDescription,
-        quoteAmount,
-        customerEmail,
-        telegramId,
-        customerPhone,
-        userId: user?._id.toString(),
-        adress: address,
-      },
-      "quote"
-    );
-  }
+  // if (user.tenantId && user.xeroToken) {
+  //   await createXeroDocumentForUser(
+  //     user?._id,
+  //     {
+  //       customerName,
+  //       jobDescription,
+  //       quoteAmount,
+  //       customerEmail,
+  //       telegramId,
+  //       customerPhone,
+  //       userId: user?._id.toString(),
+  //       adress: address,
+  //     },
+  //     "quote"
+  //   );
+  // }
 
   res.status(201).json({
     message: "Quote submitted and emailed successfully",
