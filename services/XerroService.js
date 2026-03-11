@@ -9,6 +9,7 @@ const xero = require("./XeroClient");
   }
 
   const user = await User.findById(userId);
+  console.log(user, "user in xero service");
   if (!user || !user.xeroToken || !user.tenantId) {
     throw new Error("User not connected to Xero");
   }
