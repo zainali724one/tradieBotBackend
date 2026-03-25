@@ -107,7 +107,7 @@ async function uploadFileToDrive(
     const q = `'${parentId || "root"}' in parents and name='${name}' and mimeType='application/vnd.google-apps.folder' and trashed=false`;
     const res = await drive.files.list({ q, fields: "files(id, name)" });
 
-    if (res.data.files.length > 0) {
+    if (res.data.files.length > 0){
       return res.data.files[0].id;
     }
 

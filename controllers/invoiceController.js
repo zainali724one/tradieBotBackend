@@ -434,7 +434,7 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
         month,
         day,
         customerName,
-        "Invoices" // Root Folder
+        "Material Invoices" // Root Folder
       );
       uploadedDriveUrls.push(driveFile.webViewLink);
       
