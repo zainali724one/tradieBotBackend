@@ -496,7 +496,7 @@ exports.addInvoice = catchAsyncError(async (req, res, next) => {
   // }
 
 //   // Clean up file
-  fs.unlinkSync(pdfPath);
+  // fs.unlinkSync(pdfPath);
 
   res.status(201).json({
     success: true,
