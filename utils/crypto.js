@@ -4,7 +4,7 @@ const crypto = require('crypto');
 // ENCRYPTION_KEY must be 32 characters long
 // IV_LENGTH is usually 16
 const ENGORITHM = 'aes-256-cbc';
-const KEY = Buffer.from(process.env.ENCRYPTION_KEY, 'hex'); // 32 bytes
+const KEY = Buffer.from(process.env.ENCRYPTION_KEY || "myencryptionkey123456789012345678911", 'hex'); // 32 bytes
 const IV_LENGTH = 16;
 
 function encrypt(text) {
